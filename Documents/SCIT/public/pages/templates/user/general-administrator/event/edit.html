@@ -1,0 +1,349 @@
+{%include 'user/general-administrator/dashboard/header.html'%}
+
+<div style="display:flex;justify-content:center;width:100%;">
+    {%include 'pageNotification.html'%}
+</div>
+
+{%if data.event is iterable and data.event|length%}
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+        <h2 class="card-title" style="font-size:130%;font-weight:800;text-decoration-line:underline; text-decoration-style: dotted; text-decoration-color: rgb(230,230,230);">Event</h2>
+        <p class="card-description" style="font-size:80%;font-style:italic;">
+
+        </p>
+        <form id = "holder" method = "post" action="{{data.eventModify.url}}">
+            <input type="hidden" name="token" value="{{data.eventModify.token}}">
+            <input type="hidden" id = "googleCaptcha" name="googleCaptchaToken" value="">
+
+            <div id = "eventsHolder" class="holder">
+                <div class = "active" event = "true" processed = "false" style = "box-shadow: 1px 1px 3px rgb(80,80,80);padding:20px;margin-bottom:5px;" data-additional-data = "{{data.event.data|json_encode}}" data-event-id = "{{data.event.id}}">
+                    <div class="table-responsive" style="width:70%;display:flex;flex-direction:column;margin-left: auto;margin-right: auto;">
+                        <table class="table table-bordered" data-name = "{{data.event.name}}" data-location = "{{data.event.location}}" data-date = "{{data.event.actionDate}}" data-additional-data = "{{data.event.data.addedInputs|json_encode}}" data-description = "{{data.event.description}}" data-cover-image = "" is-set = "false">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">
+                                        Key
+                                    </th>
+                                    <th class="text-center">
+                                        Value
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class = "displayImageHolder" data-value = 0>
+                                    <td>Cover Photo</td>
+                                    <td>
+                                        <img style = "width: 80px;height:80px;" data-src = "{{data.event.coverImage}}" />
+                                        <button class="btn btn-info">Browse Pictures</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Name</td>
+                                    <td class="name">
+                                        <input type="text" class="form-control" required = "required" placeholder="please insert event name" value = "{{data.event.name}}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Location</td>
+                                    <td class="location">
+                                        <input type="text" required = "required" class="form-control" placeholder="please insert event location" value = "{{data.event.location}}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Date</td>
+                                    <td class="date">
+                                        <input type="datetime-local" class = "form-control" required = "required" placeholder="please insert event date in this format yyyy-mm-dd HH:mm:ss" value = "{{data.event.actionDate}}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Description</td>
+                                    <td class="description">
+                                        <textarea name="description" id="" cols="30" rows="10" class = "form-control" required = "required" placeholder="please insert event description as well as other neccessary information">{{data.event.description}}</textarea>
+                                    </td>
+                                </tr>
+                                {%if data.event.data.addedInputs is iterable and data.event.data.addedInputs|length%}
+                                {%for addedInput in data.event.data.addedInputs%}
+                                {%if (addedInput.key and addedInput.value)%}
+                                <tr class = "addedInput">
+                                    <td>
+                                        <input type="text" name="addedInputKey" class="form-control" placeholder="Additionl item name" value = "{{addedInput.key}}">
+                                    </td>
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="text" name="addedInputValue" class="form-control" placeholder="Additional item value" value = "{{addedInput.value}}">
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default removeEntry" style="color:red;">
+                                                    &times;
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {%endif%}
+                                {%endfor%}
+                                {%endif%}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="width:100%;margin-top:20px;display:flex;justify-content:flex-end;">
+                        <button class="btn btn-primary addNewEntry">
+                            Add New Entry
+                        </button>
+                    </div>
+                </div>
+            <div>
+
+            <div style="width:100%;margin-top:15px;display:none;justify-content:center;">
+                <button type="submit" style="width:100%;padding:2%;" class="btn bg-success" id = "updateData" disabled = "disabled">Update Data</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+{%else%}
+<div class="col-12 col-xs-12" style = "display:flex;justify-content: center;align-items: center;padding: 40px;">
+    <div style="width:70%;height:400px;background:black;">
+        <img src="/assets/images/noData.png" style="width:100%;height:100%;">
+    </div>
+</div>
+{%endif%}
+{%include 'user/general-administrator/dashboard/footer.html'%}
+
+<script src = "/assets/js/dashboard/mine.js"></script>
+<script>
+    var processor = new Processor();
+    processor.loadMoxie();
+
+    var checkInterval = setInterval(function(){
+        if(typeof $ === 'function' && typeof $.fn.selectize === 'function' && window.isMoxieLoaded){
+            clearInterval(checkInterval);
+
+            var form = $('#holder'),
+            eventsHolder = form.find('#eventsHolder'),
+            updateDataBtn = form.find('#updateData'),
+            processEvents = function(){
+                eventsHolder.find('div[event="true"][processed="false"]').each(function(){
+                    var event = $(this),
+                    table = event.find('table').eq(0),
+                    tbody = table.find('tbody').eq(0),
+                    nameInput = tbody.find('tr > td.name > input').eq(0),
+                    locationInput = tbody.find('tr > td.location > input').eq(0),
+                    dateInput = tbody.find('tr > td.date > input').eq(0),
+                    descriptionInput = tbody.find('tr > td.description > textarea').eq(0),
+                    addNewEntryBtn =  event.find('.addNewEntry').eq(0),
+                    coverImageDisplay = table.find('tr.displayImageHolder').find('img').eq(0),
+                    triggerButton = table.find('tr.displayImageHolder').find('button').eq(0),
+                    coverImageInput = new moxie.file.FileInput({
+                        'browse_button': triggerButton.get(0),
+                        'multiple':false,
+                        'accept' : 'image/*'
+                    }),
+                    handleAdditionalData = function(){
+                        var data = [];
+                        table.find('tr.addedInput').each(function(){
+                            var self = $(this),
+                            out = {
+                                'key':self.find('input[name="addedInputKey"]').eq(0).val() || '',
+                                'value':self.find('input[name="addedInputValue"]').eq(0).val() || ''
+                            };
+
+                            if(out.key.length && out.value.length){
+                                data.push(out);
+                            }
+                        });
+
+                        table.data('additional-data',JSON.stringify(data));
+                    };
+
+                    var timer;
+                    table.on('dataChanged',function(){
+                        if(timer){
+                            clearTimeout(timer);
+                        }
+
+                        timer = setTimeout(function(){
+                            if(table.attr('is-set') == 'true'){
+
+                                if((table.data('cover-image') !== coverImageDisplay.data('cover-image')) || (table.data('name') !== nameInput.val()) || (table.data('location') !== locationInput.val()) || (table.data('date') !== dateInput.val()) || (table.data('description') !== descriptionInput.val()) || (table.data('additional-data') !== JSON.stringify(event.data('additional-data')['addedInputs']))){
+                                    updateDataBtn.closest('div').css({
+                                        'display' : 'flex'
+                                    });
+                                }else{
+                                    updateDataBtn.closest('div').css({
+                                        'display' : 'none'
+                                    });
+                                }
+                            }
+                        },500);
+                    });
+
+                    var launch = function(canvas){
+                        canvas = canvas || false;
+
+                        if(canvas){
+                            var dataUrl = canvas.toDataURL('image/png', 1.0);
+                            table.data('cover-image', dataUrl);
+                            coverImageDisplay.data('cover-image', dataUrl);
+                        }else{
+                            table.data('cover-image', '');
+                            coverImageDisplay.data('cover-image', '');
+                        }
+
+                        if (!table.data('additional-data')) {
+                            table.data('additional-data', '[]');
+                        }
+
+                        table.attr('is-set', 'true');
+                    };
+
+                    coverImageDisplay.on('load',function(){
+                        processor.addLoader();
+                        var canvas = document.createElement('canvas');
+                        canvas.setAttribute('width',700);
+                        canvas.setAttribute('height',550);
+
+                        ctx = canvas.getContext('2d');
+                        ctx.drawImage(coverImageDisplay.get(0),0,0,700,550);
+
+                        if(table.attr('is-set') == 'false'){
+                            launch(canvas);
+                        }else{
+                            coverImageDisplay.data('cover-image',canvas.toDataURL('image/png',1.0));
+                            table.trigger('dataChanged');
+                        }
+
+                        canvas.toBlob(function(blob){
+                            event.data('image-binary-file',blob);
+                            processor.removeLoader();
+                        },'image/png','1.0');
+                    });
+
+                    coverImageDisplay.on('error', function () {
+                        if (table.attr('is-set') == 'false') {
+                            launch();
+                        }
+                    });
+
+                    coverImageDisplay.attr('src',coverImageDisplay.data('src'));
+
+                    coverImageInput.addEventListener('change',function(){
+                        if(coverImageInput.files.length && /^image\/[\s\S]{1,}$/.test(coverImageInput.files[0]['type'])){
+                            if(coverImageInput.files[0]['size'] > 3000000){
+                                alert('cover image has a maximum allowed size of 3 MB');
+                            }else{
+                                var reader = new moxie.file.FileReader();
+                                reader.addEventListener('load',function(){
+                                    var blob = $$.binaryStringToBlob(reader.result);
+                                    blob = new Blob([blob],{'type':'image/png'});
+
+                                    var objectUrl = window.URL.createObjectURL(blob);
+                                    coverImageDisplay.attr('src',objectUrl);
+                                });
+                                reader.addEventListener('error',function(){
+                                    alert('Invalid Image file uploaded');
+                                });
+                                reader.readAsBinaryString(coverImageInput.files[0]);
+                            }
+                        }else{
+                            alert('Invalid file... Only Image upload is allowed');
+                        }
+                    });
+
+                    addNewEntryBtn.on('click',function(e){
+                        e.preventDefault();
+                        tbody.append('<tr class = "addedInput"><td><input type="text" name="addedInputKey" class="form-control" placeholder="Additionl item name"></td><td><div class="input-group"><input type="text" name="addedInputValue" class="form-control" placeholder="Additional item value"><span class="input-group-btn"><button class="btn btn-default removeEntry" style="color:red;">&times;</button></span></div></td></tr>');
+                        handleAdditionalData();
+                    });
+
+                    tbody.on('change keyup keypress keydown',function(e){
+                        handleAdditionalData();
+                        table.trigger('dataChanged');
+                    });
+
+                    tbody.on('click','button.removeEntry',function(e){
+                        e.preventDefault();
+                        $(e.target).closest('tr').remove();
+                        handleAdditionalData();
+                    });
+
+                    coverImageInput.init();
+                    event.attr('processed','true');
+                });
+            };
+
+            updateDataBtn.on('click',function(e){
+                e.preventDefault();
+                var Data = new FormData();
+
+                var data = {},
+                event = eventsHolder.children('div[event="true"]').eq(0),
+                table = event.find('table').eq(0),
+                tbody = table.find('tbody').eq(0),
+                nameInput = tbody.find('tr > td.name > input').eq(0),
+                locationInput = tbody.find('tr > td.location > input').eq(0),
+                dateInput = tbody.find('tr > td.date > input').eq(0),
+                descriptionInput = tbody.find('tr > td.description > textarea'),
+                addedInput = tbody.find('tr.addedInput');
+
+                data.name = nameInput.val();
+                data.id = event.data('event-id');
+                data.location = locationInput.val();
+                data.date = dateInput.val();
+                data.description = descriptionInput.val();
+                data.addedInput = JSON.parse(table.data('additional-data'));
+
+                if(event.data('image-binary-file') && data.name.length && data.location.length && data.date.length && data.description.length){
+                    Data.append('action','update');
+
+                    Data.append('eventCoverData',event.data('image-binary-file'),'Cover-Image');
+                    Data.append('eventData',JSON.stringify(data));
+
+                    form.children('input[type="hidden"]').each(function(){
+                        var __self = $(this);
+                        Data.append(__self.attr('name'),__self.val());
+                    });
+
+                    processor.addLoader();
+                    $.ajax({
+                        'method': 'post',
+                        'url': window.location.href,
+                        'processData': false,
+                        'contentType': false,
+                        'data':Data,
+                        'success': function(resp){
+                            window.location.reload(true);
+                        },
+                        'error': function(resp){
+                            alert('An error Occured.. please contact developer');
+                            processor.removeLoader();
+                        }
+                    });
+                }
+            });
+
+            form.on('keypress',function(e){
+                var key = e.charCode || e.keyCode || 0;
+                if(key == 13){
+                    e.preventDefault();
+                }
+            });
+
+            processEvents();
+            $('#updateData').removeAttr('disabled');
+        }
+    },200);
+</script>
+<!--<script src='{{data.googleCaptcha.url}}'></script>
+<script>
+    var $otherInterval = setInterval(function(){
+        if((typeof $ == 'function') && (typeof grecaptcha == 'object') && (typeof grecaptcha.execute == 'function')){
+            clearInterval($otherInterval);
+            grecaptcha.execute('{{data.googleCaptcha.siteKey}}', {action: 'adminUpdateEvents'}).then(function(token) {
+                $('#googleCaptcha').val(token);
+                $('#saveData').removeAttr('disabled');
+            });
+        }
+    },100);
+</script>-->

@@ -1,0 +1,302 @@
+
+<div style="display:flex;justify-content:center;width:100%;">
+    {%include 'pageNotification.html'%}
+</div>
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title" style="font-size:130%;font-weight:800;text-decoration-line:underline; text-decoration-style: dotted; text-decoration-color: rgb(230,230,230);">Support Administrators</h2>
+            <p class="card-description" style="font-size:80%;font-style:italic;">
+               A comprehensive list of all support administrators...
+            </p>
+
+            <div class="modal fade" id="additionalInformationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container-fluid">
+                                <div class="mt-2"></div>
+                                <table class="table administrator">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">
+                                                <h3 style = "width: 100%;text-align: center;" class="text-center">
+                                                    Administrator Information
+                                                </h3>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form id = "holder" action="{{data.approvalRequest.url}}" method = "post">
+                <input type="hidden" name="token" value="{{data.approvalRequest.token}}">
+                <input type="hidden" id = "googleCaptcha" name="googleCaptchaToken" value="">
+                <div id="controls" style="width: 100%;display:flex; flex-wrap:wrap;flex-direction:row;justify-content:center;display: none;">
+                   <div class="row filter">
+                       <span class="col-12 col-sm-6 col-md-4">
+                           <select class = 'form-control filterBy'></select>
+                       </span>
+                       <span class="col-12 col-sm-6 col-md-4">
+                           <select class = 'form-control filterRule'></select>
+                       </span>
+                       <span class="col-12 col-sm-6 col-md-4">
+                           <select class = 'form-control filterValue'></select>
+                       </span>
+                   </div>
+
+                   <div class="row display">
+                       <span class="col-12 col-sm-10 col-md-8">
+                           <input name="display" class = "form-control" value = "display"/>
+                       </span>
+                   </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id = "holderTable">
+                        <thead>
+                            <tr>
+                                <th>
+
+                                </th>
+                                <th>
+                                #
+                                </th>
+                                <th class="text-center" id = "screen">
+                                    Name
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody data-token = "{{attribute(data,'update-data').token}}">
+                            {%set increment = attribute(data,data.for).increment | default(50)%}
+                            {%set count = attribute(data,data.for).total.count%}
+                            {%set current = increment%}
+                            {%set hasSetCurrent = 0%}
+                            {%set isPaginated = false%}
+                            {%set from = attribute(data,data.for).from | default(0)%}
+
+                            {%set index = from%}
+                            {%if (attribute(data,data.for).list is iterable) and (attribute(data,data.for).list|length)%}
+                            {%for administrator in attribute(data,data.for).list%}
+                            {%set index = index + 1%}
+
+                            <tr class="wrapper"
+                            data-administrator-user-id = "{{administrator.adminUserId}}",
+                            data-administrator-id = "{{administrator.adminId}}",
+                            data-administrator-name = "{{administrator.adminName}}"
+                            data-administrator-email = "{{administrator.adminEmail}}"
+                            data-administrator-phone = "{{administrator.adminPhoneNumber}}",
+                            data-administrator-region-name = "{{administrator.adminRegionName}}",
+                            data-administrator-country-name = "{{administrator.adminCountryName}}",
+                            data-administrator-lga-name = "{{administrator.adminLgaName}}",
+                            data-administrator-is-approved = "{{(administrator.isApproved == 1) ? 'yes' : 'no'}}",
+                            data-administrator-is-blocked = "{{(administrator.isBlocked == 1) ? 'yes' : 'no'}}",
+                            data-administrator-approval-request-date = "{{administrator.approvalRequestDate|date('F jS \\a\\t g:ia')}}",
+                            data-administrator-approved-date = "{{administrator.approvedDate|date('F jS \\a\\t g:ia')}}",
+                            data-administrator-registered-date = "{{administrator.registeredDate|date('F jS \\a\\t g:ia')}}"
+                            >
+                                <td>
+                                    <input type="checkbox">
+                                </td>
+                                <td class="placedId">
+                                {{index}}
+                                </td>
+                                <td class="nameHolder">
+                                    <span style="display:flex;word-wrap: break-word;width: 100%;">
+                                        {{administrator.adminName|title}}
+                                    </span>
+                                </td>
+                                <td class="controls">
+                                    <div style="display:flex;width:100%;justify-content:center;align-items:center;flex-wrap: wrap;">
+                                        <button class="moreData btn bg-warning" style="margin-right:8px;" data-toggle="modal" data-target="#additionalInformationModal">View More</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {%endfor%}
+                            {%else%}
+                            <tr class="wrapper">
+                                <td colspan = "3">
+                                    <span style="display:flex;word-wrap: break-word;width: 100%;text-align: center;justify-content: center;align-items: center;font-size: 90%;font-weight: 750;text-transform: capitalize;">
+                                        No Data... Try modifying the search criteria
+                                    </span>
+                                </td>
+                            </tr>
+                            {%endif%}
+                        </tbody>
+                    </table>
+                    <nav aria-label="..." class="mt-3">
+                        <ul class="pagination">
+                            <li class="page-item {%if (from < increment)%}disabled{%endif%}">
+                                <a class="page-link" href="?from={{(from - increment)}}" tabindex="-1">Previous</a>
+                            </li>
+                            {%for i in 0..30000 if (not isPaginated)%}
+                            <li class="page-item {%if((current >= (from + increment)) and (hasSetCurrent == 0))%}active{%set hasSetCurrent = 1%}{%endif%}">
+                                <a class="page-link" href="?from={{(i*increment)}}">{{i + 1}}</a>
+                            </li>
+                            {%if current > count%}
+                            {%set isPaginated = true%}
+                            {%endif%}
+                            {%set current = (current + increment)%}
+                            {%endfor%}
+
+                            <li class="page-item {%if (count <= increment) or (count <= (from + increment))%}disabled{%endif%}">
+                                <a class="page-link" href="?from={{(from + increment)}}">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/assets/js/jquery-1.9.1.js"></script>
+<script src = "/assets/js/dashboard/mine.js"></script>
+<script>
+    var processor = new Processor();
+
+    $checkInterval = setInterval(function(){
+        if(typeof $ == 'function'){
+            clearInterval($checkInterval);
+
+            var form = $('form#holder'),
+            table = form.find('table#holderTable'),
+            tbody = table.find('tbody');
+
+            tbody.on('click','button',function(e){
+                e.preventDefault();
+            });
+
+            $('#additionalInformationModal').on('show.bs.modal', function (e) {
+                var modal = $(this),
+                button = $(e.relatedTarget),
+                tr = button.closest('tr'),
+                modalBody = modal.find('.modal-body'),
+                administratorWrapper =  modalBody.find('table.administrator').find('tbody').eq(0).html('');
+                administratorWrapper.append('<tr class = "wrapper"><td>Id</td><td class>'+tr.data('administrator-id')+'<td></tr>').append('<tr class = "wrapper"><td>User Id</td><td class>'+tr.data('administrator-user-id')+'<td></tr>').append('<tr class = "wrapper"><td>Name</td><td class>'+tr.data('administrator-name')+'<td></tr>').append('<tr class = "wrapper"><td>Email</td><td>'+tr.data('administrator-email')+'<td></tr>').append('<tr class = "wrapper"><td>Phone Number</td><td>'+tr.data('administrator-phone')+'<td></tr>').append('<tr class = "wrapper"><td>Type</td><td>Support Administrator<td></tr>').append('<tr class = "wrapper"><td>Country Name</td><td>'+tr.data('administrator-country-name')+'<td></tr>').append('<tr class = "wrapper"><td>Region Name</td><td>'+tr.data('administrator-region-name')+' state<td></tr>').append('<tr class = "wrapper"><td>Local Government Name</td><td>'+tr.data('administrator-lga-name')+' local government area<td></tr>').append('<tr class = "wrapper"><td>Is Approved</td><td>'+tr.data('administrator-is-approved')+'<td></tr>').append('<tr class = "wrapper"><td>Is Blocked</td><td>'+tr.data('administrator-is-blocked')+'<td></tr>').append('<tr class = "wrapper"><td>Approval Request Date</td><td>'+tr.data('administrator-approval-request-date')+'<td></tr>').append('<tr class = "wrapper"><td>Approved Date</td><td>'+tr.data('administrator-approved-date')+'<td></tr>').append('<tr class = "wrapper"><td>Registered Date</td><td>'+tr.data('administrator-registered-date')+'<td></tr>');
+
+                var modalFooter = modal.find('.modal-footer').eq(0);
+
+                modalFooter.find('button[data-dismiss="modal"]').siblings().remove();
+                modalFooter.append('<a type = "button" class = "view btn btn-info" href = "/{{data.user.type|e("js")}}/view/user/portfolio?id=' + tr.data('administrator-user-id') + '" style = "background:rgb(198, 245, 235);color:black;">View Portfolio</a>');
+                modalFooter.append('<a type = "button" class = "edit btn btn-info" href = "/{{data.user.type|e("js")}}/edit/user/portfolio?id=' + tr.data('administrator-user-id') + '" style = "background:rgb(198, 245, 235);color:black;">Edit Portfolio</a>');
+                if(tr.data('administrator-is-approved').toLowerCase() == 'yes'){
+                    if(tr.data('administrator-is-blocked').toLowerCase() == 'yes'){
+                        modalFooter.find('button.unlock').remove();
+                        modalFooter.append('<button class = "unblock btn btn-warning">Unblock</button>');
+                    }else if(tr.data('administrator-is-blocked').toLowerCase() == 'no'){
+                        modalFooter.find('button.block').remove();
+                        modalFooter.append('<button class = "block btn btn-warning">Block</button>');
+                    }
+                }else if(tr.data('administrator-is-approved').toLowerCase() == 'no'){
+                    modalFooter.find('button.approve,button.decline').remove();
+                    modalFooter.append('<button class = "approve btn btn-success">Approve</button>');
+                    modalFooter.append('<button class = "decline btn btn-danger">Decline</button>');
+                }
+
+                modalFooter.on('click',function(e){
+                    var self = $(e.target);
+                    if(e.target.nodeName.toLowerCase() == 'button'){
+                        var isSet = 0,
+                        data = {};
+
+                        switch(true){
+                            case (self.hasClass('approve')):
+                                data = {
+                                    '__action' : 'update',
+                                    '__for' : 'account-status',
+                                    'action' : 'approve',
+                                    'for' : 'support-administrator',
+                                    'forId': tr.data('administrator-id')
+                                };
+                                isSet = 1;
+                            break;
+
+                            case (self.hasClass('decline')):
+                                data = {
+                                    '__action' : 'update',
+                                    '__for' : 'account-status',
+                                    'action' : 'decline',
+                                    'for' : 'support-administrator',
+                                    'forId': tr.data('administrator-id')
+                                };
+                                isSet = 1;
+                            break;
+
+                            case (self.hasClass('unblock')):
+                                data = {
+                                    '__action' : 'update',
+                                    '__for' : 'account-status',
+                                    'action' : 'unblock',
+                                    'for' : 'support-administrator',
+                                    'forId': tr.data('administrator-id')
+                                };
+                                isSet = 1;
+                            break;
+
+                            case (self.hasClass('block')):
+                                data = {
+                                    '__action' : 'update',
+                                    '__for' : 'account-status',
+                                    'action' : 'block',
+                                    'for' : 'support-administrator',
+                                    'forId': tr.data('administrator-id')
+                                };
+                                isSet = 1;
+                            break;
+                        }
+
+                        if(isSet){
+                            data.token = tbody.data('token');
+                            processor.addLoader();
+                            $.ajax({
+                                'url' : '/update-data',
+                                'method' : 'post',
+                                'data' : data,
+                                'success' : function(resp){
+                                    window.location.reload(true);
+                                },
+                                'error': function(){
+                                    alert('An error occured.. please try again later');
+                                    processor.removeLoader();
+                                }
+                            });
+                        }
+                    }
+                });
+
+                modal.modal('handleUpdate');
+            });
+
+            $('#deleteData, button.remove').removeAttr('disabled');
+        }
+    },100);
+
+    $('#deleteData, button.remove').removeAttr('disabled');
+</script>
+
+<!--<script src='{{data.googleCaptcha.url}}'></script>
+<script>
+    var $otherInterval = setInterval(function(){
+        if((typeof $ == 'function') && (typeof grecaptcha == 'object') && (typeof grecaptcha.execute == 'function')){
+            clearInterval($otherInterval);
+            grecaptcha.execute('{{data.googleCaptcha.siteKey}}', {action: 'dataListing'}).then(function(token) {
+                $('#googleCaptcha').val(token);
+                $('#deleteData, button.remove').removeAttr('disabled');
+            });
+        }
+    },100);
+</script>-->

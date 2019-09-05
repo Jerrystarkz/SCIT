@@ -1,0 +1,138 @@
+<!doctype html>
+<html class="no-js" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>SCIT</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+        <style>
+            #loader{
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.3);
+                z-index: 9999999999999999;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            #loader > .content{
+                width: 100px;
+                height: 100px;
+                background: white;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 300%;
+                color: deepskyblue;
+            }
+        </style>
+	<!--[if lt IE 9]> <script src="js/html5shiv.js"></script>
+	<script src="js/respond.min.js"></script> <![endif]-->
+        <!-- Place favicon.ico in the root directory -->
+        <link rel="stylesheet" href="/assets/css/font-awesome.min.css">
+		<link href='https://fonts.googleapis.com/css?family=Lato:400,300,700' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="/assets/css/custom.css">
+        <link rel="stylesheet" href="/assets/css/normalize.css">
+        <link rel="stylesheet" href="/assets/css/main.css">
+        <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/css/owl.carousel.css">
+        <link rel="stylesheet" href="/assets/css/responsive.css">
+        <link rel="stylesheet" href="/assets/css/style.css">
+        <!-- <link rel="stylesheet" type="text/css" href="css/register-login/css/demo.css" /> -->
+          <link rel="stylesheet" type="text/css" href="/assets/css/register-login/css/style.css" />
+          <link rel="stylesheet" type="text/css" href="/assets/css/register-login/css/animate-custom.css" />
+
+<!-- HOVER EFFECTS   -->
+
+          <link href="/assets/css/hover-effect/css/hover.css" rel="stylesheet">
+          <link href="/assets/css/hover-effect/css/animate.css" rel="stylesheet">
+
+         <link href="/assets/aos/aos.css" rel="stylesheet">
+
+
+    </head>
+<body >
+		 <!-- start preloader -->
+        <!-- <div id="loader-wrapper">
+            <div class="logo"></div>
+            <div id="loader">
+            </div>
+        </div> -->
+        <!-- end preloader -->
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+
+<!-- Start Header Section -->
+<header class="main_menu_sec navbar navbar-default navbar-fixed-top">
+	<div class="container-fluid">
+		<div class="row">
+      <nav class="navbar navar-default">
+        <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">SCIT</a>
+          </div>
+
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="active"><a  href="/">Home</a></li>
+                <li><a  href="https://yopmin.org/about-us">About Us</a></li>
+                <li><a  href="/institutions">Institutions</a></li>
+                <li><a  href="/events">Events</a></li>
+                <li><a  href="https://yopmin.org/contact-us">Contact Us</a></li>
+                {%if data.user.isLogged%}
+                <li><a  href="/dashboard">Go to dashboard</a></li>
+                {%endif%}
+                
+              <!--<li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">INFORMATION<span class="caret"></span></a>
+              <ul  class="dropdown-menu">
+                <li><a class="page-scroll" href="/institutions">INSTITUTIONS</a>
+                  <ul>
+                    <li><a class="page-scroll" href="#tm_sec">WITHIN AFRICA</a>
+                      <ul>
+                        <li><a class="page-scroll" href="#tm_sec">UNDER GRADUATE</a></li>
+                        <li><a class="page-scroll" href="#tstm_sec">POST-GRADUATE</a></li>
+                          <li><a class="page-scroll" href="#tstm_sec">OTHERS</a></li>
+
+                      </ul>
+
+                    </li>
+                    <li><a class="page-scroll" href="#tstm_sec">OUTSIDE AFRICA</a>
+                      <ul>
+                        <li><a class="page-scroll" href="#tm_sec">UNDER GRADUATE</a></li>
+                        <li><a class="page-scroll" href="#tstm_sec">POST-GRADUATE</a></li>
+                          <li><a class="page-scroll" href="#tstm_sec">OTHERS</a></li>
+
+                      </ul>
+                    </li>
+
+                  </ul>
+
+                </li>-->
+            </ul>
+          </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+      </nav>
+		</div>
+	</div>
+</header>
+
+
+<!-- End Header Section -->
+
+<div style = "margin-top:25px;"></div>

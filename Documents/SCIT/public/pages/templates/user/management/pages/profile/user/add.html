@@ -1,0 +1,1590 @@
+
+<div style="display:flex;justify-content:center;width:100%;">
+    {%include 'pageNotification.html'%}
+</div>
+
+{%set isGeneral = (data.userType == 'all' ? true : false)%}
+{%set isUser = (data.userType == 'basic' ? true : false)%}
+{%set isCouncellor = (data.userType == 'school-edit' ? true : false)%}
+{%set controllerType = data.controllerType%}
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+        <style>
+        #holder,#portfolio,#user{
+            width: 100%;
+        }
+
+        #user .header{
+            font-size: 130%;
+            font-weight: 800;
+            text-align: left;
+            text-transform: uppercase;
+            margin: 20px 10px;
+        }
+
+        #user .inner{
+            margin-left: 3px 10px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        #user .inner .header{
+            font-size: 100%;
+            font-weight: 600;
+        }
+
+        #user .field{
+            margin: 20px 10px;
+        }
+
+        #user .field > .title{
+            font-weight: 650;
+            font-size: 90%;
+            width: 100%;
+            padding-bottom: 8px;
+            text-align: left;
+        }
+
+        #user .field > .text{
+            font-weight: 500;
+            font-size: 80%;
+            width: 100%;
+            background: rgb(230,230,230);
+            text-align: left;
+            padding: 14px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        #user .field > .text > *{
+            display: flex;
+            width: 100%;
+        }
+
+        #user .field.picture > .image{
+            display: flex;
+            width: 150px;
+            position: relative;
+            height: 150px;
+            z-index: 1;
+            background: rgb(0,0,0);
+        }
+
+        #user .field.picture > .image > img{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        #user .field.picture > .button{
+            display: flex;
+            width: 150px;
+            height: auto;
+        }
+
+        #user .field.picture > .button > button{
+            display: flex;
+            width: 100%;
+            height: auto;
+            padding: 10px 5px;
+        }
+
+        #user .inner.adminHolder > .adminData{
+            padding-bottom: 15px;
+            box-shadow: 0px 0.5px 2px rgb(40,40,40);
+        }
+
+        #user .inner.adminHolder > .addMore{
+            display: flex;
+            width: 100%;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        #user .inner.adminHolder > .addMore > .title{
+            display: flex;
+            font-weight: 650;
+            font-size: 90%;
+            width: 100%;
+            padding-bottom: 8px;
+            text-align: left;
+        }
+
+        #user .inner.adminHolder > .adminData > .header{
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #user .inner.adminHolder > .adminData > .header > .close{
+            color: rgb(255,0,0);
+            font-size: 130%;
+            display: flex;
+        }
+
+        #user .inner.adminHolder > .adminData > .header > .close:hover{
+            cursor: pointer;
+            color: rgb(255, 60, 60);
+            font-size: 150%;
+        }
+
+        #user .inner.adminHolder > .addMore .addMoreButton{
+            width: 100%;
+            margin-top: 10px;
+            background: deepskyblue;
+            padding: 10px;
+            text-align: center;
+            font-size: 90%;
+        }
+
+        div.error.report{
+            font-size: 90%;
+            font-style: italic;
+            font-weight: 500;
+            text-align: left;
+            color: red;
+            margin: 5px 0px 15px;
+        }
+
+        </style>
+
+        <form id = "holder" method = "post" action="{{attribute(data,'update-data').url}}" autocomplete="off">
+            <input type="hidden" name = "token" value = "{{attribute(data,'update-data').token}}" />
+
+            <div id = "user">
+                <div class="row">
+                    <div class="col-11 header">
+                        User Portfolio
+                    </div>
+                    <div class="col-12 col-md-8 field picture" processed = "false" data-name = "image">
+                        <div class="title">
+                            Profile Picture
+                        </div>
+                        <div class="image">
+                            <img alt=""/>
+                        </div>
+                        <div class="button">
+                            <button class="btn btn-info p-2 selector">Edit Profile Image</button>
+                        </div>
+                    </div>
+                    <div class="col-11 col-md-5 field">
+                        <div class="title">
+                            Full Name
+                        </div>
+                        <div class="text">
+                            <input type="text" name="name" class="form-control watchItem" placeholder="please insert a valid name">
+                        </div>
+                    </div>
+                    <div class="col-11 col-md-5 field">
+                        <div class="title">
+                            User Name
+                        </div>
+                        <div class="text">
+                            <input type="text" name="username" class="form-control watchItem optional" placeholder="please insert a valid user name without space">
+                        </div>
+                    </div>
+                    <div class="col-11 col-md-5 field">
+                        <div class="title">
+                            Email
+                        </div>
+                        <div class="text">
+                            <input type="email" name="email" class="form-control watchItem optional" placeholder="please insert a valid email address">
+                        </div>
+                    </div>
+                    <div class="col-11 col-md-5 field">
+                        <div class="title">
+                            Phone Number
+                        </div>
+                        <div class="text">
+                            <input type="text" name="phoneNumber" class="form-control watchItem optional" placeholder="please insert a valid phone number">
+                        </div>
+                    </div>
+                    <div class="col-11 col-md-5 field">
+                        <div class="title">
+                            User Type
+                        </div>
+                        <div class="text">
+                            <select id = "userType" name="type" class="form-control select watchItem" processed = "false" placeholder = "Please select user type" data-values = "{{data.userTypes|json_encode()}}">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-11 col-md-5 field">
+                        <div class="title">
+                            Is Approved
+                        </div>
+                        <div class="text">
+                            <select name="isApproved" class="form-control select watchItem" processed = "false" placeholder = "Please select account approval status">
+                                <option value="" disabled selected>None</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-11 col-md-5 field">
+                        <div class="title">
+                            Is Blocked
+                        </div>
+                        <div class="text">
+                            <select name="isBlocked" class="form-control select watchItem" processed = "false" placeholder = "Please select account blocked status">
+                                <option value="" disabled selected>None</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-11 col-md-5 field">
+                        <div class="title">
+                            Is Verified
+                        </div>
+                        <div class="text">
+                            <select name="isVerified" class="form-control select watchItem" processed = "false" placeholder = "Please select account verification status">
+                                <option value="" disabled selected>None</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-11 col-md-5 field">
+                        <div class="title">
+                            Country
+                        </div>
+                        <div class="text">
+                            <select name="country" class = "form-control select watchItem" processed = "false" data-values = '{{data.countries|json_encode}}' id = "country" affect = "#region,#stateOfResidence" data-is-remote = "true" placeholder = "please select your country"></select>
+                        </div>
+                    </div>
+                    <div class="col-11 col-md-5 field">
+                        <div class="title">
+                            State Of Origin
+                        </div>
+                        <div class="text">
+                            <select name="region" class = "form-control select watchItem" processed = "false" id = "region" affect = "#lga" provider = "#country" data-url = "{{data.settings.region.url}}" data-token = "{{data.settings.region.token}}" data-is-remote = "true" provider = "#country" placeholder = "please select your state of origin"></select>
+                        </div>
+                    </div>
+                    <div class="col-11 col-md-5 field">
+                        <div class="title">
+                            Local Government Area
+                        </div>
+                        <div class="text">
+                            <select name="lga" class = "form-control select watchItem" processed = "false" id = "lga" data-url = "{{data.settings.lga.url}}" data-token = "{{data.settings.lga.token}}" provider = "#region" data-is-remote = "true" placeholder = "please select your local government area"></select>
+                        </div>
+                    </div>
+                    <div class="col-11 col-md-5 field">
+                        <div class="title">
+                            State Of Residence
+                        </div>
+                        <div class="text">
+                            <select name="stateOfResidence" class = "form-control select watchItem" processed = "false" id = "stateOfResidence" data-url = "{{data.settings.region.url}}" data-token = "{{data.settings.region.token}}" data-is-remote = "true" provider = "#country" placeholder = "please select your state of residence"></select>
+                        </div>
+                    </div>
+                    <div class="col-11 col-md-5 field">
+                        <div class="title">
+                            New Password
+                        </div>
+                        <div class="text">
+                            <input type="password" name="password" class="form-control watchItem" placeholder="**********************" value = ''>
+                        </div>
+                    </div>
+                    <div class="col-11 col-md-5 field">
+                        <div class="title">
+                            Confirm New Password
+                        </div>
+                        <div class="text">
+                            <input type="password" name="confirmPassword" class="form-control watchItem" placeholder="**********************" value = ''>
+                        </div>
+                    </div>
+                    <div id = "insertHere" style="width:100%;" data-select-url = "{{data.select.url}}" data-select-token = "{{data.select.token}}" data-has-school-data = {{((data.select.school is iterable) and ((data.select.school|length) > 0)) ? "true" : "false"}} data-school-data = "{{data.select.school|json_encode}}"></div>
+                </div>
+            </div>
+        <div>
+
+        <div style="width:100%;margin-top:15px;display:flex;justify-content:center;" id = "saveDataCnt">
+            <button style="width:100%;padding:2%;background: rgb(123, 238, 28);color:rgb(255,255,255);" class="btn" disabled>Save Data</button>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript" src="/assets/js/jquery-1.9.1.js"></script>
+<script src = "/assets/js/dashboard/mine.js"></script>
+<script>
+    var processor = new Processor();
+    processor.loadMoxie();
+    processor.addLoader();
+
+    var checkInterval = setInterval(function(){
+        if(typeof $ === 'function' && typeof $.fn.selectize === 'function' && window.isMoxieLoaded){
+            clearInterval(checkInterval);
+
+            var form = $('#holder'),
+            userType = $('#userType'),
+            holder = $('#insertHere'),
+            saveDataCnt = $('#saveDataCnt'),
+            saveDataBtn = saveDataCnt.children('button').eq(0);
+
+            var processInputs = function () {
+                var pictures = form.find('.picture[processed="false"]');
+                pictures.each(function () {
+                    var self = $(this),
+                        screenCnt = self.find('.image'),
+                        screen = screenCnt.children('img').eq(0),
+                        selector = self.find('.selector').eq(0),
+                        imageInput,
+                        screenLoader = new InlineLoader(screenCnt),
+                        selectorLoader = new InlineLoader(selector);
+                        loaderAdd = () => {
+                            screenLoader.add();
+                            selectorLoader.add();
+                        },
+                        loaderRemove = () => {
+                            screenLoader.remove();
+                            selectorLoader.remove();
+                        };
+
+                    if (selector.length) {
+                        imageInput = new moxie.file.FileInput({
+                            'browse_button': selector.get(0),
+                            'multiple': false,
+                            'accept': 'image/*'
+                        });
+
+                        screen.on('load', function () {
+                            var canvas = document.createElement('canvas');
+                            canvas.setAttribute('width', 700);
+                            canvas.setAttribute('height', 550);
+
+                            ctx = canvas.getContext('2d');
+                            ctx.drawImage(screen.get(0), 0, 0, 700, 550);
+                            canvas.toBlob(function (blob) {
+                                self.data('image-binary-file', blob);
+                                self.attr('set','true');
+                            }, 'image/png', '1.0');
+
+                            loaderRemove();
+                        });
+
+                        screen.on('error',function(){
+                            alert('Invalid image');
+                            loaderRemove();
+                        });
+
+                        imageInput.addEventListener('change', function () {
+                            if (imageInput.files.length && /^image\/[\s\S]{1,}$/.test(imageInput.files[0]['type'])) {
+                                if (imageInput.files[0]['size'] > 3000000) {
+                                    alert('image has a maximum allowed size of 3 Mb');
+                                } else {
+                                    loaderAdd();
+                                    var reader = new moxie.file.FileReader();
+                                    reader.addEventListener('load', function () {
+                                        var blob = $$.binaryStringToBlob(reader.result);
+                                        blob = new Blob([blob], { 'type': 'image/png' });
+
+                                        var objectUrl = window.URL.createObjectURL(blob);
+                                        screen.attr('src', objectUrl);
+                                    });
+
+                                    reader.addEventListener('error', function () {
+                                        alert('Invalid Image file uploaded');
+                                        loaderRemove();
+                                    });
+
+                                    reader.readAsBinaryString(imageInput.files[0]);
+                                }
+                            } else {
+                                alert('Invalid file... Only Image upload is allowed');
+                            }
+                        });
+
+                        imageInput.init();
+                        self.attr('processed', 'true');
+                    }
+                });
+
+                $('select[processed="false"].select').each(function () {
+                    var self = $(this);
+                    self.selectize({
+                        create: false,
+                        placeholder: self.attr('placeholder'),
+                        closeAfterSelect: true,
+                        maxItems: 1,
+                        plugins: [
+                            'remove_button'
+                        ],
+                        'labelField': 'name',
+                        'valueField': 'id',
+                        'sortField': [
+                            {
+                                'field': 'name',
+                                'direction': 'asc'
+                            },
+                            {
+                                'field': 'id',
+                                'direction': 'asc'
+                            }
+                        ],
+                        'searchField': [
+                            'name'
+                        ],
+                        onInitialize: function () {
+                            var control = self.get(0).selectize;
+                            if (self.data('values')) {
+                                if(typeof self.data('values') == 'object'){
+                                    control.addOption(self.data('values'));
+                                }else if(typeof self.data('values') == 'string'){
+                                    control.addOption($(self.data('values')).data('values'));
+                                }
+                            }
+
+                            if (self.data('value')) {
+                                control.setValue([self.data('value')]);
+                            }
+
+                            if (self.attr('affect') && control.getValue()) {
+                                var timeout = setTimeout(function () {
+                                    control.trigger('change');
+                                }, 1000);
+                            }
+
+                            self.attr('processed', 'true');
+                        },
+                        onChange: function () {
+                            var control = self.get(0).selectize,
+                                affectedElement = self.attr('affect');
+                            if (affectedElement) {
+                                var el = $(affectedElement);
+
+                                if (el.length && el.data('url') && el.data('token')) {
+                                    el.each(function () {
+                                        var self = $(this),
+                                            elControl = self.get(0).selectize,
+                                            provider = self.attr('provider'),
+                                            loader = new InlineLoader(self.parent()),
+                                            process = function () {
+                                                if (provider) {
+                                                    provider = $(provider);
+
+                                                    if (provider.length) {
+                                                        var providerName = provider.attr('name').toLowerCase(),
+                                                            name = ((providerName.indexOf('country') != -1) ? 'countryId' : ((providerName.indexOf('region') != -1) ? 'regionId' : 'lgaId')),
+                                                            value = provider.val(),
+                                                            data = {
+                                                                'token': self.data('token')
+                                                            };
+                                                        data[name] = value;
+
+                                                        elControl.clear();
+                                                        elControl.clearOptions();
+                                                        elControl.disable();
+
+                                                        if (value) {
+                                                            loader.add();
+
+                                                            $.ajax({
+                                                                'method': 'get',
+                                                                'url': self.data('url'),
+                                                                'data': data,
+                                                                'success': function (resp) {
+                                                                    loader.remove();
+                                                                    if (resp.status == 'ok') {
+                                                                        var defaultValue = self.data('value');
+                                                                        elControl.enable();
+                                                                        elControl.addOption(resp.response);
+                                                                        elControl.refreshOptions(defaultValue ? false : true);
+                                                                        if (defaultValue) {
+                                                                            elControl.setValue(defaultValue);
+                                                                            elControl.refreshItems();
+                                                                        }
+                                                                    } else {
+                                                                        alert(resp.response);
+                                                                    }
+                                                                },
+                                                                'error': function (resp) {
+                                                                    loader.remove();
+                                                                    alert('An unknown server error occured');
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                }
+                                            };
+
+                                        if (!elControl) {
+                                            var controlTimer = setInterval(function () {
+                                                elControl = el.get(0).selectize
+                                                if (elControl) {
+                                                    clearInterval(controlTimer);
+                                                    process();
+                                                }
+                                            }, 500);
+                                        } else {
+                                            process();
+                                        }
+
+                                    });
+                                }
+                            }
+                        }
+                    });
+                });
+            };
+
+            let updateDelegateAdmin = function(){
+                let vals = [
+                        'general-administrator',
+                        'institution-administrator',
+                        'internship-provider-administrator',
+                        'secondary-school-administrator',
+                        'support-administrator',
+                    ],
+                    posts = [],
+                    el = $('#addMore'),
+                    control = el.get(0).selectize;
+
+                holder.find('div.inner.adminHolder > .adminData > input[type="hidden"]').each(function () {
+                    posts.push($(this).val().toLowerCase());
+                });
+
+                if(vals.length === posts.length){
+                    vals = [];
+                }
+
+                posts.forEach(function(value){
+                    var key = vals.indexOf(value);
+                    if(key !== -1){
+                        delete vals[key];
+                    }
+                });
+
+                if(control){
+                    control.destroy();
+                }
+
+                let data = [];
+
+                vals.forEach(function(value){
+                    data.push({
+                        id: value,
+                        name: value.split('-').join(' ').toLowerCase()
+                    });
+                });
+
+                el.selectize({
+                    create: false,
+                    placeholder: el.attr('placeholder'),
+                    options: data,
+                    closeAfterSelect: true,
+                    maxItems: 1,
+                    plugins: [
+                        'remove_button'
+                    ],
+                    'labelField': 'name',
+                    'valueField': 'id',
+                    'sortField': [
+                        {
+                            'field': 'name',
+                            'direction': 'asc'
+                        },
+                        {
+                            'field': 'id',
+                            'direction': 'asc'
+                        }
+                    ],
+                    'searchField': [
+                        'name'
+                    ],
+                    onInitialize: function () {
+                        var control = el.get(0).selectize;
+                        el.attr('processed', 'true');
+                    }
+                });
+            };
+
+            holder.on('click','div.inner.adminHolder > .adminData > .header > .close',function(){
+                $(this).closest('.adminData').remove();
+                updateDelegateAdmin();
+                processInputs();
+            });
+
+            holder.on('change','.searchItem > div.field > div.text > select.watchItem.trigger',function(e){
+                var self = $(this),
+                value = self.val(),
+                generalName = self.attr('name').replace('.lga','');
+
+                if(value.length){
+                    var searchParent = self.closest('.field').parent(),
+                    searchElement = searchParent.find('div.field > div.text > select.watchItem[name="'+generalName+'.id"]').eq(0);
+
+                    if(searchElement.length){
+                        var searchContainer = searchElement.closest('.text'),
+                        queryKey = searchElement.data('var-key'),
+                        queryValue = searchElement.data('var-value'),
+                        searchUrl = searchElement.data('url'),
+                        searchToken = searchElement.data('token'),
+                        countryId = searchParent.find('div.field > div.text > select.watchItem[name="' + generalName + '.country"]').eq(0).val(),
+                        regionId = searchParent.find('div.field > div.text > select.watchItem[name="' + generalName + '.region"]').eq(0).val(),
+                        loader = new InlineLoader(searchContainer),
+                        viewControl = searchElement.get(0).selectize;
+
+                        if(queryKey.length && String(queryValue).length && searchToken.length && searchUrl.length && countryId.length && regionId.length){
+                            loader.add();
+
+                            viewControl.clear();
+                            viewControl.clearOptions();
+                            viewControl.disable();
+
+                            $.ajax({
+                                'method': 'post',
+                                'url': searchUrl,
+                                'data': {
+                                    'token': searchToken,
+                                    '__for': 'stakeholderList',
+                                    'query': {
+                                        'key': queryKey,
+                                        'value': queryValue
+                                    },
+                                    'lgaId': value,
+                                    'regionId': regionId,
+                                    'countryId': countryId
+                                },
+                                'success': function (resp) {
+                                    loader.remove();
+                                    if (typeof resp !== 'object' || typeof resp.status !== 'string' || ['ok', 'error'].indexOf(resp.status) === -1) {
+                                        alert('A recoverable error occured.. please contact support if the problem persists');
+                                    } else if (resp.status == 'ok') {
+                                        if(resp.hasData){
+                                            for(var i = 0,j = resp.response.length;i < j;i++){
+                                                resp.response.name = resp.response.name + ' ( ' + resp.response.uniqueName + ' )';
+                                            }
+                                            viewControl.enable();
+                                            viewControl.addOption(resp.response);
+                                            viewControl.refreshOptions(true);
+                                        }else{
+                                            alert('Oooops no stakeholder was found');
+                                        }
+                                    } else {
+                                        alert(resp.response);
+                                    }
+                                },
+                                'error': function (resp) {
+                                    loader.remove();
+                                    alert('An unknown server error occured');
+                                }
+                            });
+                        }else{
+                            alert('Invalid request... Please contact administrator');
+                        }
+                    }
+                }
+            });
+
+            holder.on('click','#addMoreButton',function(){
+                let el = $('#addMore'),
+                control = el.get(0).selectize;
+
+                if(el.val().length){
+                    let found = 0;
+                    holder.find('div.inner.adminHolder > .adminData > input[type="hidden"]').each(function(){
+                        if($(this).val().toLowerCase() === el.val().toLowerCase()){
+                            found = 1;
+                        }
+                    });
+
+                    if(!found){
+                        let administratorType = el.val(),
+                            readableType = administratorType.split('-').join(' ').toUpperCase(),
+                            index = holder.find('.adminHolder > .adminData').length,
+                            prefix = 'admin.' + index;
+
+                        holder.find('div.inner.adminHolder > div.inner.adminData').last().after(`
+                            <div class="col-12 inner adminData">
+                                <input type="hidden" name="${prefix}.type" class="form-control watchItem" value="${administratorType}" />
+                                <div class="col-12 header">
+                                    ${readableType} Data
+
+                                    <div class = "close">
+                                        &times;
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        Is Approved
+                                    </div>
+                                    <div class="text">
+                                        <select name="${prefix}.isApproved" class="form-control select watchItem" processed="false" placeholder="Please select account approval status">
+                                            <option value="" disabled selected>None</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        Is Blocked
+                                    </div>
+                                    <div class="text">
+                                        <select name="${prefix}.isBlocked" class="form-control select watchItem" processed="false" placeholder="Please select account blocked status">
+                                            <option value="" disabled selected>None</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field parent">
+                                    <div class="title">
+                                        Stakeholder Option
+                                    </div>
+                                    <div class="text">
+                                        <select class="form-control select adminStakeholderSelection watchItem" name = "${prefix}.stakeholder.mode" processed="false" placeholder="Please select stakeholder option" data-prefix="${prefix}" data-index="${index}" data-admin-type="${administratorType}">
+                                            <option value="" disabled selected>None</option>
+                                            <option value="created">Created</option>
+                                            <option value="selected">Selected</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+
+                        if(['general-administrator', 'support-administrator'].indexOf(administratorType) !== -1){
+                            holder.find('div.inner.adminHolder > div.inner.adminData > input[type="hidden"][value="general-administrator"],div.inner.adminHolder > div.inner.adminData > input[type="hidden"][value="support-administrator"]').each(function () {
+                                let self = $(this);
+                                self.siblings('.field.parent').remove();
+                            });
+                        }
+
+                        updateDelegateAdmin();
+                        processInputs();
+                    }
+                }
+            });
+
+            holder.on('change','.adminStakeholderSelection',function(){
+                let self = $(this),
+                mode = self.val(),
+                parent = self.closest('.parent'),
+                prev = parent.next('.inner'),
+                index = self.data('index'),
+                prefix = self.data('prefix')+'.stakeholder';
+
+                if(prev.length){
+                    prev.remove();
+                }
+
+                let country = $('#country'),
+                    region = $('#region'),
+                    lga = $('#lga'),
+                    countries = "#country",
+                    regionToken = region.data('token'),
+                    regionUrl = region.data('url'),
+                    lgaToken = lga.data('token'),
+                    lgaUrl = lga.data('url');
+
+                switch(mode){
+                    case 'created':
+                        parent.after(`
+                            <div class="col-11 inner">
+                                <div class="col-12 header">
+                                    stakeholder Data
+                                </div>
+
+                                <div class="col-12 col-md-8 field picture" processed = "false" data-name="${prefix}.image">
+                                    <div class="title">
+                                        Stakeholder Picture
+                                    </div>
+                                    <div class="image">
+                                        <img alt="" />
+                                    </div>
+                                    <div class="button">
+                                        <button class="btn btn-info p-2 selector">Edit Stakeholder Image</button>
+                                    </div>
+                                </div>
+
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        name
+                                    </div>
+                                    <div class="text">
+                                        <input type="text" name="${prefix}.name" class="form-control watchItem" placeholder="Please insert stakeholder name">
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        unique name
+                                    </div>
+                                    <div class="text">
+                                        <input type="text" name="${prefix}.uniqueName" class="form-control watchItem" placeholder="Please insert stakeholder unique name">
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        country
+                                    </div>
+                                    <div class="text">
+                                        <select class="select form-control watchItem" name="${prefix}.country" processed="false" data-values='${countries}' id="stakeholder_${index}_country" affect="#stakeholder_${index}_region" placeholder="please select your country"></select>
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        region
+                                    </div>
+                                    <div class="text">
+                                        <select class="select form-control watchItem" name="${prefix}.region" processed="false" data-is-remote="true" id="stakeholder_${index}_region" affect="#stakeholder_${index}_lga" provider="#stakeholder_${index}_country" data-url="${regionUrl}" data-token="${regionToken}" placeholder="please select your region"></select>
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        lga
+                                    </div>
+                                    <div class="text">
+                                        <select class="select form-control watchItem" name="${prefix}.lga" processed="false" data-is-remote="true" provider="#stakeholder_${index}_region" id="stakeholder_${index}_lga" data-url="${lgaUrl}" data-token="${lgaToken}" placeholder="please select your local government area"></select>
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        Is Approved
+                                    </div>
+                                    <div class="text">
+                                        <select name="${prefix}.isApproved" class="form-control select watchItem" processed="false" placeholder="Please select account approval status">
+                                            <option value="" disabled selected>None</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        Is Blocked
+                                    </div>
+                                    <div class="text">
+                                        <select name="${prefix}.isBlocked" class="form-control select watchItem" processed="false" placeholder="Please select account blocked status">
+                                            <option value="" disabled selected>None</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-10 field">
+                                    <div class="title">
+                                        Address
+                                    </div>
+                                    <div class="text">
+                                        <textarea name="${prefix}.address" class="form-control watchItem" placeholder="Please insert stakeholder address" ></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-10 field">
+                                    <div class="title">
+                                        Description
+                                    </div>
+                                    <div class="text">
+                                        <textarea name="${prefix}.description" class="form-control watchItem" placeholder="Please insert stakeholder description"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                    break;
+
+                    case 'selected':
+                        let adminType = self.data('admin-type'),
+                        selectUrl = holder.data('select-url'),
+                        selectToken = holder.data('select-token');
+
+                        parent.after(`
+                            <div class="col-11 inner searchItem">
+                                <div class="col-12 header">
+                                    stakeholder Data
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        country
+                                    </div>
+                                    <div class="text">
+                                        <select class="select form-control watchItem" name="${prefix}.country" processed="false" data-values='${countries}' id="stakeholder_${index}_country" affect="#stakeholder_${index}_region" placeholder="please select stakeholder country"></select>
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        region
+                                    </div>
+                                    <div class="text">
+                                        <select class="select form-control watchItem" name="${prefix}.region" processed="false" data-is-remote="true" id="stakeholder_${index}_region" affect="#stakeholder_${index}_lga" provider="#stakeholder_${index}_country" data-url="${regionUrl}" data-token="${regionToken}" placeholder="please select stakeholder region"></select>
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        lga
+                                    </div>
+                                    <div class="text">
+                                        <select class="select form-control watchItem trigger" name="${prefix}.lga" processed="false" data-is-remote="true" provider="#stakeholder_${index}_region" id="stakeholder_${index}_lga" data-url="${lgaUrl}" data-token="${lgaToken}" placeholder="please select stakeholder local government area"></select>
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        stakeholder list
+                                    </div>
+                                    <div class="text">
+                                        <select class="select form-control watchItem" name="${prefix}.id" processed="false" data-is-remote="true" id="stakeholder_${index}_id" data-var-key="stakeholders" data-var-value="${adminType}" data-url= "${selectUrl}" data-token = "${selectToken}" placeholder = "please select a stakeholder" value = "schools"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                    break;
+                }
+
+                processInputs();
+            });
+
+            holder.on('change','.studentSchoolSelection',function(){
+                let self = $(this),
+                    mode = self.val(),
+                    parent = self.closest('.parent'),
+                    prev = parent.next('.inner'),
+                    prefix = self.data('prefix');
+
+                if (prev.length) {
+                    prev.remove();
+                }
+
+                let country = $('#country'),
+                    region = $('#region'),
+                    lga = $('#lga'),
+                    countries = "#country",
+                    regionToken = region.data('token'),
+                    regionUrl = region.data('url'),
+                    lgaToken = lga.data('token'),
+                    lgaUrl = lga.data('url'),
+                    selectUrl = holder.data('select-url'),
+                    selectToken = holder.data('select-token');
+
+                switch (mode) {
+                    case 'created':
+                        parent.after(`
+                            <div class="col-11 inner">
+                                <div class="col-12 header">
+                                    School Data
+                                </div>
+
+                                <div class="col-12 col-md-8 field picture" processed = "false" data-name="${prefix}.image">
+                                    <div class="title">
+                                        Student School Picture
+                                    </div>
+                                    <div class="image">
+                                        <img alt="" />
+                                    </div>
+                                    <div class="button">
+                                        <button class="btn btn-info p-2 selector">Edit School Image</button>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        Student School Name
+                                    </div>
+                                    <div class="text">
+                                        <input class="form-control watchItem" type="text" name="${prefix}.name" placeholder="Please insert a valid school name">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        Student School Unique Name
+                                    </div>
+                                    <div class="text">
+                                        <input class="form-control watchItem" type="text" name="${prefix}.uniqueName" placeholder="Please insert a valid school unique name">
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        Student School country
+                                    </div>
+                                    <div class="text">
+                                        <select class="select form-control watchItem" name="${prefix}.country" processed="false" data-values='${countries}' id="school_country" affect="#school_region" placeholder="please select your country"></select>
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        Student School region
+                                    </div>
+                                    <div class="text">
+                                        <select class="select form-control watchItem" name="${prefix}.region" processed="false" data-is-remote="true" id="school_region" affect="#school_lga" provider="#school_country" data-url="${regionUrl}" data-token="${regionToken}" placeholder="please select your region"></select>
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        Student School lga
+                                    </div>
+                                    <div class="text">
+                                        <select class="select form-control watchItem" name="${prefix}.lga" processed="false" data-is-remote="true" provider="#school_region" id="school_lga" data-url="${lgaUrl}" data-token="${lgaToken}" placeholder="please select your local government area"></select>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        Is Approved
+                                    </div>
+                                    <div class="text">
+                                        <select name="${prefix}.isApproved" class="form-control select watchItem" processed="false" placeholder="Please select school approval status">
+                                            <option value="" disabled selected>None</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        Is Blocked
+                                    </div>
+                                    <div class="text">
+                                        <select name="${prefix}.isBlocked" class="form-control select watchItem" processed="false" placeholder="Please select school blocked status">
+                                            <option value="" disabled selected>None</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-11 field">
+                                    <div class="title">
+                                        Student School Address
+                                    </div>
+                                    <div class="text">
+                                        <textarea name="${prefix}.address" class="form-control watchItem" placeholder="please insert a valid address"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-11 field">
+                                    <div class="title">
+                                        Student School Description
+                                    </div>
+                                    <div class="text">
+                                        <textarea class="form-control watchItem" type="text" name="${prefix}.description" placeholder="Please insert a valid school description"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                    break;
+
+                    case 'selected':
+                        var hasSchoolData = holder.data('has-school-data');
+                        if(hasSchoolData){
+                            var schoolData = holder.data('school-data');
+                            if(schoolData.length){
+                                parent.after(`
+                                    <div class="col-11 inner searchItem">
+                                        <div class="col-12 header">
+                                            School Data
+                                        </div>
+                                        <div class="col-11 col-md-5 field">
+                                            <div class="title">
+                                                country
+                                            </div>
+                                            <div class="text">
+                                                <input class = "form-control watchItem" name = "${prefix}.country" value = "${schoolData.country.id}" type = "hidden">
+                                                <input class = "form-control" value = "${schoolData.country.name}" disabled = "disabled">
+                                            </div>
+                                        </div>
+                                        <div class="col-11 col-md-5 field">
+                                            <div class="title">
+                                                region
+                                            </div>
+                                            <div class="text">
+                                                <input class = "form-control watchItem" name = "${prefix}.region" value = "${schoolData.region.id}" type = "hidden">
+                                                <input class = "form-control" value = "${schoolData.region.name}" disabled = "disabled">
+                                            </div>
+                                        </div>
+                                        <div class="col-11 col-md-5 field">
+                                            <div class="title">
+                                                lga
+                                            </div>
+                                            <div class="text">
+                                                <input class = "form-control watchItem" name = "${prefix}.lga" value = "${schoolData.lga.id}" type = "hidden">
+                                                <input class = "form-control" value = "${schoolData.lga.name}" disabled = "disabled">
+                                            </div>
+                                        </div>
+                                        <div class="col-11 col-md-5 field">
+                                            <div class="title">
+                                                School List
+                                            </div>
+                                            <div class="text">
+                                                <input class = "form-control watchItem" name = "${prefix}.id" value = "${schoolData.id}" type = "hidden">
+                                                <input class = "form-control" value = "${schoolData.name}" disabled = "disabled">
+                                            </div>
+                                        </div>
+                                    </div>
+                                `);
+                            }else{
+                                alert('An error occured');
+                            }
+                        }else{
+                            parent.after(`
+                                <div class="col-11 inner searchItem">
+                                    <div class="col-12 header">
+                                        School Data
+                                    </div>
+                                    <div class="col-11 col-md-5 field">
+                                        <div class="title">
+                                            country
+                                        </div>
+                                        <div class="text">
+                                            <select class="select form-control watchItem" name="${prefix}.country" processed="false" data-values='${countries}' id="school_country" affect="#school_region" placeholder="please select school country"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-11 col-md-5 field">
+                                        <div class="title">
+                                            region
+                                        </div>
+                                        <div class="text">
+                                            <select class="select form-control watchItem" name="${prefix}.region" processed="false" data-is-remote="true" id="school_region" affect="#school_lga" provider="#school_country" data-url="${regionUrl}" data-token="${regionToken}" placeholder="please select school region"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-11 col-md-5 field">
+                                        <div class="title">
+                                            lga
+                                        </div>
+                                        <div class="text">
+                                            <select class="select form-control watchItem trigger" name="${prefix}.lga" processed="false" data-is-remote="true" provider="#school_region" id="school_lga" data-url="${lgaUrl}" data-token="${lgaToken}" placeholder="please select school local government area"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-11 col-md-5 field">
+                                        <div class="title">
+                                            School List
+                                        </div>
+                                        <div class="text">
+                                            <select class="select form-control watchItem" name="${prefix}.id" processed="false" data-is-remote="true" id="${prefix}_id" data-var-key="schools" data-var-value="1" data-url= "${selectUrl}" data-token = "${selectToken}" placeholder = "please select a school"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            `);
+                        }
+                    break;
+                }
+
+                processInputs();
+            });
+
+            userType.on('change',function(){
+                switch(userType.val()){
+                    case 'student':
+                        holder.html(`
+                            <div class="col-11 inner schoolHolder">
+                                <div class="col-12 header">
+                                    Student Data
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        Student Class
+                                    </div>
+                                    <div class="text">
+                                        <select name="student.class" class="form-control select watchItem" processed="false" placeholder="please select student class">
+                                            <option value="" disabled selected>None</option>
+                                            <option value="sss1">Senior Secondary School 1 (sss1)</option>
+                                            <option value="sss2">Senior Secondary School 2 (sss2)</option>
+                                            <option value="sss3">Senior Secondary School 3 (sss3)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        Student Date Of Birth
+                                    </div>
+                                    <div class="text">
+                                        <input type="text" name="student.dob" class="form-control watchItem" placeholder="Please insert your date of birth in this format yyyy/mm/dd">
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field parent">
+                                    <div class="title">
+                                        School Option
+                                    </div>
+                                    <div class="text">
+                                        <select class="form-control select studentSchoolSelection watchItem" name = "student.school.mode" processed="false" placeholder="Please select stakeholder option" data-prefix="student.school">
+                                            <option value="" disabled selected>None</option>
+                                            <option value="created">Created</option>
+                                            <option value="selected">Selected</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+
+                    break;
+
+                    default:
+                        if(userType.val().length){
+                            let administratorType = userType.val(),
+                            readableType = administratorType.split('-').join(' ').toUpperCase(),
+                            index = holder.find('.adminHolder > .adminData').length,
+                            prefix = 'admin.'+index;
+
+                            holder.html(`
+                                <div class="col-11 inner adminHolder">
+                                    <div class="col-12 header">
+                                        Administrator Data
+                                    </div>
+
+                                    <div class="col-12 inner adminData">
+                                        <input type="hidden" name="${prefix}.type" class="form-control watchItem" value="${administratorType}" />
+                                        <div class="col-12 header">
+                                            ${readableType} Data
+                                        </div>
+                                        <div class="col-11 col-md-5 field">
+                                            <div class="title">
+                                                Is Approved
+                                            </div>
+                                            <div class="text">
+                                                <select name="${prefix}.isApproved" class="form-control select watchItem" processed="false" placeholder="Please select account approval status">
+                                                    <option value="" disabled selected>None</option>
+                                                    <option value="1">Yes</option>
+                                                    <option value="0">No</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-11 col-md-5 field">
+                                            <div class="title">
+                                                Is Blocked
+                                            </div>
+                                            <div class="text">
+                                                <select name="${prefix}.isBlocked" class="form-control select watchItem" processed="false" placeholder="Please select account blocked status">
+                                                    <option value="" disabled selected>None</option>
+                                                    <option value="1">Yes</option>
+                                                    <option value="0">No</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-11 col-md-5 field parent">
+                                            <div class="title">
+                                                Stakeholder Option
+                                            </div>
+                                            <div class="text">
+                                                <select class="form-control select adminStakeholderSelection watchItem" name = "${prefix}.stakeholder.mode" processed="false" placeholder="Please select stakeholder option" data-prefix="${prefix}" data-index="${index}" data-admin-type="${administratorType}">
+                                                    <option value="" disabled selected>None</option>
+                                                    <option value="created">Created</option>
+                                                    <option value="selected">Selected</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class = "col-12 inner addMore">
+                                        <div class = "col-12 title">
+                                            Delegate User
+                                        </div>
+                                        <div class = "row col-12">
+                                            <div class = "col-12 col-sm-7">
+                                                <select class="form-control select"  id = "addMore" processed="false" placeholder="Please select admin type to delegate to user" data-prefix="${prefix}"></select>
+                                            </div>
+                                            <div class = "col-12 col-sm-4">
+                                                <button class = "btn btn-info addMoreButton" id = "addMoreButton">
+                                                    Delegate User
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `);
+
+                            if(['general-administrator','support-administrator'].indexOf(administratorType) !== -1){
+                                holder.find('div.inner.adminHolder > div.inner.adminData > input[type="hidden"][value="general-administrator"],div.inner.adminHolder > div.inner.adminData > input[type="hidden"][value="support-administrator"]').each(function(){
+                                    let self = $(this);
+                                    self.siblings('.field.parent').remove();
+                                });
+                            }
+
+                            updateDelegateAdmin();
+                        }
+                    break;
+                }
+
+                processInputs();
+            });
+
+            form.on('keypress',function(e){
+                var key = e.charCode || e.keyCode || 0;
+                if(key == 13){
+                    e.preventDefault();
+                }
+            });
+
+            form.on('submit',function(e){
+                e.preventDefault();
+            });
+
+            processInputs();
+            processor.removeLoader();
+
+            var debTimer,
+                debouncedHandler = function(e){
+                    if(debTimer){
+                        clearTimeout(debTimer);
+                    }
+
+                    debTimer = setTimeout(()=>{
+                        let items = form.find('select.watchItem,input.watchItem:not(.optional),textarea.watchItem'),
+                        isValid = 1;
+
+                        items.each(function(){
+                            let self = $(this);
+                            if (!String(self.val()).length) {
+                                isValid = 0;
+                                return false
+                            }
+                        });
+
+                        if(isValid){
+                            isValid = 0;
+
+                            form.find('input.watchItem.optional').each(function(){
+                                let self = $(this);
+                                if(self.val().length){
+                                    isValid = 1;
+                                    return false;
+                                }
+                            });
+
+                            form.find('select.option').each(function(){
+                                let self = $(this);
+                                if(!self.val().length){
+                                    isValid = 0;
+                                    return false;
+                                }
+                            });
+                        }
+
+                        let errorElement = $(e.target).closest('.text').children('div.error.report');
+                        if(errorElement.length){
+                            errorElement.remove();
+                        }
+
+                        if(isValid){
+                            saveDataBtn.removeAttr('disabled');
+                        }else{
+                            saveDataBtn.attr('disabled','disabled');
+                        }
+                    },700);
+                };
+
+            form.on('change focus blur keypress keyup keydown',debouncedHandler);
+
+            saveDataBtn.on('click',function(){
+                let data = {},
+                    items = form.find('select.watchItem,input.watchItem,textarea.watchItem'),
+                    formData = new FormData(),
+                    pictures = form.find('.field.picture[set="true"]');
+
+                items.each(function () {
+                    let self = $(this),
+                        name = self.attr('name'),
+                        names = name.split('.'),
+                        pointer = data,
+                        value = self.val();
+
+                    for (var i = 0, j = names.length; i < j; i++) {
+                        var key = names[i];
+                        if (i === (j - 1)) {
+                            pointer[key] = value;
+                        } else {
+                            if (typeof pointer[key] != 'object') {
+                                pointer[key] = {};
+                            }
+                            pointer = pointer[key];
+                        }
+                    }
+                });
+
+                if (pictures.length) {
+                    pictures.each(function () {
+                        var self = $(this),
+                            name = '',
+                            names = self.data('name');
+
+                        names.split('.').forEach(function (n) {
+                            if (name) {
+                                name += '[' + n + ']';
+                            } else {
+                                name = n;
+                            }
+                        });
+
+                        formData.append(name, self.data('image-binary-file'),'image-data');
+                    });
+                }
+
+                formData.append('token', form.children('input[name="token"]').eq(0).val());
+                formData.append('data', JSON.stringify(data));
+                formData.append('__action', 'add');
+                formData.append('__for', 'portfolio');
+                formData.append('for', 'user');
+
+                processor.addLoader();
+                $.ajax({
+                    'method': form.attr('method'),
+                    'url': form.attr('action'),
+                    'processData': false,
+                    'contentType': false,
+                    'data': formData,
+                    'success': function (resp) {
+                        processor.removeLoader();
+                        if(typeof resp !== 'object' || typeof resp.status !== 'string' || ['ok','error'].indexOf(resp.status) === -1){
+                            alert('A recoverable error occured.. please contact support if the problem persists');
+                        }else if(resp.status == 'error'){
+                            let pointer = resp.pointer || false,
+                                response = resp.response || 'An error occured',
+                                isPicture = resp.isPicture || false,
+                                isStakeholder = resp.isStakeholder || false;
+
+                            if(pointer){
+                                let items;
+                                if(isPicture){
+                                    items = $(`.picture[data-name="${pointer}"]`);
+                                }else if(isStakeholder){
+                                    pointer.replace('.mode','');
+                                    items = $(`input[name="${pointer}.name"]`).closest('.inner');
+                                }else{
+                                    items = $(`input[name="${pointer}"],select[name="${pointer}"],textarea[name="${pointer}"]`);
+                                }
+
+                                if(!items.length){
+                                    items = $(`[name^="${pointer}"]`);
+                                }
+
+                                if(items.length){
+                                    let item = items.eq(0),
+                                    prev = item.prev('div.error.report');
+                                    if(!prev.length){
+                                        item.before('<div class = "error report"></div>');
+                                        prev = item.prev('div.error');
+                                    }
+
+                                    prev.html(response);
+                                    let offset = prev.offset().top;
+
+                                    if(offset > 200){
+                                        offset -= 200;
+                                    }else if(offset > 180){
+                                        offset -= 180;
+                                    }else if (offset > 160) {
+                                        offset -= 160;
+                                    }else if (offset > 140) {
+                                        offset -= 140;
+                                    }else if (offset > 120) {
+                                        offset -= 120;
+                                    }else{
+                                        offset = 0;
+                                    }
+
+                                    $('html, body').animate({
+                                        scrollTop: offset
+                                    },800);
+                                }else{
+                                    alert(response);
+                                }
+                            }
+                        }else{
+                            $('html, body').animate({
+                                scrollTop: 0
+                            }, 800);
+                            alert(resp.response ? resp.response : 'User addded succesfully');
+                        }
+
+                        /*
+                        if (typeof resp === 'object') {
+                            if (resp.status === 'ok') {
+                                alert('Saved succesfully');
+                            } else {
+                                alert((typeof resp.response == 'string') ? resp.response : 'An error occurred');
+                            }
+                        } else {
+                            alert('A Fatal error occured while processing your request');
+                            console.log(resp);
+                        }
+                        */
+                    },
+                    'error': function (resp) {
+                        processor.removeLoader();
+                        alert('A fatal error occured... please contact administrator');
+                    }
+                });
+            });
+
+            /*
+            updateBtn.on('click',function(){
+                var items = form.find('input[type="hidden"].hidden');
+                items.each(function(){
+                    var self = $(this),
+                    value = self.val(),
+                    name,
+                    names,
+                    pointer = data;
+
+                    name = self.attr('name');
+                    names = name.split('.');
+
+                    for(var i = 0,j = names.length;i < j;i++){
+                        var key = names[i];
+                        if(i === (j - 1)){
+                            pointer[key] = value;
+                        }else{
+                            if(typeof pointer[key] != 'object'){
+                                pointer[key] = {};
+                            }
+                            pointer = pointer[key];
+                        }
+                    }
+                });
+
+                var formData = new FormData(),
+                pictures = form.find('.picture[image-changed="true"]');
+
+                if(pictures.length){
+                    pictures.each(function(){
+                        var self = $(this),
+                        name = '',
+                        names = self.data('name');
+
+                        names.split('.').forEach(function(n){
+                            if(name){
+                                name += '['+n+']';
+                            }else{
+                                name = n;
+                            }
+                        });
+
+                        formData.append(name,self.data('image-binary-file'),'image-data');
+                    });
+                }
+
+                data['controllerType'] = "{{controllerType|e('js')}}";
+                formData.append('token',form.children('input[name="token"]').eq(0).val());
+                formData.append('data',JSON.stringify(data));
+                formData.append('__action','update');
+                formData.append('__for','portfolio');
+                formData.append('for','user');
+
+                processor.addLoader();
+                $.ajax({
+                    'method': form.attr('method'),
+                    'url': form.attr('action'),
+                    'processData': false,
+                    'contentType': false,
+                    'data': formData,
+                    'success': function(resp){
+                        processor.removeLoader();
+                        if(typeof resp === 'object'){
+                            if(resp.status === 'ok'){
+                                alert('Saved succesfully');
+                            }else{
+                                alert((typeof resp.response == 'string') ? resp.response : 'An error occurred');
+                            }
+                        }else{
+                            alert('A Fatal error occured while processing your request');
+                            console.log(resp);
+                        }
+                    },
+                    'error' : function(resp){
+                        processor.removeLoader();
+                        alert('A Fatal error occured while processing your request');
+                        console.log(resp);
+                    }
+                });
+            });
+
+            */
+        }
+    },500);
+</script>

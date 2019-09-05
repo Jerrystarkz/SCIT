@@ -1,0 +1,449 @@
+
+<div style="display:flex;justify-content:center;width:100%;">
+        {%include 'pageNotification.html'%}
+    </div>
+
+    {%if data.user.portfolio.status == 'ok'%}
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+            <style>
+            #holder,#portfolio,#user{
+                width: 100%;
+            }
+
+            #user .header{
+                font-size: 130%;
+                font-weight: 800;
+                text-align: left;
+                text-transform: uppercase;
+                margin: 20px 10px;
+            }
+
+            #user .inner{
+                margin: 7px 20px;
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            #user .inner .header{
+                font-size: 100%;
+                font-weight: 600;
+            }
+
+            #user .field{
+                margin: 20px 10px;
+            }
+
+            #user .field > .title{
+                font-weight: 650;
+                font-size: 90%;
+                width: 100%;
+                padding-bottom: 8px;
+                text-align: left;
+            }
+
+            #user .field > .text{
+                font-weight: 500;
+                font-size: 80%;
+                width: 100%;
+                background: rgb(230,230,230);
+                text-align: left;
+                padding: 14px;
+            }
+
+            #user .field > .image{
+                display: flex;
+                width: 150px;
+                position: relative;
+                height: 150px;
+                z-index: 1;
+                background: rgb(0,0,0);
+            }
+
+            #user .field > .image > img{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 2;
+            }
+            </style>
+
+            <div id = "portfolio" class="holder">
+                {%set userProfile = data.user.portfolio.response%}
+                <div id = "user">
+                    <div class="row wrapper">
+                        <div class="col-12 header">
+                            User Portfolio
+                        </div>
+                        <div class="col-12 col-md-8 field">
+                            <div class="title">
+                                Profile Picture
+                            </div>
+                            <div class="image">
+                                {%if attribute(userProfile.data,'cover-image')%}
+                                <img src="{{attribute(userProfile.data,'cover-image')}}" alt=""/>
+                                {%else%}
+                                <img src="/assets/images/noImage.png" alt=""/>
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Full Name
+                            </div>
+                            <div class="text">
+                                {{userProfile.name|title}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                User Name
+                            </div>
+                            <div class="text">
+                                {{userProfile.uniqueName|default('none')|lower}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Email
+                            </div>
+                            <div class="text">
+                                {{userProfile.email|default('none')|lower}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Phone Number
+                            </div>
+                            <div class="text">
+                                {{userProfile.phoneNumber|default('none')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Main Role
+                            </div>
+                            <div class="text">
+                                {{userProfile.type|split('-')|join(' ')|title}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                State Of Origin
+                            </div>
+                            <div class="text">
+                                {{userProfile.region.name|title}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Local Government Area
+                            </div>
+                            <div class="text">
+                                {{(userProfile.lga.name ? userProfile.lga.name~' local government Area' : 0)|title|default('none')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Country
+                            </div>
+                            <div class="text">
+                                {{(userProfile.country.name)|title|default('none')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                State Of Residence
+                            </div>
+                            <div class="text">
+                                {{(userProfile.data.stateOfResidence.name)|title|default('none')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Status
+                            </div>
+                            <div class="text">
+                                {{(userProfile.isBlocked ? 'blocked' : (userProfile.isApproved ? 'approved' : (userProfile.isVerified ? 'Pending Approval' : 'Pending Verification')))|title}}
+                            </div>
+                        </div>
+                        {%if (userProfile.student is iterable) and (userProfile.student|length)%}
+                        <div class="col-12 header">
+                            Student Data
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student Class
+                            </div>
+                            <div class="text">
+                                {{userProfile.student.level|title|default('none')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student Date Of Birth
+                            </div>
+                            <div class="text">
+                                {{userProfile.student.dob|date('Y/m/d')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student Age
+                            </div>
+                            <div class="text">
+                                {{(userProfile.student.age ? userProfile.student.age~' years old' : 0)|default('none')}}
+                            </div>
+                        </div>
+                        {%if (userProfile.student.school is iterable) and (userProfile.student.school|length)%}
+                        {%set school = userProfile.student.school%}
+                        <div class="col-12 header">
+                            School Data
+                        </div>
+                        <div class="col-12 col-md-8 field">
+                            <div class="title">
+                                School Picture
+                            </div>
+                            <div class="image">
+                                {%if attribute(school.data,'cover-image')%}
+                                <img src="{{attribute(school.data,'cover-image')}}" alt=""/>
+                                {%else%}
+                                <img src="/assets/images/noImage.png" alt=""/>
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student School Name
+                            </div>
+                            <div class="text">
+                                {{school.name|title|default('none')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student School Unique Name
+                            </div>
+                            <div class="text">
+                                {{school.uniqueName|title|default('none')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student School Address
+                            </div>
+                            <div class="text">
+                                {{school.address|title|default('none')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student School Country
+                            </div>
+                            <div class="text">
+                                {{school.country.name|title|default('none')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student School Region
+                            </div>
+                            <div class="text">
+                                {{school.region.name|title|default('none')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student School Local Government Area
+                            </div>
+                            <div class="text">
+                                {{school.lga.name|title|default('none')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student School Description
+                            </div>
+                            <div class="text">
+                                {{school.description|capitalize|default('none')}}
+                            </div>
+                        </div>
+                        {%endif%}
+                        {%endif%}
+                        {%if (userProfile.adminProfiles is iterable) and (userProfile.adminProfiles|length)%}
+                        <div class="col-12 header">
+                            Administrator Data
+                        </div>
+                        {%for i,adminProfile in userProfile.adminProfiles%}
+                        <div class="col-12 inner">
+                            <div class="col-12 header">
+                                {{adminProfile.type|split('-')|join(' ')|title}} Data
+                            </div>
+                            <div class="col-12 col-md-5 field">
+                                <div class="title">
+                                    Is Approved
+                                </div>
+                                <div class="text">
+                                    {{adminProfile.isApproved ? 'yes' : 'no'}}
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-5 field">
+                                <div class="title">
+                                    Is Blocked
+                                </div>
+                                <div class="text">
+                                    {{adminProfile.isBlocked ? 'yes' : 'no'}}
+                                </div>
+                            </div>
+                            {%if adminProfile.isApproved%}
+                            <div class="col-12 col-md-5 field">
+                                <div class="title">
+                                    Approved Date
+                                </div>
+                                <div class="text">
+                                    {{adminProfile.approvedDate|date}}
+                                </div>
+                            </div>
+                            {%else%}
+                            <div class="col-12 col-md-5 field">
+                                <div class="title">
+                                    Approval Request Date
+                                </div>
+                                <div class="text">
+                                    {{adminProfile.approvalRequestDate|date}}
+                                </div>
+                            </div>
+                            {%endif%}
+                            {%if ((adminProfile.stakeholder is iterable) and (adminProfile.stakeholder|length))%}
+                            {%set stakeholder = adminProfile.stakeholder%}
+                            <div class="col-12 inner">
+                                <div class="col-12 header">
+                                    stakeholder Data
+                                </div>
+                                <div class="col-12 col-md-8 field">
+                                    <div class="title">
+                                        Stakeholder Picture
+                                    </div>
+                                    <div class="image">
+                                        {%if attribute(stakeholder.data,'cover-image')%}
+                                        <img src="{{attribute(stakeholder.data,'cover-image')}}" alt=""/>
+                                        {%else%}
+                                        <img src="/assets/images/noImage.png" alt=""/>
+                                        {%endif%}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        name
+                                    </div>
+                                    <div class="text">
+                                        {{stakeholder.name|title}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        unique name
+                                    </div>
+                                    <div class="text">
+                                        {{stakeholder.uniqueName}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        country
+                                    </div>
+                                    <div class="text">
+                                        {{stakeholder.country.name}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        region
+                                    </div>
+                                    <div class="text">
+                                        {{stakeholder.region.name}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        lga
+                                    </div>
+                                    <div class="text">
+                                        {{stakeholder.lga.name}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        address
+                                    </div>
+                                    <div class="text">
+                                        {{stakeholder.address}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        description
+                                    </div>
+                                    <div class="text">
+                                        {{stakeholder.description}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        Is Approved
+                                    </div>
+                                    <div class="text">
+                                        {{stakeholder.isApproved ? 'yes' : 'no'}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        Is Blocked
+                                    </div>
+                                    <div class="text">
+                                        {{stakeholder.isBlocked ? 'yes' : 'no'}}
+                                    </div>
+                                </div>
+                                {%if stakeholder.isApproved%}
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        Approved Date
+                                    </div>
+                                    <div class="text">
+                                        {{adminProfile.approvedDate|date}}
+                                    </div>
+                                </div>
+                                {%else%}
+                                <div class="col-12 col-md-5 field">
+                                    <div class="title">
+                                        Approval Request Date
+                                    </div>
+                                    <div class="text">
+                                        {{stakeholder.approvalRequestDate|date}}
+                                    </div>
+                                </div>
+                                {%endif%}
+                            </div>
+                            {%endif%}
+                        </div>
+                        {%endfor%}
+                        {%endif%}
+                    </div>
+                </div>
+            <div>
+
+            <div style="width:100%;margin-top:15px;display:flex;justify-content:center;">
+                <a style="width:100%;padding:2%;background: rgb(68, 137, 246);color:rgb(255,255,255);" class="btn" href="{{data.editUrl}}">Edit Data</a>
+            </div>
+        </div>
+    </div>
+    {%else%}
+    <div class="container no-margin no-padding no-data">
+        <div class="content">
+            Oooops... invalid profile data
+        </div>
+    </div>
+    {%endif%}

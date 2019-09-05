@@ -1,0 +1,1585 @@
+{%include 'user/student/take-test/header.html'%}
+
+<style>
+    .container-fluid,.container{
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        max-width: 100%;
+    }
+
+    .row{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .header{
+        padding: 2% 1.5%;
+        width: 100%;
+        background: rgb(37, 37, 37);
+        color:ivory;
+        display: flex;
+        align-items: stretch;
+        justify-content: space-between;
+        margin: 0px;
+        padding: 0px;
+        font-size: 90%;
+        font-weight: 550;
+    }
+
+    .header > .text,.header > .navigation{
+        padding: 1% 1.5%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: inherit;
+        background: inherit;
+        padding: 3% 1.5%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .header > .navigation > a{
+        color: inherit;
+        background: inherit;
+    }
+
+    .header > .navigation > a:hover{
+        color:rgb(37, 159, 240) !important;
+        font-weight: 700;
+    }
+
+    .part{
+        width:100%;
+        display: flex;
+        flex-wrap: wrap;
+        padding: 5% 3%;
+        background: rgb(170, 170, 170);
+        align-items: stretch;
+    }
+
+    .part > .notification{
+        display:flex;
+        width:100%;
+        text-align:center;
+        margin: 3% 1.5%;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        background: rgb(230,230,230);
+        box-shadow: 0.5px 0.8px 3px rgb(0,0,0);
+        font-size: 90%;
+        font-weight: 600;
+    }
+    
+    .part > .notification >*{
+        margin: 2% 3%;
+    }
+
+    .text-content{
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .text-content > .part-notify{
+        display:flex;
+        padding: 3% 4%;
+        width:100%;
+        text-align:center;
+        margin: 3% 1.5%;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        background: rgb(230,230,230);
+        box-shadow: 0.5px 0.8px 3px rgb(0,0,0);
+        font-size: 90%;
+        font-weight: 600;
+    }
+
+    .text-content > .part-notify > *{
+        width:100%;
+    }
+
+    .text-content > .part-notify.isDanger{
+        color:rgb(200,0,0);
+    }
+
+    .text-content > .part-notify.isSuccess{
+        color:rgb(0, 200, 0);
+    }
+
+    .text-content > .test_section{
+        display: none;
+        width: 100%;
+        flex-wrap: wrap;
+        margin: 0px;
+        padding: 0px;
+        justify-content: center;
+    }   
+
+    .text-content > .test_section.active{
+        display: flex;
+    }
+
+    .text-content > .test_section > .section{
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .text-content > .section,.text-content > .test_section > .section{
+        margin: 3% 1%;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .text-content > .section > .part-header,.text-content > .section > .sub-text,.text-content > .test_section > .section > .part-header,.text-content > .test_section > .section > .sub-text{
+        font-weight: 600;
+        font-size: 130%;
+        width: 100%;
+        text-align: left;
+    }
+
+    .text-content > .section > .sub-text,.text-content > .test_section > .section > .sub-text{
+        font-weight: 800;
+        font-size: 110%;
+        width: 100%;
+    }
+
+    .text-content > .question,.text-content > .test_section > .question{
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        padding: 2% 3%;
+        margin: 2% 0%;
+        background: rgb(230,230,230);
+        box-shadow: 0.5px 0.5px 2px rgb(30,30,30);
+    }
+
+    .text-content > .question > .form-group,.text-content > .test_section > .question > .form-group{
+
+    }
+
+    .text-content > .question > .form-group > .question,.text-content > .test_section > .question > .form-group > .question{
+        font-size: 100%;
+        font-weight: 650;
+        text-transform: capitalize;
+    }
+
+    .text-content > .question > .form-group > .option,.text-content > .test_section > .form-group > .option{
+        font-size: 75%;
+        font-weight: 500;
+        text-transform: capitalize;
+    }
+
+    .submitButtonHolder{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 3% 2%;
+        flex-wrap: wrap;
+    }
+
+    .submitButtonHolder > button{
+        padding: 3%;
+        border-radius: 15px;
+    }
+
+    .part .controlled,#testResult .controlled{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 4% 2%;
+        margin: 3% 2%;
+        box-shadow: 0.5px 0.5px 2px rgb(30,30,30),2px 2px 3px rgb(255,255,255);
+        border-radius: 15px;
+    }
+
+    .part .controlled.title,#testResult .controlled.title{
+        background:cornflowerblue;
+    }
+
+    .part .controller,#testResult .controller{
+        display: flex;
+        text-align: center;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        padding: 4% 2%;
+        margin: 3% 2%;
+    }
+
+    .part .controller > .controlled,#testResult .controller > .controlled{
+        background:rgb(5, 20, 47);
+        height: 90%;
+    }
+
+    #toggleTestResult{
+        display: flex;
+        border-radius: 0px;
+        border: none;
+        background: rgb(37, 159, 240);
+        position: fixed;
+        height: 40px;
+        width: 55%;
+        justify-content: center;
+        align-items: center;
+        padding: 8px 5px;
+        top: 20%;
+        right: 0%;
+        -webkit-transform-origin: 50% 50%;
+        -moz-transform-origin:    50% 50%;
+        -ms-transform-origin:     50% 50%;
+        -o-transform-origin:      50% 50%;
+        transform-origin: 100% 100%;
+        
+        -webkit-transform: rotate(-90deg); 
+        -moz-transform:    rotate(-90deg); 
+        -ms-transform:     rotate(-90deg); 
+        -o-transform:      rotate(-90deg);
+        z-index: 1;
+    }
+
+    #testResult{
+        width: 100%;
+        height: auto;
+        display: none;
+        background: transparent;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 2;
+        align-items: stretch;
+    }
+
+    #testResult > .close{
+        background: rgb(240, 76, 76);
+        width: 7%;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #testResult > .content{
+        width: 93%;
+        background: rgb(30,30,30);
+        display: flex;
+        flex-wrap: wrap;
+    }
+</style>
+
+{%if (data.forcedTestFor == 'academic') or (not data.testData.academic is iterable)%}
+<body style="margin: 0px;padding:0px;overflow-x: hidden;">
+    <div class="row header">
+        <div class="text col-12 col-md-8">
+            Welcome, kindly fill the questionnaire below. This test helps you know if you're better as a science or an art student
+        </div>
+        <div class="navigation col-12 col-md-2">
+            <a href="/dashboard">Go To Dashboard</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <div class="part">
+                <div class = "notification">
+                    {%include 'pageNotification.html'%}
+                </div>
+                <form class="" action="{{data.testSubmit.url}}" method="post">
+                    <input type="hidden" name="token" value="{{data.testSubmit.token}}">
+                    <input type="hidden" name="googleCaptchaToken" value="" id = "googleCaptcha">
+                    <input type="hidden" name="type" value="academic">
+                    <div class="text-content">
+                        {%if (data.testResult is iterable) and (data.testResult|length)%}
+                        <div class = "part-notify {%if data.testResult.contactCouncellor%}isDanger{%else%}isSuccess;{%endif%}">
+                            {%if data.testResult.contactCouncellor%}
+                            <span>It looks like you made some mistakes in the answers you provided to the questions. We advise you retake the Test and read the instructions carefully.. But if you are sure you provided the correct answers then</span>
+                            <a href="/support">Click here to talk to our Counsellor</a>
+                            {%else%}
+                            <span>Congratulations... your selection has been saved.</span>
+                            {%endif%}
+                        </div>
+                        {%endif%}
+
+                        <div class="section">
+                            <h2 class="part-header">Part A</h2>
+                            <i class="sub-text">Please answer these questions truthfully...</i>
+                        </div>
+
+                        <div class="question">
+                            <div class="form-group">
+                                <label for="" class="question">Do you like math and science ?</label>
+                                <div class="custom-control custom-radio option">
+                                    <input type="radio" class="custom-control-input" name = "science_test" value = "1" {%if data.post.science_test is same as('1')%}checked{%endif%}>
+                                    <label class="custom-control-label">Yes</label>
+                                </div>
+                                <div class="custom-control custom-radio option">
+                                    <input type="radio" class="custom-control-input" name = "science_test" value = "0" {%if data.post.science_test is same as('0')%}checked{%endif%}>
+                                    <label class="custom-control-label">No</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="question">
+                            <div class="form-group">
+                                <label for="" class="question">Do you like to think of new ways to do things?</label>
+                                <div class="custom-control custom-radio option">
+                                    <input type="radio" class="custom-control-input" name = "creative_test" value = "1" {%if data.post.creative_test is same as('1')%}checked{%endif%}>
+                                    <label class="custom-control-label">Yes</label>
+                                </div>
+                                <div class="custom-control custom-radio option">
+                                    <input type="radio" class="custom-control-input" name = "creative_test" value = "0" {%if data.post.creative_test is same as('0')%}checked{%endif%}>
+                                    <label class="custom-control-label">No</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="question">
+                            <div class="form-group">
+                                <label for="" class="question">Do you like puzzles and other mind challenging games?</label>
+                                <div class="custom-control custom-radio option">
+                                    <input type="radio" class="custom-control-input" name = "thinker_test" value = "1" {%if data.post.thinker_test is same as('1')%}checked{%endif%}>
+                                    <label class="custom-control-label">Yes</label>
+                                </div>
+                                <div class="custom-control custom-radio option">
+                                    <input type="radio" class="custom-control-input" name = "thinker_test" value = "0" {%if data.post.thinker_test is same as('0')%}checked{%endif%}>
+                                    <label class="custom-control-label">No</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="question">
+                            <div class="form-group">
+                                <label for="" class="question">Do you enjoy a challenge?</label>
+                                <div class="custom-control custom-radio option">
+                                    <input type="radio" class="custom-control-input" name = "adventureous_test" value = "1" {%if data.post.adventureous_test is same as('1')%}checked{%endif%}>
+                                    <label class="custom-control-label">Yes</label>
+                                </div>
+                                <div class="custom-control custom-radio option">
+                                    <input type="radio" class="custom-control-input" name = "adventureous_test" value = "0" {%if data.post.adventureous_test is same as('0')%}checked{%endif%}>
+                                    <label class="custom-control-label">No</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="question">
+                            <div class="form-group targetSubjects">
+                                <label for="" class="question">Please select your best 6 subjects</label>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[0]" value="10" {%if attribute(data.post.best_six_subjects,0) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">Mathematics</label>
+                                </div>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[1]" value="1" {%if attribute(data.post.best_six_subjects,1) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">English Language</label>
+                                </div>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[2]" value="10" {%if attribute(data.post.best_six_subjects,2) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">Basic / Integrated Science</label>
+                                </div>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[3]" value="5" {%if attribute(data.post.best_six_subjects,3) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">Agricultural Science</label>
+                                </div>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[4]" value="1" {%if attribute(data.post.best_six_subjects,4) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">Physical Education</label>
+                                </div>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[5]" value="5" {%if attribute(data.post.best_six_subjects,5) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">Introductory Technology</label>
+                                </div>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[6]" value="1" {%if attribute(data.post.best_six_subjects,6) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">Social Studies</label>
+                                </div>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[7]" value="1" {%if attribute(data.post.best_six_subjects,7) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">Religious Studies</label>
+                                </div>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[8]" value="1" {%if attribute(data.post.best_six_subjects,8) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">Business Studies</label>
+                                </div>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[9]" value="1" {%if attribute(data.post.best_six_subjects,9) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">Local Language</label>
+                                </div>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[10]" value="5" {%if attribute(data.post.best_six_subjects,10) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">Computer</label>
+                                </div>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[11]" value="1" {%if attribute(data.post.best_six_subjects,11) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">French</label>
+                                </div>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[12]" value="1" {%if attribute(data.post.best_six_subjects,12) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">Civic Education</label>
+                                </div>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[13]" value="1" {%if attribute(data.post.best_six_subjects,13) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">Home Economics</label>
+                                </div>
+                                <div class="custom-control custom-checkbox option">
+                                    <input type="checkbox" class="custom-control-input" name="best_six_subjects[14]" value="1" {%if attribute(data.post.best_six_subjects,14) is defined%}checked{%endif%}>
+                                    <label class="custom-control-label">Cultural & Creative Arts</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 submitButtonHolder">
+                        <button type="submit" name="button" class="btn bg-info">SUBMIT</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <button id = "toggleTestResult" style="visibility: hidden;" class = "d-md-none">view results</button>
+        <div class="d-none d-md-none" id = "testResult">
+            <button class="close"></button>
+            <div class = "content">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="controlled title">
+                                Please take the test to continue
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center align-items-stretch">
+                    {%if data.testData.temperament.isValid%}
+                    <div class="col-6">
+                        <a href="/student/take-test?section=temperament" class = "controller">
+                            <div class="controlled">
+                                Take Temperament Test again
+                            </div>
+                        </a>
+                    </div>
+                    {%endif%}
+                    {%if data.testData.bestSubjects.isValid%}
+                    <div class="col-6">
+                        <a href="/student/take-test?section=bestSubjects" class = "controller">
+                            <div class="controlled">
+                                Take best subjects Test again / view Results
+                            </div>
+                        </a>
+                    </div>
+                    {%endif%}
+                </div>
+                <div class="row justify-content-center align-items-stretch">
+                    <div class="col-6">
+                        <a href="/faqs" class = "controller">
+                            <div class="controlled" >
+                                Frequesntly Asked Question
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="/student/take-test?action=retakeTest" class = "controller">
+                            <div class="controlled">
+                                Retake Entire Test
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-6">
+                        <a href="/support" class = "controller">
+                            <div class="controlled">
+                                Contact Support
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 d-none d-md-block">
+            <div class="part">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="controlled title">
+                                Please take the test to continue
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center align-items-stretch">
+                    {%if data.testData.temperament.isValid%}
+                    <div class="col-4">
+                        <a href="/student/take-test?section=temperament" class = "controller">
+                            <div class="controlled">
+                                Take Temperament Test again
+                            </div>
+                        </a>
+                    </div>
+                    {%endif%}
+                    {%if data.testData.bestSubjects.isValid%}
+                    <div class="col-4">
+                        <a href="/student/take-test?section=bestSubjects" class = "controller">
+                            <div class="controlled">
+                                Take best subjects Test again / view Results
+                            </div>
+                        </a>
+                    </div>
+                    {%endif%}
+                </div>
+                <div class="row justify-content-center align-items-stretch">
+                    <div class="col-4">
+                        <a href="/faqs" class = "controller">
+                            <div class="controlled" >
+                                Frequesntly Asked Question
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-4">
+                        <a href="/student/take-test?action=retakeTest" class = "controller">
+                            <div class="controlled">
+                                Retake Entire Test
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-4">
+                        <a href="/support" class = "controller">
+                            <div class="controlled">
+                                Contact Support
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{%else%}
+
+{%if (data.testData.academic is iterable) and data.testData.academic.isValid and ((data.forcedTestFor == 'temperament') or (not data.testData.temperament is iterable))%}
+<body style="margin: 0px;padding:0px;overflow-x: hidden;">
+    <div class="row header">
+        <div class="text col-12 col-md-8">
+            You are almost there... Ever wondered how you measured up against your friends? Or whether your personality is similar to that of your mom or your dad? Take this personality test to find out which personality type you are. This personality test is based on the Myers Briggs Type Indicator.
+            <br class="mt-3"><br>
+            Answer ALL questions below. The points are set out below the agree/disagree values.
+        </div>
+        <div class="navigation col-12 col-md-2">
+            <a href="/dashboard">Go To Dashboard</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <div class="part">
+                <div class = "notification">
+                    {%include 'pageNotification.html'%}
+                </div>
+                <form class="" action="{{data.testSubmit.url}}" method="post">
+                    <input type="hidden" name="token" value="{{data.testSubmit.token}}">
+                    <input type="hidden" name="googleCaptchaToken" value="" id = "googleCaptcha">
+                    <input type="hidden" name="type" value="temperament">
+                    <div class="text-content">
+                        {%if (data.testResult is iterable) and (data.testResult|length)%}
+                        <div class = "part-notify {%if data.testResult.contactCouncellor%}isDanger{%else%}isSuccess;{%endif%}">
+                            {%if data.testResult.contactCouncellor%}
+                            <span>It looks like you made some mistakes in the answers you provided to the questions. We advise you retake the Test and read the instructions carefully.. But if you are sure you provided the correct answers then</span>
+                            <a href="/support">Click here to talk to our Counsellor</a>
+                            {%else%}
+                            <span>Congratulations... your selection has been saved.</span>
+                            {%endif%}
+                        </div>
+                        {%endif%}
+
+                        <div class="test_section active">
+                            <div class="section">
+                                <h2 class="part-header">Part A</h2>
+                                <i class="sub-text">Please select the option that best describes you... This part determines your attiitude with the world</i>
+                            </div>
+                            
+                            {%for i,question in ['I like being around people','I am more interested in people than in their ideas……..If the idea is from someone I like, then I agree with it','i have many friends','I am popular in school','When I am not very happy, I depend on others company to cheer myself up.']%}
+                            <div class="question">
+                                <div class="form-group">
+                                    <label for="" class="question">{{question|title}}</label>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_a][{{i}}]" value = "1" {%if attribute(data.post.temperament_test.part_a,i) is same as('1')%}checked{%endif%}>
+                                        <label class="custom-control-label">Strongly Disagree</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_a][{{i}}]" value = "2" {%if attribute(data.post.temperament_test.part_a,i) is same as('2')%}checked{%endif%}>
+                                        <label class="custom-control-label">Disagree</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_a][{{i}}]" value = "3" {%if attribute(data.post.temperament_test.part_a,i) is same as('3')%}checked{%endif%}>
+                                        <label class="custom-control-label">Neutral / indifferent</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_a][{{i}}]" value = "4" {%if attribute(data.post.temperament_test.part_a,i) is same as('4')%}checked{%endif%}>
+                                        <label class="custom-control-label">Agree</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_a][{{i}}]" value = "5" {%if attribute(data.post.temperament_test.part_a,i) is same as('5')%}checked{%endif%}>
+                                        <label class="custom-control-label">Strongly Agree</label>
+                                    </div>
+                                </div>
+                            </div>
+                            {%endfor%}
+                        </div> 
+
+                        <div class="test_section">
+                            <div class="section">
+                                <h2 class="part-header">Part B</h2>
+                                <i class="sub-text">You are doing great... This part determines the way you perceives things</i>
+                            </div>
+                            
+                            {%for i,question in ['I think deeply about a question first when asked, before answering it','I don\'t say what I cannot do','I don\'t wish for things that are not possible','I like dealing with facts','I don\'t trust hunches or anything that cannot be proven']%}
+                            <div class="question">
+                                <div class="form-group">
+                                    <label for="" class="question">{{question|title}}</label>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_b][{{i}}]" value = "1" {%if attribute(data.post.temperament_test.part_b,i) is same as('1')%}checked{%endif%}>
+                                        <label class="custom-control-label">Strongly Disagree</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_b][{{i}}]" value = "2" {%if attribute(data.post.temperament_test.part_b,i) is same as('2')%}checked{%endif%}>
+                                        <label class="custom-control-label">Disagree</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_b][{{i}}]" value = "3" {%if attribute(data.post.temperament_test.part_b,i) is same as('3')%}checked{%endif%}>
+                                        <label class="custom-control-label">Neutral / indifferent</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_b][{{i}}]" value = "4" {%if attribute(data.post.temperament_test.part_b,i) is same as('4')%}checked{%endif%}>
+                                        <label class="custom-control-label">Agree</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_b][{{i}}]" value = "5" {%if attribute(data.post.temperament_test.part_b,i) is same as('5')%}checked{%endif%}>
+                                        <label class="custom-control-label">Strongly Agree</label>
+                                    </div>
+                                </div>
+                            </div>
+                            {%endfor%}
+                        </div>
+
+                        <div class="test_section">
+                            <div class="section">
+                                <h2 class="part-header">Part C</h2>
+                                <i class="sub-text">You are almost there... This part determines the way you do judge</i>
+                            </div>
+                            
+                            {%for i,question in ['I like to base my decisions on what is reasonable','I like to be fair in my judgement than judging out of pity','I like to speak the truth even if the truth hurts especially to your family & friends','I don’t like very proud people','I don’t like people who change their minds often, especially after agreeing on a plan/point','I like to be disciplined and in control']%}
+                            <div class="question">
+                                <div class="form-group">
+                                    <label for="" class="question">{{question|title}}</label>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_c][{{i}}]" value = "1" {%if attribute(data.post.temperament_test.part_c,i) is same as('1')%}checked{%endif%}>
+                                        <label class="custom-control-label">Strongly Disagree</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_c][{{i}}]" value = "2" {%if attribute(data.post.temperament_test.part_c,i) is same as('2')%}checked{%endif%}>
+                                        <label class="custom-control-label">Disagree</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_c][{{i}}]" value = "3" {%if attribute(data.post.temperament_test.part_c,i) is same as('3')%}checked{%endif%}>
+                                        <label class="custom-control-label">Neutral / indifferent</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_c][{{i}}]" value = "4" {%if attribute(data.post.temperament_test.part_c,i) is same as('4')%}checked{%endif%}>
+                                        <label class="custom-control-label">Agree</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_c][{{i}}]" value = "5" {%if attribute(data.post.temperament_test.part_c,i) is same as('5')%}checked{%endif%}>
+                                        <label class="custom-control-label">Strongly Agree</label>
+                                    </div>
+                                </div>
+                            </div>
+                            {%endfor%}
+                        </div>
+
+                        <div class="test_section">
+                            <div class="section">
+                                <h2 class="part-header">Part D</h2>
+                                <i class="sub-text">This is it..... This part determines your lifestyle when dealing with the world around you</i>
+                            </div>
+                            
+                            {%for i,question in ['I am very organized because I know how to manage my time and other personal belongings in order to achieve good result','I like to keep to plan and time for event','I like to plan ahead','I get upset if activities or plans change at the last minute','I am always punctual']%}
+                            <div class="question">
+                                <div class="form-group">
+                                    <label for="" class="question">{{question|title}}</label>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_d][{{i}}]" value = "1" {%if attribute(data.post.temperament_test.part_d,i) is same as('1')%}checked{%endif%}>
+                                        <label class="custom-control-label">Strongly Disagree</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_d][{{i}}]" value = "2" {%if attribute(data.post.temperament_test.part_d,i) is same as('2')%}checked{%endif%}>
+                                        <label class="custom-control-label">Disagree</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_d][{{i}}]" value = "3" {%if attribute(data.post.temperament_test.part_d,i) is same as('3')%}checked{%endif%}>
+                                        <label class="custom-control-label">Neutral / indifferent</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_d][{{i}}]" value = "4" {%if attribute(data.post.temperament_test.part_d,i) is same as('4')%}checked{%endif%}>
+                                        <label class="custom-control-label">Agree</label>
+                                    </div>
+                                    <div class="custom-control custom-radio option">
+                                        <input type="radio" class="custom-control-input" name = "temperament_test[part_d][{{i}}]" value = "5" {%if attribute(data.post.temperament_test.part_d,i) is same as('5')%}checked{%endif%}>
+                                        <label class="custom-control-label">Strongly Agree</label>
+                                    </div>
+                                </div>
+                            </div>
+                            {%endfor%}
+                        </div>
+                    </div>
+                    <br /><br />
+                    <div class="col-xs-12 col-12" style="display:flex;justify-content:center;align-items:center;padding-right: 30px;padding-left:30px;">
+                        <div class = 'previous' style="display:none;justify-content:flex-end;align-items:center;">
+                            <button class="btn btn-primary" style="padding:20px;">
+                                Previous
+                            </button>
+                        </div>
+                        <div class = 'next' style="display:flex;justify-content:flex-start;align-items:center;margin-left:10px;">
+                            <button class="btn btn-primary" style="padding:20px;">
+                                next
+                            </button>
+                        </div>
+                        <div class="submit submitButtonHolder" style="display:none;">
+                            <button type="submit" name="button" class="btn btn-success" style="padding:20px;">SUBMIT</button>
+                        </div>
+                    </div>
+                </form>
+
+                <script>
+                    var buttons = document.body.querySelectorAll('button');
+                    if(buttons.length){
+                        buttons.forEach(function(button,i){
+                            button.setAttribute('disabled','disabled');
+                        });
+                    }
+                    
+                    var checkInterval = setInterval(function(){
+                        if(typeof $ === 'function'){
+                            clearInterval(checkInterval);
+                            $(document.body).find('button').each(function(){
+                                $(this).removeAttr('disabled');
+                            });
+                            
+                            function checkEnter(e){ e = e || event; var txtArea = /textarea/i.test((e.target || e.srcElement).tagName); return txtArea || (e.keyCode || e.which || e.charCode || 0) !== 13; }
+                            var nextControl = $('div.next > button').eq(0),previousControl = $('div.previous > button').eq(0),submitControl = $('div.submit').eq(0);
+                            nextControl.on('click',function(e){
+                                e.preventDefault();
+                                var parts = $('.part .text-content > .test_section'),
+                                currentHolder;                                       
+                                parts.each(function(){
+                                    var self = $(this);
+                                    if(self.hasClass('active')){
+                                        currentHolder = self;
+                                    }
+                                });
+                                
+                                var nextElement = currentHolder.next('.test_section').eq(0);
+                                if(nextElement.length){
+                                    parts.removeClass('active');
+                                    nextElement.addClass('active');
+                                    previousControl.parent().css('display','flex');
+                                    if(nextElement.next('.test_section').length){
+                                        nextControl.parent().css('display','flex');
+                                        submitControl.css('display','none');
+                                    }else{
+                                        nextControl.parent().css('display','none');
+                                        submitControl.css('display','flex');
+                                    }
+
+                                    window.scrollTo({
+                                        top: 0,
+                                        behavior: 'smooth'
+                                    });
+                                }
+                            });
+                            
+                            previousControl.on('click',function(e){
+                                e.preventDefault();
+                                var parts = $('.part .text-content > .test_section'),
+                                currentHolder;                                       
+                                parts.each(function(){
+                                    var self = $(this);
+                                    if(self.hasClass('active')){
+                                        currentHolder = self;
+                                    }
+                                });
+                                
+                                var prevElement = currentHolder.prev('.test_section').eq(0);
+                                if(prevElement.length){
+                                    parts.removeClass('active');
+                                    prevElement.addClass('active');
+                                    nextControl.parent().css('display','flex');
+                                    submitControl.css('display','none');
+
+                                    if(prevElement.prev('.test_section').length){
+                                        previousControl.parent().css('display','flex');
+                                    }else{
+                                        previousControl.parent().css('display','none');
+                                    }
+
+                                    window.scrollTo({
+                                        top: 0,
+                                        behavior: 'smooth'
+                                    });
+                                }
+                            });
+                        }
+                    },500);
+                </script>
+            </div>
+        </div>
+        
+        <button id = "toggleTestResult" style="visibility: hidden;" class = "d-md-none">view results</button>
+        <div class="d-none d-md-none" id = "testResult">
+            <button class="close"></button>
+            <div class = "content">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="controlled title">
+                            Academic Result:- {%if data.testData.academic.isScience%}You will be a very good science student{%elseif data.testData.academic.isArt%}You will be a very good art student{%else%}Please take the test to continue{%endif%}{%if data.testData.academic.isTechnologist%}, Also note that you will be a very good engineer or tecnologist{%endif%}.
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center align-items-stretch">
+                    {%if data.testData.academic.isValid%}
+                    <div class="col-6">
+                        <a href="/student/take-test?section=temperament" class="controller">
+                            <div class="controlled">
+                                Take Academic Test again
+                            </div>
+                        </a>
+                    </div>
+                    {%endif%}
+                    {%if data.testData.bestSubjects.isValid%}
+                    <div class="col-6">
+                        <a href="/student/take-test?section=bestSubjects" class = "controller">
+                            <div class="controlled">
+                                Take best subjects Test again / view Results
+                            </div>
+                        </a>
+                    </div>
+                    {%endif%}
+                </div>
+                <div class="row justify-content-center align-items-stretch">
+                    <div class="col-6">
+                        <a href="/faqs" class = "controller">
+                            <div class="controlled" >
+                                Frequesntly Asked Question
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="/student/take-test?action=retakeTest" class = "controller">
+                            <div class="controlled">
+                                Retake Entire Test
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-6">
+                        <a href="/support" class = "controller">
+                            <div class="controlled">
+                                Contact Support
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 d-none d-md-block">
+            <div class="part">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="controlled title">
+                            Academic Result:- {%if data.testData.academic.isScience%}You will be a very good science student{%elseif data.testData.academic.isArt%}You will be a very good art student{%else%}Please take the test to continue{%endif%}{%if data.testData.academic.isTechnologist%}, Also note that you will be a very good engineer or tecnologist{%endif%}.
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center align-items-stretch">
+                    {%if data.testData.academic.isValid%}
+                    <div class="col-4">
+                        <a href="/student/take-test?section=temperament" class="controller">
+                            <div class="controlled">
+                                Take Academic Test again
+                            </div>
+                        </a>
+                    </div>
+                    {%endif%}
+                    {%if data.testData.bestSubjects.isValid%}
+                    <div class="col-4">
+                        <a href="/student/take-test?section=bestSubjects" class = "controller">
+                            <div class="controlled">
+                                Take best subjects Test again / view Results
+                            </div>
+                        </a>
+                    </div>
+                    {%endif%}
+                </div>
+                <div class="row justify-content-center align-items-stretch">
+                    <div class="col-4">
+                        <a href="/faqs" class = "controller">
+                            <div class="controlled" >
+                                Frequesntly Asked Question
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-4">
+                        <a href="/student/take-test?action=retakeTest" class = "controller">
+                            <div class="controlled">
+                                Retake Entire Test
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-4">
+                        <a href="/support" class = "controller">
+                            <div class="controlled">
+                                Contact Support
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{%elseif (data.testData.temperament is iterable) and data.testData.temperament.isValid%}
+<body style="margin: 0px;padding:0px;overflow-x: hidden;">
+    <div class="row header">
+        <div class="text col-12 col-md-8">
+            Please select your best two subjects from the dropdown below;
+        </div>
+        <div class="navigation col-12 col-md-2">
+            <a href="/dashboard">Go To Dashboard</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class = "modal" id = "surveyModal">
+                <div class = "modal-dialog">
+                    <div class = "modal-content">
+                        <div class = "modal-header">
+                            <h4 class = "modal-title">Quick Survey</h4>
+                            <button type = "button" class = "close" data-dismiss = "modal">
+                                &times;
+                            </button>
+                        </div>
+                        <div class = "modal-body">
+                            <div class = "row">
+                                <div class = "col-12 col-xs-12 text" style = "font-weight: 500;font-size: 110%;text-transform:capitalize;margin-bottom: 15px;">
+                                    Please briefly tell us your observation as well as your query... Thank you.
+                                </div>
+                                <div class = "col-12 col-xs-12">
+                                    <textarea name = "feedback" class = "form-control" placeholder = "please input your feedback"></textarea>
+                                </div>
+                                <div class = "col-12 col-xs-12" style = "display:flex;justify-content: center; margin-top: 30px;">
+                                    <button class = "btn btn-success send" style="width: 70%;padding: 5%;">
+                                        Send Report
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class = "modal-footer">
+                            <button type = "button" class = "btn btn-default" data-dismiss = "modal">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class = "modal" id = "satisfactionModal">
+                <div class = "modal-dialog">
+                    <div class = "modal-content">
+                        <div class = "modal-header">
+                            <h4 class = "modal-title">Test Response</h4>
+                            <button type = "button" class = "close" data-dismiss = "modal">
+                                &times;
+                            </button>
+                        </div>
+                        <div class = "modal-body">
+                            <div class = "row">
+                                <div class = "col-12 col-xs-12 text" style = "font-weight: 500;font-size: 110%;text-transform:capitalize;margin-bottom: 15px;">
+                                    Are you satisfied with the test?
+                                </div>
+                                <div class = "col-12 col-xs-12" style = "display:flex;justify-content: space-around; margin-top: 30px;">
+                                    <button class = "btn btn-success yes" style = "padding: 5%;width:45%;">
+                                        Yes I am
+                                    </button>
+                                    <button class = "btn btn-danger no" style = "padding: 5%;width:45%;">
+                                        No i am not
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class = "modal-footer">
+                            <button type = "button" class = "btn btn-default" data-dismiss = "modal">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="part">
+                <div class = "notification">
+                    {%include 'pageNotification.html'%}
+                </div>
+                <style>
+                    .part > form{
+                        display: flex;
+                        width: 100%;
+                        flex-wrap: wrap;
+                    }
+                </style>
+
+                <form action="{{data.testSubmit.url}}" method="post">
+                    <input type="hidden" name="token" value="{{data.testSubmit.token}}">
+                    <input type="hidden" name="googleCaptchaToken" value="" id = "googleCaptcha">
+                    <input type="hidden" name="type" value="bestSubjects">
+                    <div class="text-content">
+                        {%if (data.testResult is iterable) and (data.testResult|length)%}
+                        <div class = "part-notify {%if data.testResult.contactCouncellor%}isDanger{%else%}isSuccess;{%endif%}">
+                            {%if data.testResult.contactCouncellor%}
+                            <span>It looks like you made some mistakes in the answers you provided to the questions. We advise you retake the Test and read the instructions carefully.. But if you are sure you provided the correct answers then</span>
+                            <a href="/support">Click here to talk to our Counsellor</a>
+                            {%else%}
+                            <span>Congratulations... your selection has been saved.</span>
+                            {%endif%}
+                        </div>
+                        {%endif%}
+                        
+                        <div style="display:flex;justify-content:center;background:rgb(100, 100, 100);width:100%;padding:3% 5%;">
+                            <select name="bestSubjects[]" id="bestSubjects" multiple processed = 'false' data-values = "{{data.subjects|json_encode()}}" style="visibility: hidden;"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-12 submitButtonHolder">
+                        <button type="submit" name="button" class="btn bg-info">SUBMIT</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <button id = "toggleTestResult" style="visibility: hidden;" class = "d-md-none">view results</button>
+        <div class="d-none d-md-none" id = "testResult">
+            <button class="close"></button>
+            <div class = "content">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="controlled title">
+                            Academic Result:- {%if data.testData.academic.isScience%}You will be a very good science student{%elseif data.testData.academic.isArt%}You will be a very good art student{%else%}Please take the test to continue{%endif%}{%if data.testData.academic.isTechnologist%}, Also note that you will be a very good engineer or tecnologist{%endif%}.
+                        </div>
+                    </div>
+
+                    {%if data.temperamentData is iterable and (data.temperamentData.description)%}
+                    <div class="col-12">
+                        <div class="controlled title">
+                            {{-data.temperamentData.description|capitalize-}}
+                        </div>
+                    </div>
+                    {%endif%}
+
+                    {%if data.relatedProfessions is iterable%}
+                    <div class="col-12">
+                        <div class="row" style="display:flex;justify-content:center;flex-wrap: wrap;">
+                            <div class="col-12">
+                                <div class="alert" style = "background:cornflowerblue;width: 100%;text-align: center;">
+                                    Profession Suitable for you...
+                                </div>
+                            </div>
+                            {%if data.relatedProfessions|length%}
+                            <div id = "professions" style = "display: flex;width: 100%;flex-wrap: wrap;justify-content: center">
+                                <style>
+                                a.list-group-item:hover{
+                                    color:black !important;
+                                }
+                                </style>
+                                {%for k,profession in data.relatedProfessions%}
+                                <div style = "display: flex;width:85%;margin-bottom:10px;border-radius:10px;overflow: hidden;flex-wrap: wrap;">
+                                    <div class="btn-group" style = "background:rgb(23, 23, 24);color:ivory;width: 100%;text-align: left;">
+                                        <button type="button" class="btn col-xs-8" data-toggle="collapse" data-target="#_{{profession.professionId}}" style="background:inherit;color:inherit;padding-left:30px;text-align: left;">
+                                            {{profession.professionName|title}}
+                                        </button>
+                                        <a type="button" href = "#" class="btn col-xs-3 text-lowercase" style="text-align:left;">View Internships</a>
+                                    </div>
+                                    <div id = "_{{profession.professionId}}" class="collapse list-group" data-parent="#professions" style="width:100%;">
+                                        {%if profession.disciplines is iterable%}
+                                        {%for i,discipline in profession.disciplines%}
+                                        <a class="list-group-item" style = "display: flex;width:100%;" href="/discipline?disciplineId={{discipline.id}}">{{discipline.name|title}}</a>
+                                        {%endfor%}
+                                        {%else%}
+                                        <a class = "list-group-item" href="#">
+                                            There is currently no discipline linked to this profession for now.. please check back later
+                                        </a>
+                                        {%endif%}
+                                    </div>
+                                </div>
+                                {%endfor%}
+                            </div>
+                            {%else%}
+                            <div class="col-10">
+                                <div class="alert" style = "background:rgb(23, 23, 24);color:ivory;width: 100%;text-align: center;">
+                                    There are no professions available for your criteria
+                                </div>
+                            </div>
+                            {%endif%}
+                        </div>
+                    </div>
+                    {%else%}
+                    <div class="col-xs-12" style="display:flex;justify-content:center;">
+                        <div class="col-10">
+                            <div class="alert" style = "background:rgb(23, 23, 24);width:100%;text-align: center;color:ivory;">
+                                Please select your best two subjects
+                            </div>
+                        </div>
+                    </div>
+                    {%endif%}
+                    {%if data.testData.bestSubjects.isValid is same as('0')%}
+                    <div class="col-12">
+                        <div class="controlled title">
+                            It seems as though you had issues while taking this test section before... please try again now.
+                        </div>
+                    </div>
+                    {%endif%}
+                </div>
+
+                <div class="row justify-content-center align-items-stretch">
+                    {%if data.testData.temperament.isValid%}
+                    <div class="col-6">
+                        <a href="/student/take-test?section=temperament" class = "controller">
+                            <div class="controlled">
+                                Take Temperament Test again
+                            </div>
+                        </a>
+                    </div>
+                    {%endif%}
+                    {%if data.testData.academic.isValid%}
+                    <div class="col-6">
+                        <a href="/student/take-test?section=academic" class = "controller">
+                            <div class="controlled">
+                                Take best subjects Test again / view Results
+                            </div>
+                        </a>
+                    </div>
+                    {%endif%}
+                </div>
+                <div class="row justify-content-center align-items-stretch">
+                    <div class="col-6">
+                        <a href="/faqs" class = "controller">
+                            <div class="controlled" >
+                                Frequesntly Asked Question
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="/student/take-test?action=retakeTest" class = "controller">
+                            <div class="controlled">
+                                Retake Entire Test
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-6">
+                        <a href="/support" class = "controller">
+                            <div class="controlled">
+                                Contact Support
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 d-none d-md-block">
+            <div class="part">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="controlled title">
+                            Academic Result:- {%if data.testData.academic.isScience%}You will be a very good science student{%elseif data.testData.academic.isArt%}You will be a very good art student{%else%}Please take the test to continue{%endif%}{%if data.testData.academic.isTechnologist%}, Also note that you will be a very good engineer or tecnologist{%endif%}.
+                        </div>
+                    </div>
+
+                    {%if data.temperamentData is iterable and (data.temperamentData.description)%}
+                    <div class="col-12">
+                        <div class="controlled title">
+                            {{-data.temperamentData.description|capitalize-}}
+                        </div>
+                    </div>
+                    {%endif%}
+
+                    {%if data.relatedProfessions is iterable%}
+                    <div class="col-xs-12">
+                        <div class="row" style="display:flex;justify-content:center;flex-wrap: wrap;">
+                            <div class="col-xs-12">
+                                <div class="alert" style = "background:cornflowerblue;width: 100%;text-align: center;">
+                                    Profession Suitable for you...
+                                </div>
+                            </div>
+                            {%if data.relatedProfessions|length%}
+                            <div id = "professions" style = "display: flex;width: 100%;flex-wrap: wrap;justify-content: center">
+                                <style>
+                                a.list-group-item:hover{
+                                    color:black !important;
+                                }
+                                </style>
+                                {%for k,profession in data.relatedProfessions%}
+                                <div style = "display: flex;width:76%;margin-bottom:10px;border-radius:10px;overflow: hidden;flex-wrap: wrap;">
+                                    <div class="btn-group" style = "background:rgb(23, 23, 24);color:ivory;width: 100%;text-align: left;">
+                                        <button type="button" class="btn col-xs-8" data-toggle="collapse" data-target="#_{{profession.professionId}}" style="background:inherit;color:inherit;padding-left:30px;text-align: left;">
+                                            {{profession.professionName|title}}
+                                        </button>
+                                        <a type="button" href = "#" class="btn col-xs-3 text-lowercase" style="text-align:left;">View Internships</a>
+                                    </div>
+                                    <div id = "_{{profession.professionId}}" class="collapse list-group" data-parent="#professions" style="width:100%;">
+                                        {%if profession.disciplines is iterable%}
+                                        {%for i,discipline in profession.disciplines%}
+                                        <a class="list-group-item" style = "display: flex;width:100%;" href="/discipline?disciplineId={{discipline.id}}">{{discipline.name|title}}</a>
+                                        {%endfor%}
+                                        {%else%}
+                                        <a class = "list-group-item" href="#">
+                                            There is currently no discipline linked to this profession for now.. please check back later
+                                        </a>
+                                        {%endif%}
+                                    </div>
+                                </div>
+                                {%endfor%}
+                            </div>
+                            {%else%}
+                            <div class="col-xs-10">
+                                <div class="alert" style = "background:rgb(23, 23, 24);color:ivory;width: 100%;text-align: center;">
+                                    There are no professions available for your criteria
+                                </div>
+                            </div>
+                            {%endif%}
+                        </div>
+                    </div>
+                    {%else%}
+                    <div class="col-xs-12" style="display:flex;justify-content:center;">
+                        <div class="col-xs-10">
+                            <div class="alert" style = "background:rgb(23, 23, 24);width:100%;text-align: center;color:ivory;">
+                                Please select your best two subjects
+                            </div>
+                        </div>
+                    </div>
+                    {%endif%}
+                    {%if data.testData.bestSubjects.isValid is same as('0')%}
+                    <div class="col-12">
+                        <div class="controlled title">
+                            It seems as though you had issues while taking this test section before... please try again now.
+                        </div>
+                    </div>
+                    {%endif%}
+                </div>
+
+                <div class="row justify-content-center align-items-stretch">
+                    {%if data.testData.temperament.isValid%}
+                    <div class="col-4">
+                        <a href="/student/take-test?section=temperament" class = "controller">
+                            <div class="controlled">
+                                Take Temperament Test again
+                            </div>
+                        </a>
+                    </div>
+                    {%endif%}
+                    {%if data.testData.academic.isValid%}
+                    <div class="col-4">
+                        <a href="/student/take-test?section=academic" class = "controller">
+                            <div class="controlled">
+                                Take best subjects Test again / view Results
+                            </div>
+                        </a>
+                    </div>
+                    {%endif%}
+                </div>
+                <div class="row justify-content-center align-items-stretch">
+                    <div class="col-4">
+                        <a href="/faqs" class = "controller">
+                            <div class="controlled" >
+                                Frequesntly Asked Question
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-4">
+                        <a href="/student/take-test?action=retakeTest" class = "controller">
+                            <div class="controlled">
+                                Retake Entire Test
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-4">
+                        <a href="/support" class = "controller">
+                            <div class="controlled">
+                                Contact Support
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{%endif%}
+{%endif%}
+
+{%include 'user/student/take-test/footer.html'%}
+<script src = "/assets/js/dashboard/mine.js"></script>
+
+<script type="text/javascript">
+    var processor = new Processor();
+
+    var $checkInterval = setInterval(function(){
+        if(typeof $ == 'function' && typeof $.fn.selectize === 'function'){
+            clearInterval($checkInterval);
+
+            {%if (data.testResult is iterable) and (data.testResult|length) and (data.post.bestSubjects is iterable) and (data.post.bestSubjects|length) and not(data.testResult.contactCouncellor)%}
+                var testSatisfactionModal = $('#satisfactionModal'),
+                surveyModal = $('#surveyModal'),
+                userId = '{{data.user.id|e("js")}}',
+                satModalBody = testSatisfactionModal.find('.modal-body').eq(0),
+                satModalFooter = testSatisfactionModal.find('.modal-footer').eq(0),
+                surveyModalBody = surveyModal.find('.modal-body'),
+                surveyResponse = surveyModalBody.find('textarea').eq(0),
+                surveyModalFooter = surveyModal.find('.modal-footer'),
+                url = '{{attribute(data,"update-data").url|e("js")}}',
+                token = '{{attribute(data,"update-data").token|e("js")}}',
+                hasRepliedSurvey = 0;
+               
+                window.addEventListener('beforeunload',function(e){
+                   if(!hasRepliedSurvey){
+                       testSatisfactionModal.modal('show');
+                       hasRepliedSurvey = 1;
+                       e.preventDefault();
+                       e.returnValue = 'Pls you have a query to fill';
+                   }
+               }); 
+
+                satModalBody.on('click','button',function(e){
+                    e.preventDefault();
+                    var self = $(this);
+                    if(self.hasClass('no')){
+                        testSatisfactionModal.modal('hide');
+                        surveyModal.modal('show');
+                    }else{
+                        processor.addLoader();
+                        $.ajax({
+                            'url': url,
+                            'method': 'post',
+                            'data' : {
+                                'token': token,
+                                '__action' : 'update',
+                                '__for' : 'testSatifactionResponse',
+                                'data' : {
+                                    'response': 1
+                                }
+                            },
+                            'success' : function(resp){
+                                processor.removeLoader();
+                                if(resp.status == 'ok'){
+                                    testSatisfactionModal.modal('hide');
+                                    alert('Thanks for your response');
+                                }else{
+                                    alert(resp.response ? resp.response : 'An error occured');
+                                }
+                            },
+                            'error' : function(resp){
+                                processor.removeLoader();
+                                alert('An unknown server error occured... please contact administrator');
+                            }
+                        });
+                    }
+                });
+                
+                surveyModalBody.on('click','button.send',function(e){
+                    e.preventDefault();
+                    var response = surveyResponse.val();
+                    if(response.length){
+                        processor.addLoader();
+
+                        $.ajax({
+                            'url': url,
+                            'method': 'post',
+                            'data' : {
+                                'token': token,
+                                '__action' : 'update',
+                                '__for' : 'testSatifactionResponse',
+                                'data' : {
+                                    'response': 0,
+                                    'reply': response
+                                }
+                            },
+                            'success' : function(resp){
+                                processor.removeLoader();
+                                if(resp.status == 'ok'){
+                                    surveyModal.modal('hide');
+                                    alert('Thanks for your response');
+                                }else{
+                                    alert(resp.response ? resp.response : 'An error occured');
+                                }
+                            },
+                            'error' : function(resp){
+                                processor.removeLoader();
+                                alert('An unknown server error occured... please contact administrator');
+                            }
+                        });
+                    }else{
+                        alert('Please breiefly explain the query you may have as regarding the tool');
+                    }
+                });
+
+                surveyModalFooter.on('click','button',function(e){
+                    e.preventDefault();
+                    surveyModal.modal('hide');
+                });
+
+                satModalFooter.on('click','button',function(e){
+                    e.preventDefault();
+                    testSatisfactionModal.modal('hide');
+                });
+            {%endif%}
+
+            var parent = $(document.body).find('.question > .form-group.targetSubjects').eq(0);
+            if(parent.length){
+                parent.find('input[type="checkbox"]').on('click',function(){
+                    var totalChecked = parent.find('input[type="checkbox"]:checked').length;
+                    if(totalChecked === 6){
+                        parent.find('input[type="checkbox"]:not(:checked)').each(function(){
+                            $(this).attr('disabled','disabled');
+                        });
+                    }else if(totalChecked < 6){
+                        parent.find('input[type="checkbox"]').each(function(){
+                            $(this).removeAttr('disabled');
+                        });
+                    }
+                });
+            }
+
+            var bestSubjectsHtml = $('#bestSubjects');
+            bestSubjectsHtml.selectize({
+                create: false,
+                options: bestSubjectsHtml.data('values'),
+                items: bestSubjectsHtml.data('posted-values'),
+                placeholder: 'Please select two best subjects',
+                closeAfterSelect: false,
+                maxItems: 2,
+                plugins:[
+                    'remove_button'
+                ],
+                'labelField':'name',
+                'valueField':'id',
+                'sortField':[
+                    {
+                        'field':'name',
+                        'direction':'asc'
+                    },
+                    {
+                        'field':'id',
+                        'direction':'asc'
+                    }
+                ],
+                'searchField':[
+                    'name'
+                ],
+                onInitialize: function(){
+                    bestSubjectsHtml.attr('processed',true);
+                    bestSubjectsHtml.css({
+                        'visibility':'visible'
+                    });
+                }
+            });
+
+            $checkControls = setInterval(function(){
+                if(!$(document.body).find('select[processed="false"]').length){
+                    clearInterval($checkControls);
+
+                    if(bestSubjectsHtml.length){
+                        var bestSubjectsControl = bestSubjectsHtml.get(0).selectize;
+                        bestSubjectsControl.$control_input.css({
+                            'min-width': '200px'
+                        });
+                    }
+                }
+            },200);
+
+            var windowWidth = $(window).innerWidth(),
+            button = $('button#toggleTestResult'),
+            testResult = $('#testResult'),
+            buttonWidth = button.outerHeight();
+            
+            button.css({
+                'display': 'flex',
+                'flex-wrap': 'no-wrap',
+                'right': 0,
+                'visibility': 'visible'
+            });
+
+            button.on('click',function(){
+                testResult.toggleClass('d-flex');
+                testResult.toggleClass('d-none');
+            });
+
+            testResult.children('button.close').on('click',function(e){
+                testResult.toggleClass('d-flex');
+                testResult.toggleClass('d-none');
+            });
+        }
+    },200);
+
+    window.addEventListener('load',function(e){
+        var customControl = document.querySelectorAll('.custom-control'),
+        currNumber = 0;
+        if(customControl.length){
+            customControl.forEach(function(value,i){
+                var input = value.querySelector('.custom-control-input'),
+                label = value.querySelector('.custom-control-label');
+
+                if(input && label){
+                    var id = 'custom'+currNumber;
+                    currNumber++;
+                    input.setAttribute('id',id);
+                    label.setAttribute('for',id);
+                }
+            })
+        }
+    });
+</script>
+
+<!--<script src='{{data.googleCaptcha.url}}'></script>
+<script>
+    var $otherInterval = setInterval(function(){
+        if((typeof $ == 'function') && (typeof grecaptcha == 'object') && (typeof grecaptcha.execute == 'function')){
+            clearInterval($otherInterval);
+            grecaptcha.execute('{{data.googleCaptcha.siteKey}}', {action: 'dataListing'}).then(function(token) {
+                $('#googleCaptcha').val(token);
+                $('#deleteData, button.remove').removeAttr('disabled');
+            });
+        }
+    },100);
+</script>-->

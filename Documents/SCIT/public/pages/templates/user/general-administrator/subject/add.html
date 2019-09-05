@@ -1,0 +1,455 @@
+{%include 'user/general-administrator/dashboard/header.html'%}
+
+<div style="display:flex;justify-content:center;width:100%;">
+    {%include 'pageNotification.html'%}
+</div>
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+        <h2 class="card-title" style="font-size:130%;font-weight:800;text-decoration-line:underline; text-decoration-style: dotted; text-decoration-color: rgb(230,230,230);">Add Subject</h2>
+        <p class="card-description" style="font-size:80%;font-style:italic;">
+            Add subjects with little description about them
+        </p>
+        <form id = "holder" method = "post" action="{{data.admin.add.subject.url}}">
+            <input type="hidden" name="token" value="{{data.admin.add.subject.token}}">
+            <input type="hidden" id = "googleCaptcha" name="googleCaptchaToken" value="">
+
+            {%if (data.admin.add.subject.errors is iterable) or (data.admin.add.subject.exists is iterable) or (data.admin.add.subject.invalids is iterable)%}
+            <div class="table-responsive" id = "displayErrors">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>
+                            #
+                            </th>
+                            <th class="text-center">
+                                Subject Name
+                            </th>
+                            <th class="text-center">
+                                Error Type
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%set index = 0%}
+                        {%if data.admin.add.subject.errors is iterable%}
+                        {%for subject in data.admin.add.subject.errors%}
+                        {%set index = (index + 1)%}
+                        <tr class="wrapper">
+                            <td class="placedId">
+                            {{index}}
+                            </td>
+                            <td class="name">
+                                <span style="display:flex;word-wrap: break-word;width: 100%;">{{subject.name}}</span>
+                            </td>
+                            <td style="color:red;">
+                                Ooops a data center error occured while adding this subject
+                            </td>
+                        </tr>
+                        {%endfor%}
+                        {%endif%}
+
+                        {%if data.admin.add.subject.exists is iterable%}
+                        {%for subject in data.admin.add.subject.exists%}
+                        {%set index = (index + 1)%}
+                        <tr class="wrapper">
+                            <td class="placedId">
+                            {{index}}
+                            </td>
+                            <td class="name">
+                                <span style="display:flex;word-wrap: break-word;width: 100%;">{{subject.name}}</span>
+                            </td>
+                            <td style="color:red;">
+                                Ooops subject already exists... Try updating previous records
+                            </td>
+                        </tr>
+                        {%endfor%}
+                        {%endif%}
+
+                        {%if data.admin.add.subject.invalids is iterable%}
+                        {%for subject in data.admin.add.subject.invalids%}
+                        {%set index = (index + 1)%}
+                        <tr class="wrapper">
+                            <td class="placedId">
+                            {{index}}
+                            </td>
+                            <td class="name">
+                                <span style="display:flex;word-wrap: break-word;width: 100%;">{{subject.name}}</span>
+                            </td>
+                            <td style="color:red;">
+                                {{subject.errorReason}}
+                            </td>
+                        </tr>
+                        {%endfor%}
+                        {%endif%}
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="width:100%;margin-top:20px;margin-bottom: 20px;display:flex;justify-content:flex-end;">
+                <button id = "removeErrors" class="btn bg-warning">
+                    Remove Errors
+                </button>
+            </div>
+            {%endif%}
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id = "holderTable">
+                    <thead>
+                        <tr>
+                            <th>
+                            #
+                            </th>
+                            <th class="text-center">
+                                Subject Name
+                            </th>
+                            <th class="text-center">
+                                Subject Description
+                            </th>
+                            <th class="text-center">
+                                Weights
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-professions = '{{data.professions|json_encode}}'>
+                        {%set index = 0%}
+                        <tr class="wrapper" processed = "false">
+                            <td class="placedId">
+                            {{index + 1}}
+                            </td>
+                            <td class="nameHolder">
+                                <input type="text" class="form-control" name="subject_name" value = "" placeholder="Please insert subject name">
+                                <span style="display:none;word-wrap: break-word;width: 100%;"></span>
+                            </td>
+                            <td class="professionsHolder">
+                                <select name="professions" id="" style = "visibility: hidden;" multiple = "multiple" data-value = '[]'>
+
+                                </select>
+                            </td>
+                            <td class="weightHolder" data-value = '{}'>
+                            </td>
+                            <td class="controls">
+                                <div>
+                                    <button class="remove btn bg-danger" style="margin-right:8px;">Remove</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="width:100%;margin-top:20px;display:flex;justify-content:flex-end;">
+                <button id = "addNewRow" class="btn btn-success">
+                    Add Another Subject
+                </button>
+            </div>
+
+            <div style="width:100%;margin-top:15px;display:flex;justify-content:center;">
+                <button type="submit" style="width:100%;padding:2%;" class="btn bg-success" id = "saveData" disabled = "disabled">Save Data</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+{%include 'user/general-administrator/dashboard/footer.html'%}
+
+<script>
+    var checkInterval = setInterval(function(){
+        if(typeof $ === 'function' && typeof $.fn.selectize === 'function'){
+            clearInterval(checkInterval);
+
+            var form = $('#holder'),
+            table = form.find('#holderTable'),
+            tbody = table.children('tbody'),
+            addNewRowBtn =  form.find('#addNewRow'),
+            saveDataBtn = form.find('#saveData'),
+            removeErrors = form.find('#removeErrors');
+
+            function processSubjects(){
+                $(document.body).find('tr.wrapper[processed="false"]').each(function(){
+                    var self = $(this),
+                    professions = self.find('td.professionsHolder > select[name="professions"]').eq(0),
+                    weights = self.find('td.weightHolder').eq(0),
+                    isReady = false;
+
+                    professions.css({
+                        'visibility' : 'visible'
+                    });
+
+                    weights.css({
+                        'visibility' : 'visible'
+                    });
+                    
+                    var checkControl = setInterval(function(){
+                        if(isReady){
+                            clearInterval(checkControl);
+                            var professionsControl = professions.get(0).selectize;
+
+                            weights.on('change keypress blur keydown focus keydown keyup','input',function(){
+                                var self = $(this),
+                                weightObject = weights.data('value'),
+                                professionId = self.data('profession-id'),
+                                max = parseInt(self.attr('max')),
+                                min = parseInt(self.attr('min')),
+                                weight = self.val();
+                                weight = (parseInt(weight) == weight ? parseInt(weight) : 0);
+
+                                if(weight < min){
+                                    weight = min;
+                                }
+                                if(weight > max){
+                                    weight = max;
+                                }
+                                self.val(weight);
+
+                                if(typeof weightObject[professionId] == 'object'){
+                                    weightObject[professionId]['weight'] = weight;
+                                }else{
+                                    weightObject[professionId] = {
+                                        'weight' : weight
+                                    };
+                                }
+                                weights.data('value',weightObject);
+                            });
+                            
+                            var professionControlDropdown = {
+                                'status' : 'closed',
+                                'dropdownOffset': null,
+                                'dropdown': null,
+                                'position':function(dropdown){
+                                    if(this.status == 'closed'){
+                                        this.dropdown = dropdown;
+                                        if(this.dropdown.css('display').toLowerCase() == 'block'){
+                                            this.status = 'opened';
+                                            this.dropdownOffset = this.dropdown.offset();
+                                            if(this.dropdownOffset.left && (this.dropdown.css('position').toLowerCase() == 'absolute')){
+                                                var process = function(){
+                                                    this.dropdown.css({
+                                                        'position':'fixed',
+                                                        'z-index':'9000'
+                                                    }).offset({
+                                                        'top':(this.dropdownOffset.top + 8),
+                                                        'left':(this.dropdownOffset.left + 8)
+                                                    });
+                                                };
+
+                                                process = process.bind(this);
+                                                setTimeout(process,1000);
+                                            }else{
+                                                professionsControl.close();
+                                                setTimeout(function(){
+                                                    professionsControl.open();
+                                                },300);
+                                            }
+                                        }
+                                    }
+                                },
+                                'rePosition':function(){
+                                    if(this.dropdown){
+                                        this.status = 'closed';
+                                        this.position(this.dropdown);
+                                    }
+                                }
+                            };
+
+                            professionsControl.on('dropdown_open',function(dropdown){
+                                if(professionControlDropdown.status == 'closed'){
+                                    professionControlDropdown.position(dropdown);
+                                }
+                            });
+
+                            professionsControl.on('dropdown_close',function(dropdown){
+                                professionControlDropdown.status = 'closed';
+                                dropdown.css({
+                                    'position':'absolute'
+                                });
+                                professionsControl.positionDropdown();
+                            });
+
+                            professionsControl.on('change',function(e){
+                                var newProfessionArray = this.getValue(),
+                                oldProfessionArray = professions.data('value');
+
+                                if(newProfessionArray !== oldProfessionArray){
+                                    weights.html('');
+
+                                    var weightWrapper = $(document.createElement('div')),
+                                    oldWeightObject = weights.data('value'),
+                                    newWeightObject = {};
+
+                                    newProfessionArray.forEach(function(value,i){
+                                        var weight = 0;
+                                        if((typeof oldWeightObject[value] == 'object') && (typeof oldWeightObject[value]['weight'] == 'number')){
+                                            weight = oldWeightObject[value]['weight'];
+                                        }
+
+                                        newWeightObject[value] = {
+                                            'weight' : weight
+                                        };
+
+                                        weightWrapper.append('<input type = "number" name = "weight_'+value+'" min = 0 step = 1 data-profession-id = "'+value+'" value = "'+weight+'">');
+                                    });
+
+                                    weights.append(weightWrapper);
+                                    professions.data('value',JSON.parse(JSON.stringify(newProfessionArray)));
+                                    weights.data('value',newWeightObject);
+                                }
+
+                                professionControlDropdown.rePosition();
+                            });
+
+                            professionsControl.trigger.call(professionsControl,'change');
+                        }
+                    },300);
+
+                    professions.selectize({
+                        create: false,
+                        options: tbody.data('professions'),
+                        items: null,
+                        placeholder: 'Please select relating professions',
+                        plugins:[
+                            'remove_button',
+                            'drag_drop'
+                        ],
+                        'labelField':'name',
+                        'valueField':'id',
+                        'sortField':[
+                            {
+                                'field':'name',
+                                'direction':'asc'
+                            },
+                            {
+                                'field':'id',
+                                'direction':'asc'
+                            }
+                        ],
+                        'searchField':[
+                            'name'
+                        ],
+                        onInitialize: function(){
+                            isReady = true;
+                            self.attr('processed',true);
+                        },
+                        render: {
+                            'item' : function(item,escape){
+                                return '<div class="item" style = "width:100%;display:flex;">'+
+                                            '<span class="fa fa-user">'+
+                                            '</span>'+
+                                            '<span class="text">'+
+                                                escape(item.name)+
+                                            '</span>'+
+                                        '</div>';
+                            }
+                        }
+                    });
+                });
+            }
+
+            removeErrors.on('click',function(){
+                form.find('#displayErrors').remove();
+                $(this).remove();
+            });
+
+            saveDataBtn.on('click',function(e){
+                e.preventDefault();
+                var data = [],
+                rows = tbody.find('tr');
+
+                rows.each(function(i,row){
+                    row = $(row),
+                    out = {
+                        'name':row.find('td.nameHolder > input').eq(0).val(),
+                        'data':[]
+                    },
+                    weightsObject = row.find('td.weightHolder').eq(0).data('value');
+                    $.each(weightsObject,function(professionId,data){
+                        out.data.push({
+                            'professionId': professionId,
+                            'weight': data.weight
+                        });
+                    });
+
+                    if((out.name.length > 3)){
+                        data.push(out);
+                    }
+                });
+                
+                function send_sync_data(data){
+                    var newForm = $(document.createElement('form')).attr('method',form.attr('method')).attr('action',form.attr('action'));
+                    data.forEach(function(data,index){
+                        newForm.append('<input type = "hidden" name = "formData['+index+'][name]" value = "'+data.name+'">').append('<input type = "hidden" name = "formData['+index+'][data]" value = \''+JSON.stringify(data.data)+'\'>');
+                    });
+
+                    form.children('input[type="hidden"]').each(function(){
+                        var self = $(this);
+                        newForm.append('<input type = "hidden" name = "'+self.attr('name')+'" value = "'+self.val()+'">')
+                    });
+
+                    newForm.prependTo(document.body);
+                    newForm.submit();
+                }
+
+                send_sync_data(data);
+            });
+            
+            tbody.on('index_change',function(e){
+                var rows = tbody.find('tr'),
+                current = 0;
+                if(rows.length){
+                    saveDataBtn.closest('div').css({
+                        'display' : 'flex'
+                    });
+                }else{
+                    saveDataBtn.closest('div').css({
+                        'display' : 'none'
+                    });
+                }
+
+                rows.each(function(i,row){
+                    row = $(row);
+                    row.find('td.placedId').eq(0).html(current + 1);
+                    current++;
+                });
+            });
+
+            addNewRowBtn.on('click',function(e){
+                e.preventDefault();
+                tbody.append('<tr class="wrapper" processed = "false"><td class="placedId"></td><td class="nameHolder"><input type="text" class="form-control" name="subject_name" value = "" placeholder="Please insert subject name"><span style="display:none;word-wrap: break-word;width: 100%;"></span></td><td class="professionsHolder"><select name="professions" id="" style = "visibility: hidden;" multiple = "multiple" data-value = \'[]\'></select></td><td class="weightHolder" data-value = \'{}\'></td><td class="controls"><div><button class="remove btn bg-danger" style="margin-right:8px;">Remove</button></div></td></tr>');
+                tbody.trigger('index_change');
+                processSubjects();
+            });
+
+            tbody.on('keypress',function(e){
+                var key = e.charCode || e.keyCode || 0;     
+                if(key == 13){
+                    e.preventDefault();
+                }
+            });
+            
+            tbody.on('click','button.remove',function(e){
+                e.preventDefault();
+                var self = $(this);
+                self.closest('tr.wrapper').remove();
+                tbody.trigger('index_change');
+            });
+
+            processSubjects();
+            $('#saveData').removeAttr('disabled');
+        }
+    },200);
+</script>
+
+
+<!--<script src='{{data.googleCaptcha.url}}'></script>
+<script>
+    var $otherInterval = setInterval(function(){
+        if((typeof $ == 'function') && (typeof grecaptcha == 'object') && (typeof grecaptcha.execute == 'function')){
+            clearInterval($otherInterval);
+            grecaptcha.execute('{{data.googleCaptcha.siteKey}}', {action: 'adminUpdateSubjects'}).then(function(token) {
+                $('#googleCaptcha').val(token);
+                $('#saveData').removeAttr('disabled');
+            });
+        }
+    },100);
+</script>-->

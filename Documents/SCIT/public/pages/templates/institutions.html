@@ -1,0 +1,102 @@
+{%include 'header.html'%}
+  <!-- start  Section -->
+  <section id="blg_sec" style = "padding-top:70px;padding-bottom:70px;">
+    <div class="container">
+      <div class="row">
+        <div class="title_sec">
+          <h1>INSTUTIONS</h1>
+
+
+          <h2>Search for our scholarship programms</h2>
+        </div>
+        <section id="lts_sec">
+          <div class="container">
+            <div class="row">
+            {%set increment = data.institutions.increment | default(50)%}
+            {%set count = data.institutions.total.count%}
+            {%set current = increment%}
+            {%set hasSetCurrent = 0%}
+            {%set isPaginated = false%}
+            {%set from = data.institutions.from | default(0)%}
+
+            {%if data.institutions.list is iterable and data.institutions.list | length%}
+            {%for i,institution in data.institutions.list%}
+              <div class="col-lg-3 col-md-3 col-sm-12">
+                <div class="border">
+                    <div style="width:100%;height:240px;background:black;position:relative;width:100%;height:350px;background:black;position:relative;display:flex;justify-content: center;align-items: center;">
+                        {%if data.institution.coverImage%}
+                        <img src="{{data.event.coverImage}}" alt="" style="width:100%;height:100%;"/>
+                        {%else%}
+                        <img src="/assets/images/noImage.png" alt="" style="width:80px;height:80px;"/>
+                        {%endif%}
+                    </div>
+                  <div class="col-lg-12">
+                    <div style="width:100%;">
+                        <ul class="institution-list list-group">
+                            <li class="list-group-item">
+                                <span style="font-weight:750;font-style:normal;text-transform:uppercase;font-size:110%;">
+                                    {{institution.stakeholderName}}
+                                </span>
+                            </li>
+                            <li class="list-group-item">
+                                <span style="font-weight:750;font-style:normal;text-transform:capitalize;font-size:80%;">
+                                    {{institution.stakeholderAddress}}
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                  </div>
+                  <a href="{{institution.edit.url}}">
+                      Read more <i class="fa fa-long-arrow-right"></i>
+                    </a>
+                </div>
+              </div>
+              {%endfor%}
+              <div class="col-xs-12">
+                    <nav aria-label="..." class="mt-3">
+                        <ul class="pagination">
+                            <li class="page-item {%if (from < increment)%}disabled{%endif%}">
+                                <a class="page-link" href="?from={{(from - increment)}}" tabindex="-1">Previous</a>
+                            </li>
+                            {%for i in 0..30000 if (not isPaginated)%}
+                            <li class="page-item {%if((current >= (from + increment)) and (hasSetCurrent == 0))%}active{%set hasSetCurrent = 1%}{%endif%}">
+                                <a class="page-link" href="?from={{(i*increment)}}">{{i + 1}}</a>
+                            </li>
+                            {%if current > count%}
+                            {%set isPaginated = true%}
+                            {%endif%}
+                            {%set current = (current + increment)%}
+                            {%endfor%}
+            
+                            <li class="page-item {%if (count <= increment) or (count <= (from + increment))%}disabled{%endif%}">
+                                <a class="page-link" href="?from={{(from + increment)}}">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+              {%else%}
+              <div class="col-xs-12" style = "display:flex;justify-content: center;align-items: center;padding: 40px;">
+                <div style="width:70%;height:400px;background:black;">
+                    <img src="/assets/images/noData.png" style="width:100%;height:100%;">
+                </div>
+              </div>
+              {%endif%}
+
+
+            </div>
+
+
+          </div>
+        </section>
+
+
+        <style media="screen">
+
+        </style>
+
+
+      </div>
+    </div>
+  </section>
+
+{%include 'footer.html'%}

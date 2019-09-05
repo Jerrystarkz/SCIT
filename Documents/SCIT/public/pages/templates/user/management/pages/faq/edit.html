@@ -1,0 +1,188 @@
+
+<div style="display:flex;justify-content:center;width:100%;">
+    {%include 'pageNotification.html'%}
+</div>
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+        <h2 class="card-title" style="font-size:130%;font-weight:800;text-decoration-line:underline; text-decoration-style: dotted; text-decoration-color: rgb(230,230,230);">Frequently Asked Question -- {{data.faq.question}}</h2>
+        <p class="card-description" style="font-size:80%;font-style:italic;">
+            Edit Frequently Asked Question
+        </p>
+        <form id = "holder" method = "post" action="/update-data">
+            <input type="hidden" name="token" value="{{attribute(data,'update-data').token}}">
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id = "holderTable">
+                    <thead>
+                        <tr>
+                            <th>
+                            #
+                            </th>
+                            <th class="text-center">
+                                Faq Question
+                            </th>
+                            <th class="text-center">
+                                Faq Answer
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%set index = 0%}
+                        <tr class="wrapper" processed = "false" data-faq-id = "{{data.faq.id}}" data-faq-question = "{{data.faq.question}}" data-faq-answer = "{{data.faq.answer}}" data-is-set = false>
+                            <td class="placedId">
+                            {{index + 1}}
+                            </td>
+                            <td class="faqQuestion">
+                                <input type="text" class="form-control" name="fa_question" value = "{{data.faq.question}}" placeholder="Please insert a question">
+                            </td>
+                            <td class="faqAnswer">
+                                <input type="text" class="form-control" name="fa_answer" value = "{{data.faq.answer}}" placeholder="Please insert an answer">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="width:100%;margin-top:15px;display:none;justify-content:center;">
+                <button type="submit" style="width:100%;padding:2%;" class="btn bg-success" id = "updateData" disabled = "disabled">Update Data</button>
+            </div>
+        </form>
+        </div>
+    </div>
+    </div>
+
+<script type="text/javascript" src="/assets/js/jquery-1.9.1.js"></script>
+<script src = "/assets/js/dashboard/mine.js"></script>
+<script>
+    var processor = new Processor();
+
+    var checkInterval = setInterval(function(){
+        if(typeof $ === 'function' && typeof $.fn.selectize === 'function'){
+            clearInterval(checkInterval);
+
+            var form = $('form#holder'),
+            table = form.find('table#holderTable').eq(0),
+            tbody = table.find('tbody').eq(0),
+            updateDataBtn = form.find('#updateData');
+
+            function processFaqs(){
+                $(document.body).find('tr.wrapper[processed="false"]').each(function(){
+                    var tr = $(this),
+                    questionInput = tr.find('td > input[name="fa_question"]').eq(0),
+                    answerInput = tr.find('td > input[name="fa_answer"]').eq(0);
+
+                    tr.on('dataChanged',function(){
+                        if(!tr.data('is-set')){
+                            tr.data('faq-question',questionInput.val());
+                            tr.data('faq-answer',answerInput.val());
+                            tr.data('is-set',true);
+                        }else{
+                            if((questionInput.val() !== tr.data('faq-question')) || (answerInput.val() !== tr.data('faq-answer'))){
+                                updateDataBtn.closest('div').css({
+                                    'display':'flex'
+                                });
+                            }else{
+                                updateDataBtn.closest('div').css({
+                                    'display': 'none'
+                                });
+                            }
+                        }
+                    });
+
+                    var checkTimer;
+                    tr.on('change keypup keydown keypress keyup blur focus','input',function(){
+                        if(checkTimer){
+                            clearTimeout(checkTimer);
+                        }
+                        checkTimer = setTimeout(function(){
+                            tr.trigger('dataChanged');
+                        },500);
+                    });
+
+                    tr.trigger('dataChange');
+                });
+            }
+
+            updateDataBtn.on('click',function(e){
+                e.preventDefault();
+                let outData = {
+                    '__action' : 'update',
+                    '__for' : 'faq',
+                    'data' : {
+                        'question' : tbody.find('tr > td > input[name="fa_question"]').eq(0).val(),
+                        'answer' : tbody.find('tr > td > input[name="fa_answer"]').eq(0).val(),
+                        'id' : tbody.children('tr').eq(0).data('faq-id')
+                    }
+                },
+                isSet = false;
+
+                if((outData['data']['question'].length) && (outData['data']['answer'].length)){
+                    isSet = true;
+                }
+
+                if(isSet){
+                    outData.token = form.children('input[name="token"]').eq(0).val();
+                    outData.data = JSON.stringify(outData.data);
+                    processor.addLoader();
+
+                    $.ajax({
+                        'method' : 'post',
+                        'url' : form.attr('action'),
+                        'data' : outData,
+                        'success' : function(resp){
+                            window.location.reload(true);
+                        },
+                        'error' : function(){
+                            alert('An error occured');
+                            processor.removeLoader();
+                        }
+                    });
+                }
+            });
+
+            tbody.on('keypress',function(e){
+                var key = e.charCode || e.keyCode || 0;     
+                if(key == 13){
+                    e.preventDefault();
+                }
+            });
+
+            tbody.on('click','button.remove',function(e){
+                e.preventDefault();
+                let data = {
+                    '__action' : 'delete',
+                    '__for' : 'faq',
+                    'data' : JSON.stringify([tbody.children('tr').eq(0).data('faq-id')]),
+                    'token' : form.children('input[name="token"]').eq(0).val()
+                };
+
+                $.ajax({
+                    'method' : 'post',
+                    'url' : form.attr('action'),
+                    'data' : data,
+                    'success' : function(resp){
+                        window.location.reload(true);
+                    }
+                });
+            });
+
+            processFaqs();
+            $('#updateData, button.remove').removeAttr('disabled');
+        }
+    },200);
+</script>
+
+<!--<script src='{{data.googleCaptcha.url}}'></script>
+<script>
+    var $otherInterval = setInterval(function(){
+        if((typeof $ == 'function') && (typeof grecaptcha == 'object') && (typeof grecaptcha.execute == 'function')){
+            clearInterval($otherInterval);
+            grecaptcha.execute('{{data.googleCaptcha.siteKey}}', {action: 'adminUpdateSubjects'}).then(function(token) {
+                $('#googleCaptcha').val(token);
+                $('#updateData, button.remove').removeAttr('disabled');
+            });
+        }
+    },100);
+</script>-->

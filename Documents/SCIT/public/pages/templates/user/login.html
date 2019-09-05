@@ -1,0 +1,73 @@
+{%include 'user/auth/header.html'%}
+
+            <section class="margins">
+              <div class="container">
+                        <div class="row">
+                                <div class="col-md-8 col-xs-12 col-sm-12  col-md-offset-2 col-lg-offset-3 col-lg-6">
+                <div id="container_demo" >
+                    <div id="wrapper">
+                        <div id="login" class="animate form">
+                            <form  method = "post" action="{{-data.user.login.url-}}" autocomplete="on">
+                                <input name="token" type="hidden" value="{{-data.user.login.token-}}">
+                                <h1>Log in</h1>
+                                {%include 'pageNotification.html'%}
+                                <p class="change_ink" style="margin-bottom: 20px;">
+                                    Not a member yet ? <a href="/user/register"> Join Us</a> Or <a href="/"> Take Me Home </a>
+                                </p>
+                                <p>
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'login'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+                                    
+                                    {%if attribute(data.errors.response,'login') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'login')%}
+                                    {%endif%}
+
+                                    <label for="username" class="uname" data-icon="u" > Your email or phone number</label>
+                                    <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} id="username" name="login" type="text" placeholder=""/>
+
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+                                </p>
+                                <p>
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'password'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+                                    
+                                    {%if attribute(data.errors.response,'password') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'password')%}
+                                    {%endif%}
+
+                                    <label for="password" class="youpasswd" data-icon="p"> Your password </label>
+                                    <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} id="password" name="password" required="required" type="password" placeholder="" />
+
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+                                </p>
+                                <p class="keeplogin">
+									<input type="checkbox" name="loginkeeping" id="loginkeeping" value="loginkeeping" />
+									<label for="loginkeeping">Keep me logged in</label>
+								</p>
+								<p>
+                        Forgot password ?
+                        <a href="/user/forgot-password">Reset Password</a>
+                    </p>
+                                <p class="login button">
+                                    <input type="submit" value="Login" />
+								</p>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+
+        </div>
+              </div>
+                    </div>
+    </section>
+    
+ {%include 'user/auth/footer.html'%}

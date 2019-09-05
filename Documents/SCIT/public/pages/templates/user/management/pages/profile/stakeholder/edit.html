@@ -1,0 +1,674 @@
+<div style="display:flex;justify-content:center;width:100%;">
+    {%include 'pageNotification.html'%}
+</div>
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            {%set isGeneral = (data.user.type == 'general-administrator' ? true : false)%}
+            {%set isUser = data.isUser%}
+            {%if (data.stakeholder.portfolio.status == 'ok') and (isGeneral or isUser)%}
+            <style>
+                #holder,
+                #portfolio,
+                #user {
+                    width: 100%;
+                }
+
+                #user .header {
+                    font-size: 130%;
+                    font-weight: 800;
+                    text-align: left;
+                    text-transform: uppercase;
+                    margin: 20px 10px;
+                }
+
+                #user .inner {
+                    margin: 7px 20px;
+                    display: flex;
+                    flex-wrap: wrap;
+                }
+
+                #user .inner .header {
+                    font-size: 100%;
+                    font-weight: 600;
+                }
+
+                #user .field {
+                    margin: 20px 10px;
+                }
+
+                #user .field>.title {
+                    font-weight: 650;
+                    font-size: 90%;
+                    width: 100%;
+                    padding-bottom: 8px;
+                    text-align: left;
+                }
+
+                #user .field>.text {
+                    font-weight: 500;
+                    font-size: 80%;
+                    width: 100%;
+                    background: rgb(230, 230, 230);
+                    text-align: left;
+                    padding: 14px;
+                }
+
+                #user .field.picture>.image {
+                    display: flex;
+                    width: 150px;
+                    position: relative;
+                    height: 150px;
+                    z-index: 1;
+                    background: rgb(0, 0, 0);
+                }
+
+                #user .field.picture>.image>img {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 2;
+                }
+
+                #user .field.picture>.button {
+                    display: flex;
+                    width: 150px;
+                    height: auto;
+                }
+
+                #user .field.picture>.button>button {
+                    display: flex;
+                    width: 100%;
+                    height: auto;
+                    padding: 10px 5px;
+                }
+
+                div.error.report {
+                    font-size: 90%;
+                    font-style: italic;
+                    font-weight: 500;
+                    text-align: left;
+                    color: red;
+                    margin: 5px 0px 15px;
+                }
+            </style>
+
+            <form id="holder" method="post" action="{{attribute(data,'update-data').url}}" autocomplete="off">
+
+                {%set profile = data.stakeholder.portfolio.response%}
+                <input type="hidden" name="token" value="{{attribute(data,'update-data').token}}" />
+                <input type="hidden" name="id" value="{{profile.id}}" class="hidden" />
+
+                <div id="user" data-id="{{profile.id}}">
+                    <div class="row">
+                        <div class="col-11 header">
+                            Stakeholder Portfolio
+                        </div>
+                        <div class="col-12 col-md-8 field picture" data-name="image">
+                            <div class="title">
+                                Display Picture
+                            </div>
+                            <div class="image">
+                                <img data-src="{{attribute(profile.data,'cover-image')}}" alt="" />
+                            </div>
+                            <div class="button">
+                                <button class="btn btn-info p-2 selector">Edit Profile Image</button>
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Name
+                            </div>
+                            <div class="text">
+                                <input type="text" name="name" class="form-control watchItem" value="{{profile.name|lower}}" data-value="{{profile.name|lower}}" placeholder="please insert a valid name">
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Unique Name
+                            </div>
+                            <div class="text">
+                                <input type="text" name="uniqueName" class="form-control watchItem" value="{{profile.uniqueName|lower}}" data-value="{{profile.uniqueName|lower}}" placeholder="please insert a valid unique name without space">
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Is Approved
+                            </div>
+                            <div class="text">
+                                <select name="isApproved" class="form-control select watchItem" processed="false" data-value="{{profile.isApproved ? '1' : '0'}}" placeholder="Please select account approval status">
+                                    <option value="" disabled>None</option>
+                                    <option value="1" {%if profile.isApproved == 1%}selected{%endif%}>Yes</option>
+                                    <option value="0" {%if profile.isApproved == 0%}selected{%endif%}>No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Is Blocked
+                            </div>
+                            <div class="text">
+                                <select name="isBlocked" class="form-control select watchItem" processed="false" data-value="{{profile.isBlocked == 1 ? '1' : '0'}}" placeholder="Please select account blocked status">
+                                    <option value="" disabled>None</option>
+                                    <option value="1" {%if profile.isBlocked == 1%}selected{%endif%}>Yes</option>
+                                    <option value="0" {%if profile.isBlocked == 0%}selected{%endif%}>No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Country
+                            </div>
+                            <div class="text">
+                                <select name="country" class="form-control select watchItem" processed="false" data-values="{{data.countries|json_encode}}" data-value="{{profile.country.id}}" id="country" affect="#region" data-is-remote="true" placeholder="please select your country"></select>
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Region
+                            </div>
+                            <div class="text">
+                                <select name="region" class="form-control select watchItem" processed="false" data-value="{{profile.region.id}}" id="region" affect="#lga" provider="#country" data-url="{{data.settings.region.url}}" data-token="{{data.settings.region.token}}" data-is-remote="true" provider="#country" placeholder="please select your state of origin"></select>
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Local Government Area
+                            </div>
+                            <div class="text">
+                                <select name="lga" class="form-control select watchItem" processed="false" data-value="{{profile.lga.id}}" id="lga" data-url="{{data.settings.lga.url}}" data-token="{{data.settings.lga.token}}" provider="#region" data-is-remote="true" placeholder="please select your local government area"></select>
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Address
+                            </div>
+                            <div class="text">
+                                <textarea name="address" class = "form-control watchItem" placeholder = "Please enter a valid address" data-value = "{{profile.address}}">{{profile.address|lower}}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Description
+                            </div>
+                            <div class="text">
+                                <textarea name="address" class="form-control watchItem" placeholder="Please enter a valid description" data-value="{{profile.description}}">{{profile.description|lower}}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div style="width:100%;margin-top:15px;display:flex;justify-content:center;" class="d-none" id="updateDataCnt">
+                        <button style="width:100%;padding:2%;background: rgb(123, 238, 28);color:rgb(255,255,255);" class="btn updateDataBtn">Save Data</button>
+                    </div>
+                </div>
+            </form>
+            {%else%}
+            <div class="container no-margin no-padding no-data">
+                <div class="content">
+                    Oooops... invalid profile data
+                </div>
+            </div>
+            {%endif%}
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/assets/js/jquery-1.9.1.js"></script>
+<script src="/assets/js/dashboard/mine.js"></script>
+<script>
+    var processor = new Processor();
+    processor.loadMoxie();
+    processor.addLoader();
+
+    var checkInterval = setInterval(function () {
+        if (typeof $ === 'function' && typeof $.fn.selectize === 'function' && window.isMoxieLoaded) {
+            clearInterval(checkInterval);
+
+            var form = $('#holder'),
+                imageContainer = form.find('.profilePicture > .image').eq(0),
+                preview = imageContainer.find('img').eq(0),
+                updateBtnCnt = $('#updateDataCnt'),
+                updateBtn = updateBtnCnt.children('button').eq(0),
+                data;
+
+            form.on('keypress', function (e) {
+                var key = e.charCode || e.keyCode || 0;
+                if (key == 13) {
+                    e.preventDefault();
+                }
+            });
+
+            form.on('submit', function (e) {
+                e.preventDefault();
+            });
+
+            processor.removeLoader();
+
+            updateBtn.on('click', function () {
+                var items = form.find('input[type="hidden"].hidden');
+                items.each(function () {
+                    var self = $(this),
+                        value = self.val(),
+                        name,
+                        names,
+                        pointer = data;
+
+                    name = self.attr('name');
+                    names = name.split('.');
+
+                    for (var i = 0, j = names.length; i < j; i++) {
+                        var key = names[i];
+                        if (i === (j - 1)) {
+                            pointer[key] = value;
+                        } else {
+                            if (typeof pointer[key] != 'object') {
+                                pointer[key] = {};
+                            }
+                            pointer = pointer[key];
+                        }
+                    }
+                });
+
+                var formData = new FormData(),
+                    pictures = form.find('.picture[image-changed="true"]');
+
+                if (pictures.length) {
+                    pictures.each(function () {
+                        var self = $(this),
+                            name = '',
+                            names = self.data('name');
+
+                        names.split('.').forEach(function (n) {
+                            if (name) {
+                                name += '[' + n + ']';
+                            } else {
+                                name = n;
+                            }
+                        });
+
+                        formData.append(name, self.data('image-binary-file'), 'image-data');
+                    });
+                }
+
+                data['controllerType'] = "{{controllerType|e('js')}}";
+                formData.append('token', form.children('input[name="token"]').eq(0).val());
+                formData.append('data', JSON.stringify(data));
+                formData.append('__action', 'update');
+                formData.append('__for', 'portfolio');
+                formData.append('for', 'user');
+
+                processor.addLoader();
+                $.ajax({
+                    'method': form.attr('method'),
+                    'url': form.attr('action'),
+                    'processData': false,
+                    'contentType': false,
+                    'data': formData,
+                    'success': function (resp) {
+                        processor.removeLoader();
+                        if (typeof resp !== 'object' || typeof resp.status !== 'string' || ['ok', 'error'].indexOf(resp.status) === -1) {
+                            alert('A recoverable error occured.. please contact support if the problem persists');
+                        } else if (resp.status == 'error') {
+                            let errors = resp.errors || false,
+                                response = resp.response || 'An error occured',
+                                topOffset;
+
+                            if ($.isArray(errors)) {
+                                $.each(errors, function (index, obj) {
+                                    if ($.isPlainObject(obj)) {
+                                        $.each(obj, function (key, value) {
+                                            let items = $(`input[name="${key}"],select[name="${key}"],textarea[name="${key}"],.picture[data-name="${key}"]`);
+
+                                            if (!items.length) {
+                                                items = $(`[name^="${pointer}"]`);
+                                            }
+
+                                            if (items.length) {
+                                                let item = items.eq(0),
+                                                    prev = item.prev('div.error.report');
+                                                if (!prev.length) {
+                                                    item.before('<div class = "error report"></div>');
+                                                    prev = item.prev('div.error');
+                                                }
+
+                                                prev.html(value);
+                                                let offset = prev.offset().top;
+
+                                                if (offset > 200) {
+                                                    offset -= 200;
+                                                } else if (offset > 180) {
+                                                    offset -= 180;
+                                                } else if (offset > 160) {
+                                                    offset -= 160;
+                                                } else if (offset > 140) {
+                                                    offset -= 140;
+                                                } else if (offset > 120) {
+                                                    offset -= 120;
+                                                } else {
+                                                    offset = 0;
+                                                }
+
+                                                if (typeof topOffset == 'undefined') {
+                                                    topOffset = offset;
+                                                } else if (offset < topOffset) {
+                                                    topOffset = offset;
+                                                }
+                                            } else {
+                                                alert(value);
+                                            }
+                                        });
+                                    }
+                                });
+
+                                $('html, body').animate({
+                                    scrollTop: (topOffset ? topOffset : 0)
+                                }, 800);
+                            } else {
+                                alert(response);
+                            }
+                        } else {
+                            $('html, body').animate({
+                                scrollTop: 0
+                            }, 800);
+                            alert(resp.response ? resp.response : 'Data updated succesfully');
+                        }
+                    },
+                    'error': function (resp) {
+                        processor.removeLoader();
+                        alert('A Fatal error occured while processing your request... please contact administrator');
+                    }
+                });
+            });
+
+            form.on('dataChanged', function () {
+                var items = form.find('.watchItem');
+                data = {};
+
+                items.each(function () {
+                    var self = $(this),
+                        value = self.val(),
+                        name,
+                        names,
+                        nodeName = self.get(0).nodeName.toLowerCase(),
+                        pointer = data;
+
+                    if ((['input', 'select', 'textarea'].indexOf(nodeName) !== -1) && value && (String(value) !== String(self.data('value')))) {
+                        name = self.attr('name');
+                        names = name.split('.');
+
+                        for (var i = 0, j = names.length; i < j; i++) {
+                            var key = names[i];
+                            if (i === (j - 1)) {
+                                pointer[key] = value;
+                            } else {
+                                if (typeof pointer[key] != 'object') {
+                                    pointer[key] = {};
+                                }
+                                pointer = pointer[key];
+                            }
+                        }
+                    }
+                });
+
+                if (JSON.stringify(data) == '{}' && (form.find('.picture[image-changed="true"]').length === 0)) {
+                    updateBtnCnt.removeClass('d-flex').addClass('d-none');
+                } else {
+                    updateBtnCnt.removeClass('d-none').addClass('d-flex');
+                }
+            });
+
+            var debounceTimer,
+                triggerDataChanged = function (e) {
+                    if (debounceTimer) {
+                        clearTimeout(debounceTimer);
+                    }
+                    debounceTimer = setTimeout(() => {
+                        form.trigger('dataChanged');
+                        let errorElement = $(e.target).closest('.text').children('div.error.report');
+                        if (errorElement.length) {
+                            errorElement.remove();
+                        }
+                    }, 500);
+                };
+
+            var items = form.find('input.watchItem,textarea.watchItem');
+            items.each(function () {
+                var self = $(this);
+                self.on('change blur keypress keydown keyup focus', triggerDataChanged);
+            });
+
+            var pictures = form.find('.picture');
+            pictures.each(function () {
+                var self = $(this),
+                    screenCnt = self.find('.image').eq(0),
+                    screen = screenCnt.children('img').eq(0),
+                    selector = self.find('.selector').eq(0),
+                    imageInput,
+                    loader = new InlineLoader(screenCnt),
+                    selectorLoader = new InlineLoader(selector);
+
+                if (selector.length) {
+                    imageInput = new moxie.file.FileInput({
+                        'browse_button': selector.get(0),
+                        'multiple': false,
+                        'accept': 'image/*'
+                    });
+
+                    screen.on('load', function () {
+                        var canvas = document.createElement('canvas');
+                        canvas.setAttribute('width', 700);
+                        canvas.setAttribute('height', 550);
+
+                        ctx = canvas.getContext('2d');
+                        ctx.drawImage(screen.get(0), 0, 0, 700, 550);
+                        canvas.toBlob(function (blob) {
+                            self.data('image-binary-file', blob);
+                            var reader = new FileReader();
+                            reader.addEventListener('load', function () {
+                                if (self.attr('is-set') != 'true') {
+                                    self.data('default-image-binary-string', reader.result);
+                                    self.attr('is-set', 'true');
+                                } else {
+                                    if (self.data('default-image-binary-string') !== reader.result) {
+                                        self.attr('image-changed', 'true');
+                                    } else {
+                                        self.attr('image-changed', 'false');
+                                    }
+                                }
+
+                                if (self.attr('is-set') == 'true') {
+                                    triggerDataChanged({
+                                        target: self
+                                    });
+                                }
+
+                                loader.remove();
+                                selectorLoader.remove();
+                            });
+
+                            reader.readAsBinaryString(blob);
+                        }, 'image/png', '1.0');
+                    });
+
+                    screen.on('error', function () {
+                        if (self.attr('is-set') != 'true') {
+                            self.attr('is-set', 'true');
+                        }
+                        loader.remove();
+                        selectorLoader.remove();
+                    });
+
+                    imageInput.addEventListener('change', function () {
+                        if (imageInput.files.length && /^image\/[\s\S]{1,}$/.test(imageInput.files[0]['type'])) {
+                            if (imageInput.files[0]['size'] > 3000000) {
+                                alert('image has a maximum allowed size of 3 Mb');
+                            } else {
+                                loader.add();
+                                selectorLoader.add();
+
+                                var reader = new moxie.file.FileReader();
+                                reader.addEventListener('load', function () {
+                                    var blob = $$.binaryStringToBlob(reader.result);
+                                    blob = new Blob([blob], { 'type': 'image/png' });
+
+                                    var objectUrl = window.URL.createObjectURL(blob);
+                                    screen.attr('src', objectUrl);
+                                });
+
+                                reader.addEventListener('error', function () {
+                                    alert('Invalid Image file uploaded');
+                                    loader.remove();
+                                    selectorLoader.remove();
+                                });
+
+                                reader.readAsBinaryString(imageInput.files[0]);
+                            }
+                        } else {
+                            alert('Invalid file... Only Image upload is allowed');
+                        }
+                    });
+
+                    imageInput.init();
+                }
+            });
+
+            form.find('.picture .image > img').each(function () {
+                var self = $(this);
+                if (self.data('src')) {
+                    self.attr('src', self.data('src'));
+                } else {
+                    self.closest('.picture').attr('is-set', 'false');
+                }
+            });
+
+            $('select[processed="false"].select').each(function () {
+                var self = $(this);
+                self.selectize({
+                    create: false,
+                    placeholder: self.attr('placeholder'),
+                    closeAfterSelect: true,
+                    maxItems: 1,
+                    plugins: [
+                        'remove_button'
+                    ],
+                    'labelField': 'name',
+                    'valueField': 'id',
+                    'sortField': [
+                        {
+                            'field': 'name',
+                            'direction': 'asc'
+                        },
+                        {
+                            'field': 'id',
+                            'direction': 'asc'
+                        }
+                    ],
+                    'searchField': [
+                        'name'
+                    ],
+                    onInitialize: function () {
+                        var control = self.get(0).selectize;
+                        if (self.data('values')) {
+                            control.addOption(self.data('values'));
+                        }
+
+                        if (self.data('value')) {
+                            control.setValue([self.data('value')]);
+                        }
+
+                        if (self.attr('affect') && control.getValue()) {
+                            var timeout = setTimeout(function () {
+                                control.trigger('change');
+                            }, 1000);
+                        }
+                    },
+                    onChange: function () {
+                        triggerDataChanged({
+                            target: self
+                        });
+
+                        var control = self.get(0).selectize,
+                            affectedElement = self.attr('affect');
+                        if (affectedElement) {
+                            var el = $(affectedElement);
+
+                            if (el.length && el.data('url') && el.data('token')) {
+                                el.each(function () {
+                                    var self = $(this),
+                                        elControl = self.get(0).selectize,
+                                        provider = self.attr('provider'),
+                                        loader = new InlineLoader(self.parent()),
+                                        process = function () {
+                                            if (provider) {
+                                                provider = $(provider);
+
+                                                if (provider.length) {
+                                                    var providerName = provider.attr('name').toLowerCase(),
+                                                        name = ((providerName.indexOf('country') != -1) ? 'countryId' : ((providerName.indexOf('region') != -1) ? 'regionId' : 'lgaId')),
+                                                        value = provider.val(),
+                                                        data = {
+                                                            'token': self.data('token')
+                                                        };
+                                                    data[name] = value;
+
+                                                    elControl.clear();
+                                                    elControl.clearOptions();
+                                                    elControl.disable();
+
+                                                    if (value) {
+                                                        loader.add();
+
+                                                        $.ajax({
+                                                            'method': 'get',
+                                                            'url': self.data('url'),
+                                                            'data': data,
+                                                            'success': function (resp) {
+                                                                loader.remove();
+                                                                if (resp.status == 'ok') {
+                                                                    var defaultValue = self.data('value');
+                                                                    elControl.enable();
+                                                                    elControl.addOption(resp.response);
+                                                                    elControl.refreshOptions(defaultValue ? false : true);
+                                                                    if (defaultValue) {
+                                                                        elControl.setValue(defaultValue);
+                                                                        elControl.refreshItems();
+                                                                    }
+                                                                } else {
+                                                                    alert(resp.response);
+                                                                }
+                                                            },
+                                                            'error': function (resp) {
+                                                                loader.remove();
+                                                                alert('An unknown server error occured');
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        };
+
+                                    if (!elControl) {
+                                        var controlTimer = setInterval(function () {
+                                            elControl = el.get(0).selectize
+                                            if (elControl) {
+                                                clearInterval(controlTimer);
+                                                process();
+                                            }
+                                        }, 500);
+                                    } else {
+                                        process();
+                                    }
+
+                                });
+                            }
+                        }
+                    }
+                });
+            });
+        }
+    }, 500);
+</script>

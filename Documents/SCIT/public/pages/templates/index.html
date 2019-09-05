@@ -1,0 +1,222 @@
+{%include 'header.html'%}
+
+<!-- start slider Section -->
+<section id="slider_sec">
+    <div class="overlay"></div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class=" col-md-offset-1 col-lg-7 visible-lg">
+                <div class="banner_text">
+                    <h1>
+                        STUDENT CAREER INFORMATION TOOL
+                    </h1>
+                    <p>
+                        Determine Your Path...
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 ">
+                <div id="container_demo" >
+                    <div id="wrapper">
+                        <div id="login" class="animate form">
+                            <form  method = "post" action="{{data.user.login.url}}" autocomplete="on">
+                                <input type="hidden" name="token" value="{{data.user.login.token}}">
+                                <h1>Log in</h1>
+                                {%include 'pageNotification.html'%}
+                                <p>
+                                    <label for="username" class="uname" ><i class="fa fa-user" aria-hidden="true"></i> Your email or username </label>
+                                    <input id="username" name="login" required="required" type="text" placeholder=""/>
+                                </p>
+                                <p>
+                                    <label for="password" class="youpasswd" ><i class="fa fa-key" aria-hidden="true"></i> Your password </label>
+                                    <input id="password" name="password" required="required" type="password" placeholder="" />
+                                </p>
+                                <p class="keeplogin">
+                                    <input type="checkbox" name="loginkeeping" id="loginkeeping" value="loginkeeping" />
+                                    <label for="loginkeeping">Keep me logged in</label>
+                                </p>
+                                <p class="login button">
+                                    <input type="submit" value="Login" />
+                                </p>
+                                <p class="change_link">
+                                    Not a member yet ?
+                                    <a href="/user/register">Join us</a>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id = "about_section">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 content">
+                <div class="row">
+                    <div class="title">
+                        About Us
+                    </div>
+                    <div class="message">
+                        <P>
+                            The Student's career information tool is intended to serve as a guide to Students in choosing, planning and implementing the perfect Career. The tool seek to enable the User who is believed to be in Secondary or Tertiary Institutions or any one who is curious in obtaining knowledge on what Career to pursue that will result in maximum reward in terms of Compensation and Satisfaction, especially African Students.
+                        </P>
+                    </div>
+                    <div class="button">
+                        <a class="btn btn-default">
+                            Read More
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="process_section">
+    <div class="container">
+        <div class="row content">
+            <div class="col-xs-12">
+                <div class="title">
+                    <div class="main">
+                        Our Process
+                    </div>
+                    <div class="additional">
+                        It takes simply four steps
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="step">
+                    <div class="text">
+                        Register
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-laptop"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="step">
+                    <div class="text">
+                        Take Test
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-list-alt"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="step">
+                    <div class="text">
+                        View Result
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-thumbs-up"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="step">
+                    <div class="text">
+                        Internship
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-building-o"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="information_section">
+    <div class="container">
+        <div class="content">
+            <div class="row">
+                <div class="col-xs-12 col-md-5">
+                    <div class="information">
+                        Start Your Test Today!
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-7">
+                    <div class="input">
+                        <div class="wrapper">
+                            <input name="name" placeholder="Your name" type="text"/>
+                            <a class="btn submit-new" role = "button" href="/user/login">
+                                Take Test
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="contact_us_section">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-6">
+                <div class="contact_form">
+                    <div class="title">
+                        Contact Us
+                    </div>
+                    <div class="form">
+                        <form action="">
+                            <div class="col-xs-12">
+                                <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+                            </div>
+                            <div class="col-xs-12">
+                                <input type="email" name="email" class="form-control" placeholder="Your Email" required>
+                            </div>
+                            <div class="col-xs-12">
+                                <textarea name="message" cols="30" rows="10" class="form-control" placeholder="Your message"></textarea>
+                            </div>
+                            <div class="col-xs-12">
+                                <button class="btn" type="button" role="button">
+                                    Send Message
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6">
+                <div class="address">
+                    <div class="col-xs-12 item">
+                        <span class="icon">
+                            <i class="fa fa-map-marker"></i>
+                        </span>
+                        <span class="text">
+                            Tudun Wadar Road, Niger State, Nigeria
+                        </span>
+                    </div>
+                    <div class="col-xs-12 item">
+                        <span class="icon">
+                            <i class="fa fa-envelope"></i>
+                        </span>
+                        <span class="text">
+                            info@yopminscit.com
+                        </span>
+                    </div>
+                    <div class="col-xs-12 item">
+                        <span class="icon">
+                            <i class="fa fa-phone"></i>
+                        </span>
+                        <span class="text">
+                            +234 803 764 9669
+                        </span>
+                    </div>
+                </div>
+                <div class="fancyImage">
+                    <img src="/assets/images/students.jpg" alt="" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{%include 'footer.html'%}

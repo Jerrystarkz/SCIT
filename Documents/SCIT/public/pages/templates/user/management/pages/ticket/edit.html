@@ -1,0 +1,343 @@
+<div style="display:flex;justify-content:center;width:100%;">
+    {%include 'pageNotification.html'%}
+</div>
+{%if data.ticket is iterable and data.ticket|length%}
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+        <h2 class="card-title" style="font-size:130%;font-weight:800;text-decoration-line:underline; text-decoration-style: dotted; text-decoration-color: rgb(230,230,230);margin-bottom:20px;">Update Support Ticket</h2>
+
+        <div class="justify-content-center align-items-center" style="width:100%;">
+            <form id = "holder" method = "post" action="{{attribute(data,'update-data').url}}">
+                <input type="hidden" name = "token" value="{{attribute(data,'update-data').token}}">
+
+                <div class = "active" ticket = "true" processed = "false" style = "box-shadow: 1px 1px 3px rgb(80,80,80);padding:20px;margin-bottom:5px;">
+                    <div class="table-responsive" style="width:70%;display:flex;flex-direction:column;margin-left: auto;margin-right: auto;">
+                        <table class="table table-bordered" data-ticket-id = "{{data.ticket.id}}">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">
+                                        Key
+                                    </th>
+                                    <th class="text-center">
+                                        Value
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Title</td>
+                                    <td class="title">
+                                        <input type="text" name = "title" class="form-control" required = "required" placeholder="please insert ticket title" value = "{{data.ticket.title}}" data-value = "{{data.ticket.title}}">
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td>Priority</td>
+                                    <td class="priority">
+                                        <select name="priority" processed = "false" data-values = "{{data.ticket.priorities|json_encode()}}" data-value = "{{data.ticket.priorityId}}" style="display:none;" is-set = "false"></select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Category</td>
+                                    <td class="category">
+                                        <select name="category" processed = "false" data-url = "{{attribute(data,'get-support-ticket-categories').url}}" data-token = "{{attribute(data,'get-support-ticket-categories').token}}" style="display:none;" data-value = {{data.ticket.categoryId}} is-set = "false"></select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Message</td>
+                                    <td class="message">
+                                        <textarea name="message" cols="30" rows="10" class = "form-control" placeholder="Please insert message" data-value = "{{data.ticket.message}}">{{data.ticket.message}}</textarea>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div style="width:100%;margin-top:15px;display:none;justify-content:center;">
+                    <button type="submit" style="width:100%;padding:2%;" class="btn bg-success" id = "updateTicket" disabled = "disabled">Update Ticket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{%else%}
+<div style = "display:flex;justify-content: center;align-items: center;padding: 40px;width:100%;">
+    <h4>
+        Oooops... invalid ticket selected. Please select a valid ticket from your ticket list
+    </h4>
+</div>
+{%endif%}
+
+<script type="text/javascript" src="/assets/js/jquery-1.9.1.js"></script>
+<script src = "/assets/js/dashboard/mine.js"></script>
+<script>
+    var processor = new Processor();
+    
+    var checkInterval = setInterval(function(){
+        if(typeof $ === 'function' && typeof $.fn.selectize === 'function'){
+            clearInterval(checkInterval);
+
+            var form = $('#holder'),
+            table = form.find('table').eq(0),
+            tbody = table.find('tbody').eq(0),
+            updateTicketBtn = form.find('#updateTicket'),
+            ticketId = table.data('ticket-id'),
+            titleInput = form.find('input[name="title"]').eq(0),
+            categoryHtml = form.find('select[name="category"]').eq(0),
+            priorityHtml = form.find('select[name="priority"]').eq(0),
+            messageInput = form.find('textarea[name="message"]').eq(0);
+
+            tbody.on('dataChanged',function(){
+                if(!(titleInput.val() === titleInput.data('value') && categoryHtml.val() === categoryHtml.data('value') && priorityHtml.val() === priorityHtml.data('value') && messageInput.val() === messageInput.data('value'))){
+                    updateTicketBtn.closest('div').css('display','flex');
+                }else{
+                    updateTicketBtn.closest('div').css('display','none');
+                }
+            });
+
+            priorityHtml.selectize({
+                create:false,
+                options: priorityHtml.data('values'),
+                items: [priorityHtml.data('value')],
+                placeholder: 'please ticket priority',
+                closeAfterSelect: true,
+                persist: false,
+                maxItems: 1,
+                plugins:[
+                    'remove_button'
+                ],
+                'labelField':'name',
+                'valueField':'id',
+                'sortField':[
+                    {
+                        'field':'name',
+                        'direction':'asc'
+                    },
+                    {
+                        'field':'id',
+                        'direction':'asc'
+                    }
+                ],
+                'searchField':[
+                    'name'
+                ],
+                onInitialize: function(){
+                    priorityHtml.attr('processed','true');
+                }
+            });
+
+            var processCategory = function(options){
+                categoryHtml.selectize({
+                    create: false,
+                    options: categoryHtml.data('values'),
+                    items: null,
+                    placeholder: 'please select ticket category',
+                    closeAfterSelect: true,
+                    maxItems: 1,
+                    persist: false,
+                    plugins:[
+                        'remove_button'
+                    ],
+                    'labelField':'name',
+                    'valueField':'id',
+                    'sortField':[
+                        {
+                            'field':'name',
+                            'direction':'asc'
+                        },
+                        {
+                            'field':'id',
+                            'direction':'asc'
+                        }
+                    ],
+                    'searchField':[
+                        'name'
+                    ],
+                    onInitialize: function(){
+                        options = options || null;
+                        categoryHtml.attr('processed','true');
+                        categoryControl = categoryHtml.get(0).selectize;
+
+                        if(options){
+                            categoryControl.addOption(options);
+                            categoryControl.refreshOptions(true);
+                        }
+                    },
+                    onChange: function(){
+                        tbody.trigger('dataChanged');
+                    }
+                });
+            };
+
+            processCategory();
+
+            $checkControls = setInterval(function(){
+                if(!$(document.body).find('select[processed="false"]').length){
+                    clearInterval($checkControls);
+
+                    var priorityControl = priorityHtml.get(0).selectize,
+                    categoryControl = categoryHtml.get(0).selectize;
+
+                    var eventHandler = function(){
+                        tbody.trigger('dataChanged');
+                    };
+
+                    titleInput.on('change keyup keypress keydown',eventHandler);
+                    messageInput.on('change keyup keypress keydown',eventHandler);
+
+                    categoryControl.on('change',function(){
+                        tbody.trigger('dataChanged');
+                    });
+
+                    priorityControl.on('change',function(){
+                        var value = priorityControl.getValue();
+
+                        if(priorityHtml.attr('is-set') == 'false'){
+                            priorityHtml.data('value',value);
+                            priorityHtml.attr('is-set','true');
+                        }
+
+                        processor.addLoader();
+                        $.ajax({
+                            'method' : 'get',
+                            'url' : categoryHtml.data('url'),
+                            'data' : {
+                                'token' : categoryHtml.data('token'),
+                                'for' : value
+                            },
+                            'success' : function(resp){
+                                processor.removeLoader();
+                                if(resp && (typeof resp == 'object')){
+                                    categoryControl.unlock();
+                                    categoryControl.clearOptions();
+                                    categoryControl.clear();
+
+                                    if(categoryControl.hasOptions){
+                                        categoryControl.destroy();
+                                        categoryHtml.siblings('.selectize-control').remove();
+
+                                        processCategory(resp.response);
+                                    }else{
+                                        categoryControl.addOption(resp.response);
+                                        categoryControl.refreshOptions(true);
+                                    }
+
+                                    if(categoryHtml.attr('is-set') == 'false'){
+                                        categoryControl.setValue(categoryHtml.data('value'));
+                                        categoryHtml.attr('is-set','true');
+                                    }
+
+                                    tbody.trigger('dataChanged');
+                                }
+                            },
+                            'error' : function(){
+                                processor.removeLoader();
+                                alert('An unknown server error occured... please contact administrator');
+                            }
+                        })
+                    });
+                    
+                    priorityControl.trigger('change');
+                }
+            },200);
+
+            updateTicketBtn.on('click',function(e){
+                e.preventDefault();
+                let data = {
+                    '__action' : 'update',
+                    '__for' : 'ticket',
+                    'data' : {}
+                },
+                isSet = true;
+
+                data.data['id'] = ticketId;
+                data.data['type'] = 'ticket';
+                data.data['title'] = titleInput.val();
+                data.data['category'] = categoryHtml.val();
+                data.data['priority'] = priorityHtml.val();
+                data.data['message'] = messageInput.val();
+
+                if(!data.data.title.length){
+                    isSet = false;
+                    alert('A valid ticket title is required');
+                }
+
+                if(!data.data.category.length){
+                    isSet = false;
+                    alert('Please select a ticket category');
+                }
+
+                if(!data.data.priority.length){
+                    isSet = false;
+                    alert('Please select a ticket priority');
+                }
+
+                if(!data.data.message.length){
+                    isSet = false;
+                    alert('Please input ticket message / description');
+                }
+
+                if(isSet){
+                    form.children('input[type="hidden"]').each(function(){
+                        var self = $(this),
+                        name = self.attr('name');
+
+                        if(name == 'token'){
+                            data['token'] = self.val();
+                        }else{
+                            data.data[name] = self.val();
+                        }
+                    });
+
+                    data.data = JSON.stringify(data.data);
+
+                    processor.addLoader();
+                    $.ajax({
+                        'method' : 'post',
+                        'url' : form.attr('action'),
+                        'data' : data,
+                        'success' : function(resp){
+                            if(resp.status === 'ok'){
+                                alert(typeof resp.response == 'string' ? resp.response : 'Ticket updated succesfully');
+                                window.location.reload(true);
+                            }else{
+                                processor.removeLoader();
+                                alert(typeof resp.response == 'string' ? resp.response : 'An unknown error occured... please try again later');
+                            }
+                        },
+                        'error' : function(resp){
+                            processor.removeLoader();
+                            console.log(resp);
+                            alert('An unknown server error occured... please contact administrator');
+                        }
+                    });
+                }
+            });
+
+            tbody.on('keypress',function(e){
+                var key = e.charCode || e.keyCode || 0;     
+                if(key == 13){
+                    e.preventDefault();
+                }
+            });
+
+            updateTicketBtn.removeAttr('disabled');
+        }
+    },200);
+</script>
+
+
+<!--<script src='{{data.googleCaptcha.url}}'></script>
+<script>
+    var $otherInterval = setInterval(function(){
+        if((typeof $ == 'function') && (typeof grecaptcha == 'object') && (typeof grecaptcha.execute == 'function')){
+            clearInterval($otherInterval);
+            grecaptcha.execute('{{data.googleCaptcha.siteKey}}', {action: 'adminUpdateSubjects'}).then(function(token) {
+                $('#googleCaptcha').val(token);
+                $('#saveData').removeAttr('disabled');
+            });
+        }
+    },100);
+</script>-->

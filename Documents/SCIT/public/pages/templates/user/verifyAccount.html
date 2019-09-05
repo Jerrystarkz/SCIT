@@ -1,0 +1,160 @@
+{%include 'user/auth/header.html'%}
+<link rel="stylesheet" href="/assets/css/font-awesome.min.css">
+
+<section class="margins">
+              <div class="container">
+                        <div class="row">
+                                <div class="col-md-8 col-xs-12 col-sm-12  col-md-offset-2 col-lg-offset-3 col-lg-6">
+                <div id="container_demo" >
+
+                    <div id="wrapper">
+                        <div id="login" class="animate form">
+                            <form method="post" id = "verifyEmail" action="{{-data.user.verification.url-}}" autocomplete="on">
+                                <input name="token" type="hidden" value="{{-data.user.verification.token-}}">
+                                {%if data.user.verification.for == 'resend'%}
+                                <input type="hidden" value="resend" name = "action" />
+                                    {%if data.user.email.verification.hasData%}
+                                        <h1>Pending Verification</h1>
+                                        {%include 'pageNotification.html'%}
+                                        <p class="change_ink" style="margin-bottom: 20px;">
+                                            <a href="#" id = "logout"> Take Me Home</a>
+
+                                            <script>
+                                                var anchor = document.getElementById('logout');
+                                                anchor.addEventListener('click',function(e){
+                                                    e.preventDefault();
+                                                    var form = document.createElement('form');
+                                                    form.setAttribute('action','{{data.user.logout.url}}');
+                                                    form.setAttribute('method','post');
+                                                    
+                                                    var tokenInput = document.createElement('input');
+                                                    tokenInput.setAttribute('type','hidden');
+                                                    tokenInput.setAttribute('name','token');
+                                                    tokenInput.setAttribute('value','{{data.user.logout.token}}');
+
+                                                    form.appendChild(tokenInput);
+                                                    document.body.appendChild(form);
+                                                    form.submit();
+                                                });
+                                            </script>
+                                        </p>
+                                        <p>
+                                            {%set plural = (data.user.email.verifications.sent > 1 ? true : false)%}
+                                            {%set canResendMail = (data.user.email.verifications.sent < data.user.email.verifications.maximum)%}
+                                            {%set resendTrialLeft = (data.user.email.verifications.maximum - data.user.email.verifications.sent)%}
+
+                                            Your account is pending basic verification. {%if plural%}Verification mails{%else%}A verification mail{%endif%} has been sent to <span style="font-size:110%;font-weight:800;color: deepskyblue;">{{data.user.emailAddress}}</span>. Please check your email inbox as well as spam folder to view mail and follow the instructions to get your account verified. Or <a href="#" id="submit" onclick="document.getElementById('verifyEmail').submit();">click here to resend your verification mail</a>.
+                                            <br/><br/><br/>
+                                            <span style="font-size:120%;font-weight:900;text-transform:uppercase;color: deepskyblue;">Note:</span>
+                                            <br><br>
+                                            <span style="font-style:italic;font-size:80%;">
+                                                <span style="font-size:130%;font-weight:800;color: green;">{{data.user.email.verifications.sent}}</span> verification mail{%if plural%}s{%endif%} has been sent to your email account. {%if canResendMail%}You have <span style="font-size:110%;font-weight:900;color:green;">{{resendTrialLeft}} verification resend trials left</span>{%else%}<span style="font-size:110%;font-weight:900;color:green;">You have exceeded the verification resend limit.</span>{%endif%}
+                                                <br><br>
+                                                Failure to verify your account after 24 hours from the delivery of the last verification mail, your account will be deleted from this system.
+                                            </span>
+                                            
+                                        </p>
+                                    {%else%}
+                                        <h1>Email Verification</h1>
+                                        {%include 'pageNotification.html'%}
+                                        <p>
+                                        <p class="change_ink" style="margin-bottom: 20px;">
+                                            <a href="#" id = "logout"> Take Me Home</a>
+
+                                            <script>
+                                                var anchor = document.getElementById('logout');
+                                                anchor.addEventListener('click',function(e){
+                                                    e.preventDefault();
+                                                    var form = document.createElement('form');
+                                                    form.setAttribute('action','{{data.user.logout.url}}');
+                                                    form.setAttribute('method','post');
+                                                    
+                                                    var tokenInput = document.createElement('input');
+                                                    tokenInput.setAttribute('type','hidden');
+                                                    tokenInput.setAttribute('name','token');
+                                                    tokenInput.setAttribute('value','{{data.user.logout.token}}');
+
+                                                    form.appendChild(tokenInput);
+                                                    document.body.appendChild(form);
+                                                    form.submit();
+                                                });
+                                            </script>
+                                        </p>
+                                        Your account is pending basic verification. please <a href="#" id="submit" onclick="document.getElementById('verifyEmail').submit();">click here to send your verification mail</a>, then follow the instructions to get your account verified.
+                                        </p>
+                                    {%endif%}
+                                {%elseif data.user.verification.for == 'verify'%}
+                                    <input name="verificationHash" type="hidden" value="{{-data.user.verification.hash-}}">
+                                    <input type="hidden" value="verify" name = "action" />
+                                    <input type="hidden" name="googleCaptchaToken" id="googleCaptchaToken" value = "">
+
+                                    <h1>Verifing Email</h1>
+                                    {%include 'pageNotification.html'%}
+                                    <p class="change_ink" style="margin-bottom: 20px;">
+                                        <a href="#" id = "logout"> Take Me Home</a>
+
+                                        <script>
+                                            var anchor = document.getElementById('logout');
+                                            anchor.addEventListener('click',function(e){
+                                                e.preventDefault();
+                                                var form = document.createElement('form');
+                                                form.setAttribute('action','{{data.user.logout.url}}');
+                                                form.setAttribute('method','post');
+                                                
+                                                var tokenInput = document.createElement('input');
+                                                tokenInput.setAttribute('type','hidden');
+                                                tokenInput.setAttribute('name','token');
+                                                tokenInput.setAttribute('value','{{data.user.logout.token}}');
+
+                                                form.appendChild(tokenInput);
+                                                document.body.appendChild(form);
+                                                form.submit();
+                                            });
+                                        </script>
+                                    </p>
+                                    <p style="text-align:center;">Please prove you are not a robot to continue</p>
+                                    <div id="captchaContainer" style="text-align:center;margin-bottom: 15px;display: flex;justify-content: center;">
+                                        <i class="fa fa-spinner fa-spin fa-3x"></i>
+                                    </div>
+
+                                    <script src='{{data.googleCaptcha.url}}'></script>
+                                    <script>
+                                        var $checkInterval = setInterval(function(){
+                                            if((typeof $ == 'function') && (typeof grecaptcha == 'object') && (typeof grecaptcha.render == 'function')){
+                                                clearInterval($checkInterval);
+
+                                                $('#captchaContainer').html('');
+                                                
+                                                var captchaId = grecaptcha.render('captchaContainer',{
+                                                    'sitekey': '{{data.googleCaptcha.siteKey}}',
+                                                    'theme':'{{data.googleCaptcha.theme|default("dark")}}',
+                                                    'callback':function(token){
+                                                        $('#googleCaptchaToken').val(token);
+                                                        $('#verifyEmail').submit();
+                                                    },
+                                                    'expired-callback': function(){
+                                                        alert('Token expired... please try again');
+                                                        grecaptcha.reset(captchaId);
+                                                    },
+                                                    'error-callback': function(){
+                                                        alert('Ooops an error occured... please try again');
+                                                        grecaptcha.reset(captchaId);
+                                                    }
+                                                });
+                                            }
+                                        },100);
+                                    </script>
+                                {%endif%}
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+
+        </div>
+              </div>
+                    </div>
+    </section>
+    
+{%include 'user/auth/footer.html'%}

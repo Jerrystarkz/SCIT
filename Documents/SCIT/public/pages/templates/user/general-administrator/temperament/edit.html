@@ -1,0 +1,341 @@
+{%include 'user/general-administrator/dashboard/header.html'%}
+
+<div style="display:flex;justify-content:center;width:100%;">
+    {%include 'pageNotification.html'%}
+</div>
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+        <h2 class="card-title" style="font-size:130%;font-weight:800;text-decoration-line:underline; text-decoration-style: dotted; text-decoration-color: rgb(230,230,230);">Temperament -- {{data.temperament.name|upper}}</h2>
+        <p class="card-description" style="font-size:80%;font-style:italic;">
+            {{data.temperament.name|upper}} Details
+        </p>
+        <form id = "holder" method = "post" action="{{data.temperamentModify.url}}">
+            <input type="hidden" name="token" value="{{data.temperamentModify.token}}">
+            <input type="hidden" id = "googleCaptcha" name="googleCaptchaToken" value="">
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id = "holderTable">
+                    <thead>
+                        <tr>
+                            <th>
+                            #
+                            </th>
+                            <th class="text-center">
+                                Temperament Name
+                            </th>
+                            <th class="text-center">
+                                Relating Professions
+                            </th>
+                            <th class="text-center">
+                                Temperament Description
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-professions = '{{data.professions|json_encode}}'>
+                        {%set index = 0%}
+                        <tr class="wrapper" processed = "false" data-temperament-id = "{{data.temperament.id}}" data-temperament-name = "{{data.temperament.name|upper}}" data-selected-temperament-professions = "{{data.temperament.professions.selected.list|default('[]') | json_encode()}}" data-temperament-description = "{{data.temperament.data.description}}" data-is-set = false>
+                            <td class="placedId">
+                            {{index + 1}}
+                            </td>
+                            <td class="nameHolder">
+                                <input type="text" class="form-control" name="temperament_name" value = "{{data.temperament.name|upper}}" placeholder="Please insert temperament type">
+                            </td>
+                            <td class="professionsHolder">
+                                <select name="professions" style = "visibility: hidden;" multiple = "multiple" data-value = "{{data.temperament.professions.selected.list| default('[]') | json_encode()}}">
+
+                                </select>
+                            </td>
+                            <td class="temperamentDescription">
+                                <textarea name="description" class = "form-control" cols="30" rows="10" placeholder="Please insert a valid description for this temperament">{{data.temperament.data.description}}</textarea>
+                            </td>
+                            <td class="controls">
+                                <div>
+                                    <button class="remove btn bg-danger" style="margin-right:8px;" disabled = "disabled">Delete Temperament</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="width:100%;margin-top:15px;display:none;justify-content:center;">
+                <button type="submit" style="width:100%;padding:2%;" class="btn bg-success" id = "updateData" disabled = "disabled">Update Data</button>
+            </div>
+        </form>
+        </div>
+    </div>
+    </div>
+{%include 'user/general-administrator/dashboard/footer.html'%}
+
+<script>
+    var checkInterval = setInterval(function(){
+        if(typeof $ === 'function' && typeof $.fn.selectize === 'function'){
+            clearInterval(checkInterval);
+
+            var form = $('form#holder'),
+            table = form.find('table#holderTable').eq(0),
+            tbody = table.find('tbody').eq(0),
+            updateDataBtn = form.find('#updateData');
+
+            function processTemperaments(){
+                $(document.body).find('tr.wrapper[processed="false"]').each(function(){
+                    var tr = $(this),
+                    nameInput = tr.find('td.nameHolder > input').eq(0),
+                    professions = tr.find('td.professionsHolder > select[name="professions"]').eq(0),
+                    descriptionInput = tr.find('td.temperamentDescription > textarea[name="description"]').eq(0)
+                    isReady = false;
+
+                    professions.css({
+                        'visibility' : 'visible'
+                    });
+                    
+                    var checkControl = setInterval(function(){
+                        if(isReady){
+                            clearInterval(checkControl);
+                            var professionsControl = professions.get(0).selectize;
+
+                            tr.on('dataChanged',function(){
+                                if(!tr.data('is-set')){
+                                    tr.data('selected-temperament-professions',JSON.stringify(professions.data('value')));
+                                    tr.data('temperament-name',nameInput.val());
+                                    tr.data('temperament-description',descriptionInput.val());
+                                    tr.data('is-set',true);
+                                }else{
+                                    if((nameInput.val() !== tr.data('temperament-name')) || (JSON.stringify(professions.data('value')) !== tr.data('selected-temperament-professions')) || (descriptionInput.val() !== tr.data('temperament-description'))){
+                                        updateDataBtn.closest('div').css({
+                                            'display':'flex'
+                                        });
+                                    }else{
+                                        updateDataBtn.closest('div').css({
+                                            'display': 'none'
+                                        });
+                                    }
+                                }
+                            });
+
+                            var checkTimer;
+                            nameInput.on('change keypup keydown focus blur keypress',function(){
+                                if(checkTimer){
+                                    clearTimeout(checkTimer);
+                                }
+                                checkTimer = setTimeout(function(){
+                                    nameInput.val(nameInput.val().toUpperCase());
+                                    tr.trigger('dataChanged');
+                                },500);
+                            });
+                            
+                            var descriptionTimer;
+                            descriptionInput.on('change keyup keydown focus blur keypress',function(){
+                                if(descriptionTimer){
+                                    clearTimeout(descriptionTimer);
+                                }
+                                descriptionTimer = setTimeout(function(){
+                                    tr.trigger('dataChanged');
+                                },500);
+                            });
+
+                            var professionControlDropdown = {
+                                'status' : 'closed',
+                                'dropdownOffset': null,
+                                'dropdown': null,
+                                'position':function(dropdown){
+                                    if(this.status == 'closed'){
+                                        this.dropdown = dropdown;
+                                        if(this.dropdown.css('display').toLowerCase() == 'block'){
+                                            this.status = 'opened';
+                                            this.dropdownOffset = this.dropdown.offset();
+                                            if(this.dropdownOffset.left && (this.dropdown.css('position').toLowerCase() == 'absolute')){
+                                                var process = function(){
+                                                    this.dropdown.css({
+                                                        'position':'fixed',
+                                                        'z-index':'9000'
+                                                    }).offset({
+                                                        'top':(this.dropdownOffset.top + 8),
+                                                        'left':(this.dropdownOffset.left + 8)
+                                                    });
+                                                };
+
+                                                process = process.bind(this);
+                                                setTimeout(process,1000);
+                                            }else{
+                                                professionsControl.close();
+                                                setTimeout(function(){
+                                                    professionsControl.open();
+                                                },300);
+                                            }
+                                        }
+                                    }
+                                },
+                                'rePosition':function(){
+                                    if(this.dropdown){
+                                        this.status = 'closed';
+                                        this.position(this.dropdown);
+                                    }
+                                }
+                            };
+
+                            professionsControl.on('dropdown_open',function(dropdown){
+                                if(professionControlDropdown.status == 'closed'){
+                                    professionControlDropdown.position(dropdown);
+                                }
+                            });
+
+                            professionsControl.on('dropdown_close',function(dropdown){
+                                professionControlDropdown.status = 'closed';
+                                dropdown.css({
+                                    'position':'absolute'
+                                });
+                                professionsControl.positionDropdown();
+                            });
+                            
+                            professionsControl.on('change',function(e){
+                                var newProfessionArray = JSON.stringify(this.getValue()),
+                                oldProfessionArray = JSON.stringify(professions.data('value'));
+
+                                if(newProfessionArray !== oldProfessionArray){
+                                    professions.data('value',JSON.parse(newProfessionArray));
+                                }
+                                tr.trigger('dataChanged');
+                                professionControlDropdown.rePosition();
+                            });
+                            professionsControl.trigger.call(professionsControl,'change');
+                        }
+                    },300);
+
+                    professions.selectize({
+                        create: false,
+                        options: tbody.data('professions'),
+                        items: professions.data('value'),
+                        placeholder: 'Please select relating professions',
+                        plugins:[
+                            'remove_button',
+                            'drag_drop'
+                        ],
+                        'labelField':'name',
+                        'valueField':'id',
+                        'sortField':[
+                            {
+                                'field':'name',
+                                'direction':'asc'
+                            },
+                            {
+                                'field':'id',
+                                'direction':'asc'
+                            }
+                        ],
+                        'searchField':[
+                            'name'
+                        ],
+                        onInitialize: function(){
+                            isReady = true;
+                            tr.attr('processed',true);
+                        },
+                        render: {
+                            'item' : function(item,escape){
+                                return '<div class="item" style = "width:100%;display:flex;">'+
+                                            '<span class="fa fa-user">'+
+                                            '</span>'+
+                                            '<span class="text">'+
+                                                escape(item.name)+
+                                            '</span>'+
+                                        '</div>';
+                            }
+                        }
+                    });
+                });
+            }
+
+            function send_sync_data(data,instructionSet){
+                var newForm = $(document.createElement('form')).attr('method',form.attr('method')).attr('action',form.attr('action'));
+                instructionSet = instructionSet || {};
+
+                if(instructionSet.sticky){
+                    instructionSet.sticky.forEach(function(data){
+                        newForm.append('<input type = "hidden" name = "'+data.name+'" value = "'+data.value+'">');
+                    });
+                }
+
+                if(instructionSet.for == "update"){
+                    newForm.append('<input type = "hidden" name = "temperamentId" value = "'+data.id+'">');
+                    newForm.append('<input type = "hidden" name = "temperamentName" value = "'+data.name+'">');
+                    newForm.append('<input type = "hidden" name = "professions" value = \''+JSON.stringify(data.data)+'\'>');
+                    newForm.append('<input type = "hidden" name = "temperamentDescription" value = "'+data.description+'">');
+                }
+
+                if(instructionSet.for == "remove"){
+                    data = JSON.stringify(data);
+                    newForm.append('<input type = "hidden" name = "temperamentIds" value = \''+data+'\'>');
+                }
+
+                form.children('input[type="hidden"]').each(function(){
+                    var self = $(this);
+                    newForm.append('<input type = "hidden" name = "'+self.attr('name')+'" value = "'+self.val()+'">')
+                });
+
+                newForm.prependTo(document.body);
+                newForm.get(0).submit();
+            }
+
+            updateDataBtn.on('click',function(e){
+                e.preventDefault();
+                var tr = tbody.find('tr').eq(0),
+                out = {
+                    'id': tr.data('temperament-id'),
+                    'name': tr.find('td.nameHolder > input').eq(0).val(),
+                    'data': tr.find('td.professionsHolder > select[name="professions"]').eq(0).data('value'),
+                    'description': tr.find('td.temperamentDescription > textarea[name="description"]').eq(0).val()
+                };
+
+                if((out.name.length > 3) && (out.description.length > 5)){
+                    send_sync_data(out,{
+                        'for':'update',
+                        'sticky':[
+                            {
+                                'name':'action',
+                                'value':'update'
+                            }
+                        ]
+                    });
+                }
+            });
+
+            tbody.on('keypress',function(e){
+                var key = e.charCode || e.keyCode || 0;     
+                if(key == 13){
+                    e.preventDefault();
+                }
+            });
+            
+            tbody.on('click','button.remove',function(e){
+                e.preventDefault();
+                send_sync_data([$(this).closest('tr').data('temperament-id')],{
+                    'for':'remove',
+                    'sticky':[
+                        {
+                            'name':'action',
+                            'value':'remove'
+                        }
+                    ]
+                });
+            });
+
+            processTemperaments();
+            $('#updateData, button.remove').removeAttr('disabled');
+        }
+    },200);
+</script>
+
+<!--<script src='{{data.googleCaptcha.url}}'></script>
+<script>
+    var $otherInterval = setInterval(function(){
+        if((typeof $ == 'function') && (typeof grecaptcha == 'object') && (typeof grecaptcha.execute == 'function')){
+            clearInterval($otherInterval);
+            grecaptcha.execute('{{data.googleCaptcha.siteKey}}', {action: 'adminUpdateTemperaments'}).then(function(token) {
+                $('#googleCaptcha').val(token);
+                $('#updateData, button.remove').removeAttr('disabled');
+            });
+        }
+    },100);
+</script>-->

@@ -1,0 +1,493 @@
+<div style="display:flex;justify-content:center;width:100%;">
+    {%include 'pageNotification.html'%}
+</div>
+
+{%set isGeneralAdmin = (data.user.type == 'general-administrator' ? true : false)%}
+{%if data.stakeholder.portfolio.status == 'ok'%}
+<style>
+    #holder,
+    #portfolio,
+    #user {
+        width: 100%;
+    }
+
+    #user .header {
+        font-size: 130%;
+        font-weight: 800;
+        text-align: left;
+        text-transform: uppercase;
+        margin: 20px 10px;
+    }
+
+    #user .inner {
+        margin: 7px 20px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    #user .inner .header {
+        font-size: 100%;
+        font-weight: 600;
+    }
+
+    #user .field {
+        margin: 20px 10px;
+    }
+
+    #user .field>.title {
+        font-weight: 650;
+        font-size: 90%;
+        width: 100%;
+        padding-bottom: 8px;
+        text-align: left;
+    }
+
+    #user .field>.text {
+        font-weight: 500;
+        font-size: 80%;
+        width: 100%;
+        background: rgb(230, 230, 230);
+        text-align: left;
+        padding: 14px;
+    }
+
+    #user .field>.image {
+        display: flex;
+        width: 150px;
+        position: relative;
+        height: 150px;
+        z-index: 1;
+        background: rgb(0, 0, 0);
+    }
+
+    #user .field>.image>img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+    }
+
+    table#holderTable tr>td {
+        height: 100%;
+    }
+
+    table#holderTable tr>td:nth-child(1) {
+        font-weight: 500;
+        font-size: 120%;
+        text-shadow: 0.8px 0.8px 3px rgb(68, 137, 246);
+        text-decoration-line: blink;
+        text-decoration-style: double;
+        text-decoration-color: rgb(0, 0, 0);
+    }
+
+    table#holderTable tr>td:nth-child(2) {
+        text-transform: capitalize;
+    }
+
+    table#holderTable tr>td:not(:nth-child(2)) {
+        text-align: center;
+        margin: 0px auto;
+    }
+
+    table#holderTable tr>td:nth-child(3)>a[type="button"] {
+        margin: 5px 5px 0px 0px;
+        border-radius: 20px;
+        color: aliceblue;
+    }
+
+    table#holderTable tr>td:nth-child(3)>a[type="button"].more {
+        background: rgb(70, 255, 80);
+    }
+
+    table#holderTable tr>td:nth-child(3)>a[type="button"].user {
+        background: rgb(69, 112, 255);
+    }
+
+    table#holderTable tr>td:nth-child(3)>a[type="button"].edit {
+        background: rgb(53, 215, 243);
+    }
+
+    .students button.btn.view-students {
+        padding: 15px 20px;
+        font-size: 100%;
+        border-radius: 10px;
+        margin-left: 20px;
+        display: flex;
+    }
+
+    #additionalInformationModal table.user>tbody>tr:nth-child(1)>td:nth-child(2){
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: auto;
+        padding: 15px;
+    }
+
+    #additionalInformationModal table.user>tbody>tr:nth-child(1)>td:nth-child(2)>.image {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        display: flex;
+        z-index: 1;
+        background: white;
+    }
+
+    #additionalInformationModal table.user>tbody>tr:nth-child(1)>td:nth-child(2)>.image>img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 2;
+    }
+</style>
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="modal fade" id="additionalInformationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container-fluid">
+                                <div class="mt-2"></div>
+                                <table class="table user">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">
+                                                <h3 style="width: 100%;text-align: center;" class="text-center">
+                                                    User Information
+                                                </h3>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <div class="mt-2"></div>
+                                <table class="table administrator">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">
+                                                <h3 style="width: 100%;text-align: center;" class="text-center">
+                                                    Administrator Information
+                                                </h3>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="portfolio" class="holder">
+                {%set profile = data.stakeholder.portfolio.response%}
+                <div id="user" data-type = "{{profile.type}}">
+                    <div class="row wrapper">
+                        <div class="col-12 header">
+                            Stakeholder Portfolio
+                        </div>
+                        <div class="col-12 col-md-8 field">
+                            <div class="title">
+                                Profile Picture
+                            </div>
+                            <div class="image">
+                                {%if attribute(profile.data,'cover-image')%}
+                                <img src="{{attribute(profile.data,'cover-image')}}" alt="" />
+                                {%else%}
+                                <img src="/assets/images/noImage.png" alt="" />
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Name
+                            </div>
+                            <div class="text">
+                                {{profile.name|title}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Unique Name
+                            </div>
+                            <div class="text">
+                                {{profile.uniqueName|default('none')|lower}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Type
+                            </div>
+                            <div class="text">
+                                {{profile.type|default('none')|lower}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Region
+                            </div>
+                            <div class="text">
+                                {{profile.region.name|title}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Local Government Area
+                            </div>
+                            <div class="text">
+                                {{(profile.lga.name ? profile.lga.name~' local government Area' : 0)|title|default('none')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Country
+                            </div>
+                            <div class="text">
+                                {{(profile.country.name)|title|default('none')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Address
+                            </div>
+                            <div class="text">
+                                {{(profile.address)|title|default('none')}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Description
+                            </div>
+                            <div class="text">
+                                {{(profile.description)|title|default('none')}}
+                            </div>
+                        </div>
+                        {%if (profile.adminProfiles is iterable) and (profile.adminProfiles|length)%}
+                        <div class="col-12 header">
+                            Admininistrator List
+                        </div>
+
+                        <div class="table-responsive mt-2">
+                            <table class="table table-bordered" id="holderTable">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            No
+                                        </th>
+                                        <th>
+                                            Name
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody data-token = "{{attribute(data,'update-data').token}}">
+                                    {%for adminProfile in profile.adminProfiles%}
+                                    <tr class="wrapper"
+                                    data-user-id = "{{adminProfile.id}}",
+                                    data-user-name = "{{adminProfile.name}}"
+                                    data-user-email = "{{adminProfile.email | default('none')}}"
+                                    data-user-phone = "{{adminProfile.phoneNumber | default('none')}}",
+                                    data-user-region-name = "{{adminProfile.region.name}}",
+                                    data-user-country-name = "{{adminProfile.country.name}}",
+                                    data-user-lga-name = "{{adminProfile.lga.name}}",
+                                    data-user-is-approved = "{{(adminProfile.isApproved == 1) ? 'yes' : 'no'}}",
+                                    data-user-is-verified = "{{(adminProfile.isVerified == 1) ? 'yes' : 'no'}}",
+                                    data-user-is-blocked = "{{(adminProfile.isBlocked == 1) ? 'yes' : 'no'}}",
+                                    data-user-token = "{{adminProfile.token | default('none')}}",
+                                    data-user-has-complete-registration = "{{(adminProfile.hasCompleteRegistration == 1) ? 'yes' : 'no'}}",
+                                    data-user-registered-date = "{{(adminProfile.registerDate ? (adminProfile.registerDate|date('F jS \\a\\t g:ia')) : 'none')}}",
+                                    data-user-profile-image = "{{(attribute(adminProfile.data,'cover-image') ?: '/assets/images/noUserImage.png')}}",
+                                    data-user-state-of-residence = "{{(adminProfile.data.stateOfResidence.name ? (adminProfile.data.stateOfResidence.name ~ ' State'): 'none')}}",
+                                    data-administrator-id = "{{adminProfile.admin.id}}"
+                                    data-administrator-is-approved = "{{(adminProfile.admin.isApproved == 1) ? 'yes' : 'no'}}",
+                                    data-administrator-is-blocked = "{{(adminProfile.admin.isBlocked == 1) ? 'yes' : 'no'}}",
+                                    data-administrator-approval-request-date = "{{adminProfile.admin.approvalRequestDate ? (adminProfile.admin.approvalRequestDate|date('F jS \\a\\t g:ia')) : 'none'}}",
+                                    data-administrator-approved-date = "{{adminProfile.admin.approvedDate ? (adminProfile.admin.approvedDate|date('F jS \\a\\t g:ia')) : 'none'}}">
+                                        <td>{{loop.index}}</td>
+                                        <td>{{adminProfile.name}}</td>
+                                        <td>
+                                            <a type = "button" class="btn more" data-toggle="modal" data-target="#additionalInformationModal">View More</a>
+                                            <a type="button" class="btn user" href = "/{{data.user.type|e('js')}}/view/user/portfolio?id={{adminProfile.id}}">View User</a>
+                                            {%if isGeneralAdmin%}
+                                            <a type="button" class="btn edit" href = "/{{data.user.type|e('js')}}/edit/user/portfolio?id={{adminProfile.id}}">Edit User Data</a>
+                                            {%endif%}
+                                        </td>
+                                    </tr>
+                                    {%else%}
+                                    <tr class="wrapper">
+                                        <td colspan="3">
+                                            <span style="display:flex;word-wrap: break-word;width: 100%;text-align: center;justify-content: center;align-items: center;font-size: 90%;font-weight: 750;text-transform: capitalize;">
+                                                No Administrator found
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {%endfor%}
+                                </tbody>
+                            </table>
+                        </div>
+                        {%endif%}
+                    </div>
+                    <div class="row wrapper students">
+                        <div class="col-12 header">
+                            Students List
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-success view-students">View Students</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {%else%}
+            <div class="container no-margin no-padding no-data">
+                <div class="content">
+                    Oooops... invalid portfolio data
+                </div>
+            </div>
+            {%endif%}
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/assets/js/jquery-1.9.1.js"></script>
+<script src="/assets/js/dashboard/mine.js"></script>
+<script>
+    var processor = new Processor();
+
+    $checkInterval = setInterval(function () {
+        if (typeof $ == 'function') {
+            clearInterval($checkInterval);
+
+            var form = $('form#holder'),
+                table = form.find('table#holderTable'),
+                tbody = table.find('tbody');
+
+            tbody.on('click', 'td:nth-child(3) > a[type="button"]:nth-child(1)', function (e) {
+                e.preventDefault();
+            });
+
+            $('#additionalInformationModal').on('show.bs.modal', function (e) {
+                var modal = $(this),
+                    button = $(e.relatedTarget),
+                    tr = button.closest('tr'),
+                    modalBody = modal.find('.modal-body'),
+                    userWrapper = modalBody.find('table.user').find('tbody').eq(0).html(''),
+                    administratorWrapper = modalBody.find('table.administrator').find('tbody').eq(0).html('');
+
+                userWrapper.append('<tr class = "wrapper"><td>Profile PIcture</td><td><div class = "image"><img src = "' + tr.data('user-profile-image') + '" alt = "profileImage"/></div><td></tr>').append('<tr class = "wrapper"><td>Id</td><td class>' + tr.data('user-id') + '<td></tr>').append('<tr class = "wrapper"><td>Name</td><td class>' + tr.data('user-name') + '<td></tr>').append('<tr class = "wrapper"><td>Email</td><td>' + tr.data('user-email') + '<td></tr>').append('<tr class = "wrapper"><td>Phone Number</td><td>' + tr.data('user-phone') + '<td></tr>').append('<tr class = "wrapper"><td>Country Name</td><td>' + tr.data('user-country-name') + '<td></tr>').append('<tr class = "wrapper"><td>Region Name</td><td>' + tr.data('user-region-name') + ' state<td></tr>').append('<tr class = "wrapper"><td>Local Government Name</td><td>' + tr.data('user-lga-name') + ' local government area<td></tr>').append('<tr class = "wrapper"><td>State Of Residence</td><td>' + tr.data('user-state-of-residence') + '<td></tr>').append('<tr class = "wrapper"><td>Token</td><td>' + tr.data('user-token') + '<td></tr>').append('<tr class = "wrapper"><td>Has Complete Registration</td><td>' + tr.data('user-has-complete-registration') + '<td></tr>').append('<tr class = "wrapper"><td>Is Verified</td><td>' + tr.data('user-is-verified') + '<td></tr>').append('<tr class = "wrapper"><td>Is Approved</td><td>' + tr.data('user-is-approved') + '<td></tr>').append('<tr class = "wrapper"><td>Is Blocked</td><td>' + tr.data('user-is-blocked') + '<td></tr>').append('<tr class = "wrapper"><td>Registered Date</td><td>' + tr.data('user-registered-date') + '<td></tr>');
+
+                administratorWrapper.append('<tr class = "wrapper"><td>Id</td><td class>' + tr.data('administrator-id') + '<td></tr>').append('<tr class = "wrapper"><td>Is Approved</td><td>' + tr.data('administrator-is-approved') + '<td></tr>').append('<tr class = "wrapper"><td>Is Blocked</td><td>' + tr.data('administrator-is-blocked') + '<td></tr>').append('<tr class = "wrapper"><td>Approval Request Date</td><td>' + tr.data('administrator-approval-request-date') + '<td></tr>').append('<tr class = "wrapper"><td>Approved Date</td><td>' + tr.data('administrator-approved-date') + '<td></tr>');
+
+                var modalFooter = modal.find('.modal-footer').eq(0);
+                modalFooter.find('button[data-dismiss="modal"]').siblings().remove();
+
+                modalFooter.append('<a type = "button" class = "view btn btn-info" href = "/{{data.user.type|e("js")}}/view/user/portfolio?id=' + tr.data('user-id') + '" style = "background:rgb(198, 245, 235);color:black;">View Portfolio</a>');
+
+                var isGeneral = parseInt("{{isGeneralAdmin ? 1 : 0}}");
+                if(isGeneral){
+                    modalFooter.append('<a type = "button" class = "edit btn btn-info" href = "/{{data.user.type|e("js")}}/edit/user/portfolio?id=' + tr.data('user-id') + '" style = "background:rgb(198, 245, 235);color:black;">Edit Portfolio</a>');
+
+                    if (tr.data('administrator-is-approved').toLowerCase() == 'yes') {
+                        if (tr.data('administrator-is-blocked').toLowerCase() == 'yes') {
+                            modalFooter.append('<button class = "unblock btn btn-warning">Unblock</button>');
+                        } else if (tr.data('administrator-is-blocked').toLowerCase() == 'no') {
+                            modalFooter.append('<button class = "block btn btn-warning">Block</button>');
+                        }
+                    } else if (tr.data('administrator-is-approved').toLowerCase() == 'no') {
+                        modalFooter.append('<button class = "approve btn btn-success">Approve</button>');
+                        modalFooter.append('<button class = "decline btn btn-danger">Decline</button>');
+                    }
+
+                    modalFooter.on('click', function (e) {
+                        var self = $(e.target);
+                        if (e.target.nodeName.toLowerCase() == 'button') {
+                            var isSet = 0,
+                                data = {};
+
+                            switch (true) {
+                                case (self.hasClass('approve')):
+                                    data = {
+                                        '__action': 'update',
+                                        '__for': 'account-status',
+                                        'action': 'approve',
+                                        'for': 'general-administrator',
+                                        'forId': tr.data('administrator-id')
+                                    };
+                                    isSet = 1;
+                                    break;
+
+                                case (self.hasClass('decline')):
+                                    data = {
+                                        '__action': 'update',
+                                        '__for': 'account-status',
+                                        'action': 'decline',
+                                        'for': 'general-administrator',
+                                        'forId': tr.data('administrator-id')
+                                    };
+                                    isSet = 1;
+                                    break;
+
+                                case (self.hasClass('unblock')):
+                                    data = {
+                                        '__action': 'update',
+                                        '__for': 'account-status',
+                                        'action': 'unblock',
+                                        'for': 'general-administrator',
+                                        'forId': tr.data('administrator-id')
+                                    };
+                                    isSet = 1;
+                                    break;
+
+                                case (self.hasClass('block')):
+                                    data = {
+                                        '__action': 'update',
+                                        '__for': 'account-status',
+                                        'action': 'block',
+                                        'for': 'general-administrator',
+                                        'forId': tr.data('administrator-id')
+                                    };
+                                    isSet = 1;
+                                    break;
+                            }
+
+                            if (isSet) {
+                                data.token = tbody.data('token');
+                                processor.addLoader();
+                                $.ajax({
+                                    'url': '/update-data',
+                                    'method': 'post',
+                                    'data': data,
+                                    'success': function (resp) {
+                                        window.location.reload(true);
+                                    },
+                                    'error': function () {
+                                        alert('An error occured.. please try again later');
+                                        processor.removeLoader();
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+
+                modal.modal('handleUpdate');
+            });
+
+            $('#deleteData, button.remove').removeAttr('disabled');
+        }
+    }, 100);
+</script>

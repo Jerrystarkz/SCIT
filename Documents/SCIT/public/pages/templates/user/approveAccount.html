@@ -1,0 +1,63 @@
+{%include 'user/auth/header.html'%}
+<link rel="stylesheet" href="/assets/css/font-awesome.min.css">
+
+<section class="margins">
+              <div class="container">
+                        <div class="row">
+                                <div class="col-md-8 col-xs-12 col-sm-12  col-md-offset-2 col-lg-offset-3 col-lg-6">
+                <div id="container_demo" >
+
+                    <div id="wrapper">
+                        <div id="login" class="animate form">
+                            <form method="post" id = "approveAccount">
+                                <h1>Pending Approval</h1>
+                                {%include 'pageNotification.html'%}
+                                <p class="change_ink" style="margin-bottom: 20px;">
+                                    <a href="#" id = "logout"> Take Me Home</a>
+                                    <script>
+                                        var anchor = document.getElementById('logout');
+                                        anchor.addEventListener('click',function(e){
+                                            e.preventDefault();
+                                            var form = document.createElement('form');
+                                            form.setAttribute('action','{{data.user.logout.url}}');
+                                            form.setAttribute('method','post');
+                                            
+                                            var tokenInput = document.createElement('input');
+                                            tokenInput.setAttribute('type','hidden');
+                                            tokenInput.setAttribute('name','token');
+                                            tokenInput.setAttribute('value','{{data.user.logout.token}}');
+
+                                            form.appendChild(tokenInput);
+                                            document.body.appendChild(form);
+
+                                            form.submit();
+                                        });
+                                    </script>
+                                </p>
+                                <p>
+                                    {%set type = (data.user.type)%}
+                                    {%if type == 'student'%}
+                                        Ooops... An approval request has been sent to your school representative and as such your account is pending approval. Please be patient.
+                                    {%else%}
+                                        Ooops... your account is pending approval from SCIT administrators. Please be patient.
+                                    {%endif%}
+                                    <br/><br/><br/>
+                                    <span style="font-size:120%;font-weight:900;text-transform:uppercase;color: deepskyblue;">Note:</span>
+                                    <br><br>
+                                    <span style="font-style:italic;font-size:80%;">
+                                        Decline of approval request from the person in charge results to account flagged as spam. And as such be reported to appropriate authorities
+                                    </span>
+                                </p>
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+
+        </div>
+              </div>
+                    </div>
+    </section>
+    
+{%include 'user/auth/footer.html'%}

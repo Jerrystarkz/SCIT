@@ -1,0 +1,328 @@
+
+<div style="display:flex;justify-content:center;width:100%;">
+    {%include 'pageNotification.html'%}
+</div>
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title" style="font-size:130%;font-weight:800;text-decoration-line:underline; text-decoration-style: dotted; text-decoration-color: rgb(230,230,230);">Students</h2>
+            <p class="card-description" style="font-size:80%;font-style:italic;">
+               A comprehensive list of all students...
+            </p>
+
+            <div class="modal fade" id="additionalInformationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container-fluid">
+                                <div class="mt-2"></div>
+                                <table class="table administrator">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">
+                                                <h3 style = "width: 100%;text-align: center;" class="text-center">
+                                                    Student Information
+                                                </h3>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <div class="mt-2"></div>
+                                <table class="table stakeholder">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">
+                                                <h3 style = "width: 100%;text-align: center;" class="text-center">
+                                                    School Information
+                                                </h3>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form id = "holder" action="{{data.approvalRequest.url}}" method = "post">
+                <input type="hidden" name="token" value="{{data.approvalRequest.token}}">
+                <input type="hidden" id = "googleCaptcha" name="googleCaptchaToken" value="">
+                <div id="controls" style="width: 100%;display:flex; flex-wrap:wrap;flex-direction:row;justify-content:center;display: none;">
+                   <div class="row filter">
+                       <span class="col-12 col-sm-6 col-md-4">
+                           <select class = 'form-control filterBy'></select>
+                       </span>
+                       <span class="col-12 col-sm-6 col-md-4">
+                           <select class = 'form-control filterRule'></select>
+                       </span>
+                       <span class="col-12 col-sm-6 col-md-4">
+                           <select class = 'form-control filterValue'></select>
+                       </span>
+                   </div>
+
+                   <div class="row display">
+                       <span class="col-12 col-sm-10 col-md-8">
+                           <input name="display" class = "form-control" value = "display"/>
+                       </span>
+                   </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id = "holderTable">
+                        <thead>
+                            <tr>
+                                <th>
+
+                                </th>
+                                <th>
+                                #
+                                </th>
+                                <th class="text-center" id = "screen">
+                                    Name
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody data-token = "{{attribute(data,'update-data').token}}">
+                            {%set increment = attribute(data,data.for).increment | default(50)%}
+                            {%set count = attribute(data,data.for).total.count%}
+                            {%set current = increment%}
+                            {%set hasSetCurrent = 0%}
+                            {%set isPaginated = false%}
+                            {%set from = attribute(data,data.for).from | default(0)%}
+
+                            {%set index = from%}
+                            {%if (attribute(data,data.for).list is iterable) and (attribute(data,data.for).list|length)%}
+                            {%for student in attribute(data,data.for).list%}
+                            {%set index = index + 1%}
+
+                            <tr class="wrapper"
+                            data-stakeholder-id = "{{student.schoolId}}",
+                            data-stakeholder-name = "{{student.schoolName}}",
+                            data-stakeholder-unique-name = "{{student.schoolUniqueName}}",
+                            data-stakeholder-region-name = "{{student.schoolRegionName}}",
+                            data-stakeholder-country-name = "{{student.schoolCountryName}}",
+                            data-stakeholder-lga-name = "{{student.schoolLgaName}}",
+                            data-stakeholder-address = "{{student.schoolAddress}}",
+                            data-stakeholder-description = "{{student.schoolDescription}}",
+                            data-student-user-id = "{{student.studentUserId}}",
+                            data-student-id = "{{student.studentId}}",
+                            data-student-name = "{{student.studentName}}"
+                            data-student-unique-name = "{{student.studentUniqueName}}",
+                            data-student-level = "{{student.studentLevel}}",
+                            data-student-region-name = "{{student.studentRegionName}}",
+                            data-student-country-name = "{{student.studentCountryName}}",
+                            data-student-lga-name = "{{student.studentLgaName}}",
+                            data-student-is-approved = "{{(student.isApproved == 1) ? 'yes' : 'no'}}",
+                            data-student-is-blocked = "{{(student.isBlocked == 1) ? 'yes' : 'no'}}",
+                            data-student-approval-request-date = "{{student.approvalRequestDate|date('F jS \\a\\t g:ia')}}",
+                            data-student-approved-date = "{{student.approvedDate|date('F jS \\a\\t g:ia')}}",
+                            data-student-registered-date = "{{student.registeredDate|date('F jS \\a\\t g:ia')}}"
+                            >
+                                <td>
+                                    <input type="checkbox">
+                                </td>
+                                <td class="placedId">
+                                {{index}}
+                                </td>
+                                <td class="nameHolder">
+                                    <span style="display:flex;word-wrap: break-word;width: 100%;">
+                                        {{student.studentName|title}}
+                                    </span>
+                                </td>
+                                <td class="controls">
+                                    <div style="display:flex;width:100%;justify-content:center;align-items:center;flex-wrap: wrap;">
+                                        <button class="moreData btn bg-warning" style="margin-right:8px;" data-toggle="modal" data-target="#additionalInformationModal">View More</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {%endfor%}
+                            {%else%}
+                            <tr class="wrapper">
+                                <td colspan = "3">
+                                    <span style="display:flex;word-wrap: break-word;width: 100%;text-align: center;justify-content: center;align-items: center;font-size: 90%;font-weight: 750;text-transform: capitalize;">
+                                        No Data... Try modifying the search criteria
+                                    </span>
+                                </td>
+                            </tr>
+                            {%endif%}
+                        </tbody>
+                    </table>
+                    <nav aria-label="..." class="mt-3">
+                        <ul class="pagination">
+                            <li class="page-item {%if (from < increment)%}disabled{%endif%}">
+                                <a class="page-link" href="?from={{(from - increment)}}" tabindex="-1">Previous</a>
+                            </li>
+                            {%for i in 0..30000 if (not isPaginated)%}
+                            <li class="page-item {%if((current >= (from + increment)) and (hasSetCurrent == 0))%}active{%set hasSetCurrent = 1%}{%endif%}">
+                                <a class="page-link" href="?from={{(i*increment)}}">{{i + 1}}</a>
+                            </li>
+                            {%if current > count%}
+                            {%set isPaginated = true%}
+                            {%endif%}
+                            {%set current = (current + increment)%}
+                            {%endfor%}
+
+                            <li class="page-item {%if (count <= increment) or (count <= (from + increment))%}disabled{%endif%}">
+                                <a class="page-link" href="?from={{(from + increment)}}">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/assets/js/jquery-1.9.1.js"></script>
+<script src = "/assets/js/dashboard/mine.js"></script>
+<script>
+    var processor = new Processor();
+
+    $checkInterval = setInterval(function(){
+        if(typeof $ == 'function'){
+            clearInterval($checkInterval);
+
+            var form = $('form#holder'),
+            table = form.find('table#holderTable'),
+            tbody = table.find('tbody');
+
+            tbody.on('click','button',function(e){
+                e.preventDefault();
+            });
+
+            $('#additionalInformationModal').on('show.bs.modal', function (e) {
+                var modal = $(this),
+                button = $(e.relatedTarget),
+                tr = button.closest('tr'),
+                modalBody = modal.find('.modal-body'),
+                administratorWrapper =  modalBody.find('table.administrator').find('tbody').eq(0).html(''),
+                stakeholderWrapper =  modalBody.find('table.stakeholder').find('tbody').eq(0).html('');
+
+                administratorWrapper.append('<tr class = "wrapper"><td>Id</td><td class>'+tr.data('student-id')+'<td></tr>').append('<tr class = "wrapper"><td>User Id</td><td class>'+tr.data('student-user-id')+'<td></tr>').append('<tr class = "wrapper"><td>Name</td><td class>'+tr.data('student-name')+'<td></tr>').append('<tr class = "wrapper"><td>Unique Name</td><td>'+tr.data('student-unique-name')+'<td></tr>').append('<tr class = "wrapper"><td>Level</td><td>'+tr.data('student-level')+'<td></tr>').append('<tr class = "wrapper"><td>Country Name</td><td>'+tr.data('student-country-name')+'<td></tr>').append('<tr class = "wrapper"><td>Region Name</td><td>'+tr.data('student-region-name')+' state<td></tr>').append('<tr class = "wrapper"><td>Local Government Name</td><td>'+tr.data('student-lga-name')+' local government area<td></tr>').append('<tr class = "wrapper"><td>Is Approved</td><td>'+tr.data('student-is-approved')+'<td></tr>').append('<tr class = "wrapper"><td>Is Blocked</td><td>'+tr.data('student-is-blocked')+'<td></tr>').append('<tr class = "wrapper"><td>Approval Request Date</td><td>'+tr.data('student-approval-request-date')+'<td></tr>').append('<tr class = "wrapper"><td>Approved Date</td><td>'+tr.data('student-approved-date')+'<td></tr>').append('<tr class = "wrapper"><td>Registered Date</td><td>'+tr.data('student-registered-date')+'<td></tr>');
+
+                stakeholderWrapper.append('<tr class = "wrapper"><td>Id</td><td class>'+tr.data('stakeholder-id')+'<td></tr>').append('<tr class = "wrapper"><td>Name</td><td class>'+tr.data('stakeholder-name')+'<td></tr>').append('<tr class = "wrapper"><td>Unique Name</td><td class>'+tr.data('stakeholder-unique-name')+'<td></tr>').append('<tr class = "wrapper"><td>Address</td><td>'+tr.data('stakeholder-address')+'<td></tr>').append('<tr class = "wrapper"><td>Country Name</td><td>'+tr.data('stakeholder-country-name')+'<td></tr>').append('<tr class = "wrapper"><td>Region Name</td><td>'+tr.data('stakeholder-region-name')+' state<td></tr>').append('<tr class = "wrapper"><td>Local Government Name</td><td>'+tr.data('stakeholder-lga-name')+' local government area<td></tr>').append('<tr class = "wrapper"><td>Description</td><td>'+tr.data('stakeholder-description')+'<td></tr>');
+
+                var modalFooter = modal.find('.modal-footer').eq(0);
+                modalFooter.find('button[data-dismiss="modal"]').siblings().remove();
+                var userType = "{{data.user.type|e('js')}}";
+
+                modalFooter.append('<a type = "button" class = "view btn btn-info" href = "/{{data.user.type|e("js")}}/view/user/portfolio?id=' + tr.data('student-user-id') + '" style = "background:rgb(198, 245, 235);color:black;">View Portfolio</a>');
+                if(['general-administrator','secondary-school-administrator'].indexOf(userType) !== -1){
+                    modalFooter.append('<a type = "button" class = "edit btn btn-info" href = "/{{data.user.type|e("js")}}/edit/user/portfolio?id=' + tr.data('student-user-id') + '" style = "background:rgb(198, 245, 235);color:black;">Edit Portfolio</a>');
+                    if(tr.data('student-is-approved').toLowerCase() == 'yes'){
+                        if(tr.data('student-is-blocked').toLowerCase() == 'yes'){
+                            modalFooter.append('<button class = "unblock btn btn-warning">Unblock</button>');
+                        }else if(tr.data('student-is-blocked').toLowerCase() == 'no'){
+                            modalFooter.append('<button class = "block btn btn-warning">Block</button>');
+                        }
+                    }else if(tr.data('student-is-approved').toLowerCase() == 'no'){
+                        modalFooter.append('<button class = "approve btn btn-success">Approve</button>');
+                        modalFooter.append('<button class = "decline btn btn-danger">Decline</button>');
+                    }
+                }
+
+                modalFooter.on('click',function(e){
+                    var self = $(e.target);
+                    if(e.target.nodeName.toLowerCase() == 'button'){
+                        var isSet = 0,
+                        data = {};
+
+                        switch(true){
+                            case (self.hasClass('approve')):
+                                data = {
+                                    '__action' : 'update',
+                                    '__for' : 'account-status',
+                                    'action' : 'approve',
+                                    'for' : 'student',
+                                    'forId': tr.data('student-id')
+                                };
+                                isSet = 1;
+                            break;
+
+                            case (self.hasClass('decline')):
+                                data = {
+                                    '__action' : 'update',
+                                    '__for' : 'account-status',
+                                    'action' : 'decline',
+                                    'for' : 'student',
+                                    'forId': tr.data('student-id')
+                                };
+                                isSet = 1;
+                            break;
+
+                            case (self.hasClass('unblock')):
+                                data = {
+                                    '__action' : 'update',
+                                    '__for' : 'account-status',
+                                    'action' : 'unblock',
+                                    'for' : 'student',
+                                    'forId': tr.data('student-id')
+                                };
+                                isSet = 1;
+                            break;
+
+                            case (self.hasClass('block')):
+                                data = {
+                                    '__action' : 'update',
+                                    '__for' : 'account-status',
+                                    'action' : 'block',
+                                    'for' : 'student',
+                                    'forId': tr.data('student-id')
+                                };
+                                isSet = 1;
+                            break;
+                        }
+
+                        if(isSet){
+                            data.token = tbody.data('token');
+                            processor.addLoader();
+                            $.ajax({
+                                'url' : '/update-data',
+                                'method' : 'post',
+                                'data' : data,
+                                'success' : function(resp){
+                                    window.location.reload(true);
+                                },
+                                'error': function(resp){
+                                    console.log(resp);
+                                    alert('An error occured.. please try again later');
+                                    processor.removeLoader();
+                                }
+                            });
+                        }
+                    }
+                });
+
+                modal.modal('handleUpdate');
+            });
+
+            $('#deleteData, button.remove').removeAttr('disabled');
+        }
+    },100);
+
+    $('#deleteData, button.remove').removeAttr('disabled');
+</script>
+
+<!--<script src='{{data.googleCaptcha.url}}'></script>
+<script>
+    var $otherInterval = setInterval(function(){
+        if((typeof $ == 'function') && (typeof grecaptcha == 'object') && (typeof grecaptcha.execute == 'function')){
+            clearInterval($otherInterval);
+            grecaptcha.execute('{{data.googleCaptcha.siteKey}}', {action: 'dataListing'}).then(function(token) {
+                $('#googleCaptcha').val(token);
+                $('#deleteData, button.remove').removeAttr('disabled');
+            });
+        }
+    },100);
+</script>-->

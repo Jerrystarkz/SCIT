@@ -1,0 +1,14 @@
+{%if data.pageNotification is iterable%}
+    {%set notification = data.pageNotification.notification%}
+    {%set type = data.pageNotification.type%}
+
+    <div class = "col-xs-12 text-center" style = "text-align:center;color:{%if type == 'error'%}red{%elseif type == 'notice'%}teal{%elseif type == 'success'%}green{%endif%};text-transform:capitalize;font-size:90%;margin-top:15px;margin-bottom:30px;">
+        <span style = "text-transform: capitalize;font-weight:900;font-size:110%;">{%if type == 'error'%}Ooops an error occured:{%elseif type == 'notice'%}Notice:{%elseif type == 'success'%}Success:{%endif%} </span>{{notification}}
+    </div>
+{%else%}
+    {%if data.errors is iterable%}
+    <div class = "col-xs-12 text-center" style = "text-align:center;color:red;text-transform:capitalize;font-size:90%;margin-top:15px;margin-bottom:30px;">
+        <span style = "text-transform: capitalize;font-weight:900;font-size:110%;">Ooops an error occured:</span> Check form fields below to view specific error
+    </div>
+    {%endif%}
+{%endif%}

@@ -1,0 +1,187 @@
+{%include 'header.html'%}
+<!-- start blog Section -->
+<section id="blg_sec" style="padding-top:90px;">
+	<div class="container">
+        <style>
+            .panel.with-nav-tabs .panel-heading{
+                padding: 5px 5px 0 5px;
+            }
+            .panel.with-nav-tabs .nav-tabs{
+                border-bottom: none;
+            }
+            .panel.with-nav-tabs .nav-justified{
+                margin-bottom: -1px;
+            }
+            /********************************************************************/
+            /*** PANEL DEFAULT ***/
+            .with-nav-tabs.panel-default .nav-tabs > li > a,
+            .with-nav-tabs.panel-default .nav-tabs > li > a:hover,
+            .with-nav-tabs.panel-default .nav-tabs > li > a:focus {
+                color: #777;
+            }
+            .with-nav-tabs.panel-default .nav-tabs > .open > a,
+            .with-nav-tabs.panel-default .nav-tabs > .open > a:hover,
+            .with-nav-tabs.panel-default .nav-tabs > .open > a:focus,
+            .with-nav-tabs.panel-default .nav-tabs > li > a:hover,
+            .with-nav-tabs.panel-default .nav-tabs > li > a:focus {
+                color: #777;
+                background-color: #ddd;
+                border-color: transparent;
+            }
+            .with-nav-tabs.panel-default .nav-tabs > li.active > a,
+            .with-nav-tabs.panel-default .nav-tabs > li.active > a:hover,
+            .with-nav-tabs.panel-default .nav-tabs > li.active > a:focus {
+                color: #555;
+                background-color: #fff;
+                border-color: #ddd;
+                border-bottom-color: transparent;
+            }
+            .with-nav-tabs.panel-default .nav-tabs > li.dropdown .dropdown-menu {
+                background-color: #f5f5f5;
+                border-color: #ddd;
+            }
+            .with-nav-tabs.panel-default .nav-tabs > li.dropdown .dropdown-menu > li > a {
+                color: #777;   
+            }
+            .with-nav-tabs.panel-default .nav-tabs > li.dropdown .dropdown-menu > li > a:hover,
+            .with-nav-tabs.panel-default .nav-tabs > li.dropdown .dropdown-menu > li > a:focus {
+                background-color: #ddd;
+            }
+            .with-nav-tabs.panel-default .nav-tabs > li.dropdown .dropdown-menu > .active > a,
+            .with-nav-tabs.panel-default .nav-tabs > li.dropdown .dropdown-menu > .active > a:hover,
+            .with-nav-tabs.panel-default .nav-tabs > li.dropdown .dropdown-menu > .active > a:focus {
+                color: #fff;
+                background-color: #555;
+            }
+        </style>
+		<div class="row">
+			<div class="col-lg-8 col-md-8 col-sm-8 ">
+                {%if data.event is iterable and data.event|length%}
+				<div class="sngl_blg">
+                    <div style="width:100%;height:450px;background:black;position:relative;display:flex;justify-content: center;align-items: center;">
+                        {%if data.event.coverImage%}
+                        <img src="{{data.event.coverImage|default('/assets/images/noImage.png')}}" alt="" style="width:100%;height:100%;"/>
+                        {%else%}
+                        <img src="/assets/images/noImage.png" alt="" style="width:250px;height:250px;"/>
+                        {%endif%}
+                    </div>
+					<div class="post_info">
+						<div class="post_intro">
+							<h2>{{data.event.name}}</h2>
+							<i class="fa fa-picture-o"></i>
+						</div>
+						<ul>
+							<li>Event Date: {{data.event.actionDate|date}}</li>
+						</ul>
+					</div>
+					<div class="post_content" style="display: flex;width: 100%;padding-left: 20px;padding-right:10px;">
+						<p>{{data.event.description|default('')}}</p>
+				    </div>
+                </div>
+                <div class="flex;width:100%;margin-tp:30px;">
+                    <div class="panel with-nav-tabs panel-default">
+                        <div class="panel-heading">
+                            <ul class="nav nav-tabs">
+                                <li class="active">
+                                    <a href="#eventData" data-toggle="tab">
+                                        Event Data
+                                    </a>
+                                </li>
+                                <!--<li>
+                                    <a href="#tab2default" data-toggle="tab">
+                                        Default 2
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#tab3default" data-toggle="tab">
+                                        Default 3
+                                    </a>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="#" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#tab4default" data-toggle="tab">Default 4</a></li>
+                                        <li><a href="#tab5default" data-toggle="tab">Default 5</a></li>
+                                    </ul>
+                                </li>-->
+                            </ul>
+                        </div>
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <div class="tab-pane fade in active" id="eventData">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover table-primary">
+                                            <thead>
+                                                <th>Name</th>
+                                                <th>Data</th>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Location</td>
+                                                    <td>{{data.event.location}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Date</td>
+                                                    <td>{{data.event.actionDate|date}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Added Date</td>
+                                                    <td>{{data.event.addedDate|date}}</td>
+                                                </tr>
+                                                {%if data.event.data.addedInputs is iterable and data.event.data.addedInputs|length%}
+                                                {%for data in data.event.data.addedInputs%}
+                                                <tr>
+                                                    <td>{{data.key}}</td>
+                                                    <td>{{data.value}}</td>
+                                                </tr>
+                                                {%endfor%}
+                                                {%endif%}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!--<div class="tab-pane fade" id="tab2default">Default 2</div>
+                                <div class="tab-pane fade" id="tab3default">Default 3</div>
+                                <div class="tab-pane fade" id="tab4default">Default 4</div>
+                                <div class="tab-pane fade" id="tab5default">Default 5</div>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {%else%}
+                <div class="col-xs-12" style = "display:flex;justify-content: center;align-items: center;padding: 40px;">
+                    <div style="width:70%;height:400px;background:black;">
+                        <img src="/assets/images/noData.png" style="width:100%;height:100%;">
+                    </div>
+                </div>
+                {%endif%}
+            </div>
+
+			<div class="col-lg-4 col-md-4 col-sm-4">
+				<div class="sidebar">
+			 
+					<div class="widget">
+						<h2>Similar Events</h2>
+						<div class="title_br"></div>
+						<ul>
+                            {%if data.otherEvents%}
+                            {%for event in data.otherEvents%}
+                            <li>
+                                <a href="{{institution.url}}">{{event.name}}</a>
+                            </li>
+                            {%endfor%}
+                            {%else%}
+                            <li>
+                                No event to display
+                            </li>
+                            {%endif%}
+						</ul>
+					</div>
+			
+							</div>
+			</div>
+		</div>
+	</div>
+</section>
+<!-- start Blog Section -->
+{%include 'footer.html'%}

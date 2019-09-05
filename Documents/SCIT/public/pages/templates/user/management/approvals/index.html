@@ -1,0 +1,66 @@
+
+<div style="display:flex;justify-content:center;width:100%;">
+    {%include 'pageNotification.html'%}
+</div>
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title" style="font-size:130%;font-weight:800;text-decoration-line:underline; text-decoration-style: dotted; text-decoration-color: rgb(230,230,230);">Approval Request For Schools</h2>
+            <p class="card-description" style="font-size:80%;font-style:italic;">
+               list of schools with their details
+            </p>
+
+            <div class="" style="width:100%;display:flex;justify-content:center;">
+                <div class="table-responsive" style="width:60%;">
+                    <div class="mt-2"></div>
+                    <table class="table stakeholder">
+                        <thead>
+                            <tr>
+                                <th colspan="2">
+                                    <h3 style = "width: 100%;text-align: center;" class="text-center">
+                                        Stakeholders Requests
+                                    </h3>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%if ((data.stakeholders.list is iterable) and (data.stakeholders.list|length))%}
+                            {%for stakeholder in data.stakeholders.list%}
+                            <tr>
+                                <td>
+                                    {{stakeholder.name|capitalize|split('-')|join(' ')}}
+                                </td>
+                                <td>
+                                    <a href="{{stakeholder.url}}">Click Here To View Requests</a>
+                                </td>
+                            </tr>
+                            {%endfor%}
+                            {%else%}
+                            <tr>
+                                <td colspan="2">
+                                    Ooops no stakeholder approval request is viewable
+                                </td>
+                            </tr>
+                            {%endif%}
+                        </tbody>
+                    </table>
+                    <div class="mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<script src='{{data.googleCaptcha.url}}'></script>
+<script>
+    var $otherInterval = setInterval(function(){
+        if((typeof $ == 'function') && (typeof grecaptcha == 'object') && (typeof grecaptcha.execute == 'function')){
+            clearInterval($otherInterval);
+            grecaptcha.execute('{{data.googleCaptcha.siteKey}}', {action: 'approvalRequest'}).then(function(token) {
+                $('#googleCaptcha').val(token);
+                $('#deleteData, button.remove').removeAttr('disabled');
+            });
+        }
+    },100);
+</script>-->

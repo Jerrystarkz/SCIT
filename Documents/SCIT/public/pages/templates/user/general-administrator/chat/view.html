@@ -1,0 +1,180 @@
+{%include 'user/general-administrator/dashboard/header.html'%}
+
+<div style="display:flex;justify-content:center;width:100%;">
+    {%include 'pageNotification.html'%}
+</div>
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title" style="font-size:130%;font-weight:800;text-decoration-line:underline; text-decoration-style: dotted; text-decoration-color: rgb(230,230,230);">View chats</h2>
+            <p class="card-description" style="font-size:80%;font-style:italic;">
+                List of chats
+            </p>
+            <form id = "holder" action="{{data.chatsModify.url}}" method = "post">
+                <input type="hidden" name="token" value="{{data.chatsModify.token}}">
+                <input type="hidden" id = "googleCaptcha" name="googleCaptchaToken" value="">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id = "holderTable">
+                        <thead>
+                            <tr>
+                                <th>
+        
+                                </th>
+                                <th>
+                                #
+                                </th>
+                                <th class="text-center">
+                                    chat Name
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%set index = 0%}
+                            {%if (data.chats.list is iterable) and (data.chats.list|length)%}
+                            {%for chat in data.chats.list%}
+                            {%set index = index + 1%}
+                            <tr class="wrapper" data-chat-id = "{{chat.id}}" data-url = "{{chat.view.url}}">
+                                <td>
+                                    <input type="checkbox">
+                                </td>
+                                <td class="placedId">
+                                {{index}}
+                                </td>
+                                <td class="nameHolder">
+                                    <span style="display:flex;word-wrap: break-word;width: 100%;">
+                                        {{chat.name}}
+                                    </span>
+                                </td>
+                                <td class="controls">
+                                    <div style="display:flex;width:100%;justify-content:center;align-items:center;flex-wrap: wrap;">
+                                        <button class="view btn bg-warning" style="margin-right:8px;">View</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {%endfor%}
+                            {%else%}
+                            <tr class="wrapper">
+                                <td colspan = "3">
+                                    <span style="display:flex;word-wrap: break-word;width: 100%;text-align: center;justify-content: center;align-items: center;font-size: 90%;font-weight: 600;text-transform: capitalize;">
+                                        Empty Chat List
+                                    </span>
+                                </td>
+                            </tr>
+                            {%endif%}
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{%include 'user/general-administrator/dashboard/footer.html'%}
+
+<script>
+    $checkInterval = setInterval(function(){
+        if(typeof $ == 'function'){
+            clearInterval($checkInterval);
+
+            var form = $('form#holder'),
+            table = form.find('table#holderTable'),
+            tbody = table.find('tbody');
+
+            function send_sync_data(data,instructionSet){
+                var newForm = $(document.createElement('form')).attr('method',form.attr('method')).attr('action',form.attr('action'));
+                instructionSet = instructionSet || {};
+
+                if(instructionSet.sticky){
+                    instructionSet.sticky.forEach(function(data){
+                        newForm.append('<input type = "hidden" name = "'+data.name+'" value = "'+data.value+'">');
+                    });
+                }
+
+                if(instructionSet.for == "remove"){
+                    data = JSON.stringify(data);
+                    newForm.append('<input type = "hidden" name = "chatIds" value = \''+data+'\'>');
+                }
+                
+                form.children('input[type="hidden"]').each(function(){
+                    var self = $(this);
+                    newForm.append('<input type = "hidden" name = "'+self.attr('name')+'" value = "'+self.val()+'">')
+                });
+
+                newForm.prependTo(document.body);
+                newForm.get(0).submit();
+            }
+
+            tbody.on('click','input[type="checkbox"]',function(){
+                if(tbody.find('tr > td > input[type="checkbox"]:checked').length > 0){
+                    deleteDataBtn.closest('div').css({
+                        'display':'flex'
+                    });
+                }else{
+                    deleteDataBtn.closest('div').css({
+                        'display':'none'
+                    });
+                }
+            });
+
+            deleteDataBtn.on('click',function(e){
+                e.preventDefault();
+                var data = [],
+                checkeds = tbody.find('tr > td > input[type="checkbox"]:checked');
+
+                checkeds.each(function(){
+                    tr = $(this).closest('tr'),
+                    chatId = tr.data('chat-id');
+                    data.push(chatId);
+                });
+
+                send_sync_data(data,{
+                    'for':'remove',
+                    'sticky':[
+                        {
+                            'name':'action',
+                            'value':'remove'
+                        }
+                    ]
+                });
+            });
+
+            tbody.on('click','button.remove',function(e){
+                e.preventDefault();
+                var self = $(this),
+                tr = self.closest('tr.wrapper'),
+                chatId = tr.data('chat-id');
+
+                send_sync_data([chatId],{
+                    'for':'remove',
+                    'sticky':[
+                        {
+                            'name':'action',
+                            'value':'remove'
+                        }
+                    ]
+                });
+            });
+
+            tbody.on('click','button.view',function(e){
+                e.preventDefault();
+                var url = $(this).closest('tr').data('url');
+                document.location.href = url;
+            });
+        }
+    },100);
+
+    $('#deleteData, button.remove').removeAttr('disabled');
+</script>
+
+<!--<script src='{{data.googleCaptcha.url}}'></script>
+<script>
+    var $otherInterval = setInterval(function(){
+        if((typeof $ == 'function') && (typeof grecaptcha == 'object') && (typeof grecaptcha.execute == 'function')){
+            clearInterval($otherInterval);
+            grecaptcha.execute('{{data.googleCaptcha.siteKey}}', {action: 'adminUpdatechats'}).then(function(token) {
+                $('#googleCaptcha').val(token);
+                $('#deleteData, button.remove').removeAttr('disabled');
+            });
+        }
+    },100);
+</script>-->

@@ -1,0 +1,83 @@
+{
+    "db_debug": true,
+    "db_user": "root",
+    "db_pass": "Aaquiloaded1",
+    "db_host": "localhost",
+    "db_database":"scit",
+    "db_timezone": "+01:00",
+    "google":{
+        "captcha":{
+            "verifyUrl":"https://www.google.com/recaptcha/api/siteverify",
+            "v2":{
+                "secret":"6LdJFYcUAAAAAD_a5cH4LXyzgQ15ufu90iv_jnUM",
+                "sitekey":"6LdJFYcUAAAAAE6QlU1taib8yeG4w-d4mmS-1OWD",
+                "url":"https://www.google.com/recaptcha/api.js?render=explicit"
+            },
+            "v3":{
+                "secret":"6LeHDYcUAAAAAKNR-uRDpKg1zqDJJOjaalVOouz0",
+                "sitekey":"6LeHDYcUAAAAANlbYB4tu6HJEKyf4RnEMDobtVj2",
+                "url":"https://www.google.com/recaptcha/api.js?render=6LeHDYcUAAAAANlbYB4tu6HJEKyf4RnEMDobtVj2",
+                "checkAction":true,
+                "minimumScore":0.85
+            }
+        }
+    },
+    "verification": {
+        "email":{
+            "maximum":10,
+            "interval":"1 hour"
+        }
+    },
+    "mail":{
+        "debug":{
+            "level":0
+        },
+        "host": "mail.scit.info",
+        "port": 587,
+        "username" : "2525",
+        "password": "SecuredScit@scit.info",
+        "connectionType" : "tls",
+        "useAuthentication" : true,
+        "timeout": 30,
+        "ssl":{
+            "verify_peer": false,
+            "verify_depth": 3,
+            "allow_self_signed": true,
+            "peer_name": "mail.scit.info",
+            "verify_peer_name": false,
+            "cafile": "/etc/ssl/ca_cert.pem"
+        },
+        "accounts":{
+            "verification":{
+                "name":"Scit Support Team",
+                "email":"no-reply@scit.info",
+                "username":"no-reply@scit.info",
+                "password":"SecuredScit@scit.info"
+            }
+        }
+    },
+    "http_manager_timeout":"15.0",
+    "php_timezone":"Africa/Lagos",
+    "php_debug":true,
+    "twig_debug":true,
+    "twig_cache":false,
+    "twig_template_dir":"/public/pages/templates/",
+    "bcscale":6,
+    "temp_file_storage" : "/public/assets/uploads/",
+    "maximum_single_upload_size" : 5000000,
+    "maximum_total_upload_size" : 200000000,
+    "trendingDaysLimit" : "900",
+    "default":{},
+    "webUrl":"http://localhost",
+    "salts":{
+        "password":{
+            "prepend":"scitgiz",
+            "append":"20182019"
+        }
+    },
+    "hash":{
+        "key":"SCITGIZhash",
+        "cipher":"AES-256-CBC",
+        "salt":"Scit-Giz"
+    }
+}

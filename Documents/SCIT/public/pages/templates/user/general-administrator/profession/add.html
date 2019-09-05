@@ -1,0 +1,503 @@
+{%include 'user/general-administrator/dashboard/header.html'%}
+
+<div style="display:flex;justify-content:center;width:100%;">
+    {%include 'pageNotification.html'%}
+</div>
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+        <h2 class="card-title" style="font-size:130%;font-weight:800;text-decoration-line:underline; text-decoration-style: dotted; text-decoration-color: rgb(230,230,230);">Add Profession</h2>
+        <p class="card-description" style="font-size:80%;font-style:italic;">
+            Add professions
+        </p>
+        <form id = "holder" method = "post" action="{{data.admin.add.profession.url}}">
+            <input type="hidden" name="token" value="{{data.admin.add.profession.token}}">
+            <input type="hidden" id = "googleCaptcha" name="googleCaptchaToken" value="">
+
+            {%if (data.admin.add.profession.errors is iterable) or (data.admin.add.profession.exists is iterable) or (data.admin.add.profession.invalids is iterable)%}
+            <div class="table-responsive" id = "displayErrors">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>
+                            #
+                            </th>
+                            <th class="text-center">
+                                Profession Name
+                            </th>
+                            <th class="text-center">
+                                Error Type
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%set index = 0%}
+                        {%if data.admin.add.profession.errors is iterable%}
+                        {%for profession in data.admin.add.profession.errors%}
+                        {%set index = (index + 1)%}
+                        <tr class="wrapper">
+                            <td class="placedId">
+                            {{index}}
+                            </td>
+                            <td class="name">
+                                <span style="display:flex;word-wrap: break-word;width: 100%;">{{profession.name}}</span>
+                            </td>
+                            <td style="color:red;">
+                                Ooops a data center error occured while adding this profession
+                            </td>
+                        </tr>
+                        {%endfor%}
+                        {%endif%}
+
+                        {%if data.admin.add.profession.exists is iterable%}
+                        {%for profession in data.admin.add.profession.exists%}
+                        {%set index = (index + 1)%}
+                        <tr class="wrapper">
+                            <td class="placedId">
+                            {{index}}
+                            </td>
+                            <td class="name">
+                                <span style="display:flex;word-wrap: break-word;width: 100%;">{{profession.name}}</span>
+                            </td>
+                            <td style="color:red;">
+                                Ooops profession already exists... Try updating previous records
+                            </td>
+                        </tr>
+                        {%endfor%}
+                        {%endif%}
+
+                        {%if data.admin.add.profession.invalids is iterable%}
+                        {%for profession in data.admin.add.profession.invalids%}
+                        {%set index = (index + 1)%}
+                        <tr class="wrapper">
+                            <td class="placedId">
+                            {{index}}
+                            </td>
+                            <td class="name">
+                                <span style="display:flex;word-wrap: break-word;width: 100%;">{{profession.name}}</span>
+                            </td>
+                            <td style="color:red;">
+                                {{profession.errorReason}}
+                            </td>
+                        </tr>
+                        {%endfor%}
+                        {%endif%}
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="width:100%;margin-top:20px;margin-bottom: 20px;display:flex;justify-content:flex-end;">
+                <button id = "removeErrors" class="btn bg-warning">
+                    Remove Errors
+                </button>
+            </div>
+            {%endif%}
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id = "holderTable">
+                    <thead>
+                        <tr>
+                            <th>
+                            #
+                            </th>
+                            <th class="text-center">
+                                Profession Name
+                            </th>
+                            <th class="text-center">
+                                Category Weight
+                            </th>
+                            <th class="text-center">
+                                Relating Disciplines
+                            </th>
+                            <th class="text-center">
+                                Discipline Weights
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-disciplines = '{{data.disciplines|json_encode}}'>
+                        {%set index = 0%}
+                        <tr class="wrapper" processed = "false">
+                            <td class="placedId">
+                            {{index + 1}}
+                            </td>
+                            <td class="nameHolder">
+                                <input type="text" class="form-control" name="profession_name" value = "" placeholder="Please insert profession name">
+                            </td>
+                            <td class="categoryWeightHolder" data-value = '{"science":0,"art":0}'>
+                                <div class="weight science" style="width:100%;display:flex;align-items:center;margin-bottom:18px;flex-direction: column;">
+                                    <span style="margin-bottom:7px;">science</span>
+                                    <input type="number" value="0" step="5" min="0" max="100">
+                                </div>
+                                <div class="weight art" style="width:100%;display:flex;align-items:center;flex-direction: column;">
+                                    <span style="margin-bottom:7px;">art</span>
+                                    <input type="number" value="0" step="5" min="0" max="100">
+                                </div>
+                            </td>
+                            <td class="disciplinesHolder">
+                                <select name="disciplines" id="" style = "visibility: hidden;" multiple = "multiple" data-value = '[]'>
+
+                                </select>
+                            </td>
+                            <td class="weightHolder" data-value = '{}'>
+
+                            </td>
+                            <td class="controls">
+                                <div>
+                                    <button class="remove btn bg-danger" style="margin-right:8px;">Remove</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="width:100%;margin-top:20px;display:flex;justify-content:flex-end;">
+                <button id = "addNewRow" class="btn btn-success">
+                    Add Another profession
+                </button>
+            </div>
+
+            <div style="width:100%;margin-top:15px;display:flex;justify-content:center;">
+                <button type="submit" style="width:100%;padding:2%;" class="btn bg-success" id = "saveData" disabled = "disabled">Save Data</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+{%include 'user/general-administrator/dashboard/footer.html'%}
+
+<script>
+    var checkInterval = setInterval(function(){
+        if(typeof $ === 'function' && typeof $.fn.selectize === 'function'){
+            clearInterval(checkInterval);
+
+            var form = $('#holder'),
+            table = form.find('#holderTable'),
+            tbody = table.children('tbody'),
+            addNewRowBtn =  form.find('#addNewRow'),
+            saveDataBtn = form.find('#saveData'),
+            removeErrors = form.find('#removeErrors');
+
+            tbody.on('index_change',function(e){
+                var rows = tbody.find('tr'),
+                current = 0;
+                if(rows.length){
+                    saveDataBtn.closest('div').css({
+                        'display' : 'flex'
+                    });
+                }else{
+                    saveDataBtn.closest('div').css({
+                        'display' : 'none'
+                    });
+                }
+                rows.each(function(i,row){
+                    row = $(row);
+                    row.find('td.placedId').eq(0).html(current + 1);
+                    current++;
+                });
+            });
+
+            function processDisciplines(){
+                $(document.body).find('tr.wrapper[processed="false"]').each(function(){
+                    var self = $(this),
+                    disciplines = self.find('td.disciplinesHolder > select[name="disciplines"]').eq(0),
+                    categoryWeightHolder = self.find('td.categoryWeightHolder').eq(0),
+                    scienceWeightInput = categoryWeightHolder.find('div.weight.science > input').eq(0),
+                    artWeightInput = categoryWeightHolder.find('div.weight.art > input').eq(0),
+                    weights = self.find('td.weightHolder').eq(0),
+                    isReady = false;
+
+                    disciplines.css({
+                        'visibility' : 'visible'
+                    });
+
+                    weights.css({
+                        'visibility' : 'visible'
+                    });
+                    
+                    var checkControl = setInterval(function(){
+                        if(isReady){
+                            clearInterval(checkControl);
+                            var disciplinesControl = disciplines.get(0).selectize,
+                            changeTimer;
+
+                            categoryWeightHolder.on('change blur keypress focus keydown keyup',function(e){
+                                if(changeTimer){
+                                    clearTimeout(changeTimer);
+                                }
+                                changeTimer = setTimeout(function(){
+                                    var newObject = {
+                                        'art' : parseInt(artWeightInput.val()),
+                                        'science' : parseInt(scienceWeightInput.val())
+                                    };
+
+                                    if(artWeightInput.is(e.target)){
+                                        newObject.art = parseInt(newObject.art) || 0;
+                                        var max = parseInt(artWeightInput.attr('max')),
+                                        min = parseInt(artWeightInput.attr('min'));
+                                        if(newObject.art < min){
+                                            newObject.art = min;
+                                        }
+                                        if(newObject.art > max){
+                                            newObject.art = max;
+                                        }
+                                        newObject.science = (100 - newObject.art);
+                                    }
+
+                                    if(scienceWeightInput.is(e.target)){
+                                        newObject.science = parseInt(newObject.science) || 0;
+                                        var max = parseInt(scienceWeightInput.attr('max')),
+                                        min = parseInt(scienceWeightInput.attr('min'));
+                                        if(newObject.science < min){
+                                            newObject.science = min;
+                                        }
+                                        if(newObject.science > max){
+                                            newObject.science = max;
+                                        }
+                                        newObject.art = (100 - newObject.science);
+                                    }
+                                    artWeightInput.val(newObject.art);
+                                    scienceWeightInput.val(newObject.science);
+                                    categoryWeightHolder.data('value',newObject);
+                                },500);
+                            });
+
+                            weights.on('change keypress blur keydown focus keydown keyup','input',function(){
+                                var self = $(this),
+                                weightObject = weights.data('value'),
+                                disciplineId = self.data('discipline-id'),
+                                max = parseInt(self.attr('max')),
+                                min = parseInt(self.attr('min')),
+                                weight = self.val();
+                                weight = (parseInt(weight) == weight ? parseInt(weight) : 0);
+
+                                if(weight < min){
+                                    weight = min;
+                                }
+                                if(weight > max){
+                                    weight = max;
+                                }
+                                self.val(weight);
+
+                                if(typeof weightObject[disciplineId] == 'object'){
+                                    weightObject[disciplineId]['weight'] = weight;
+                                }else{
+                                    weightObject[disciplineId] = {
+                                        'weight' : weight
+                                    };
+                                }
+                                weights.data('value',weightObject);
+                            });
+                            
+                            var disciplineControlDropdown = {
+                                'status' : 'closed',
+                                'dropdownOffset': null,
+                                'dropdown': null,
+                                'position':function(dropdown){
+                                    if(this.status == 'closed'){
+                                        this.dropdown = dropdown;
+                                        if(this.dropdown.css('display').toLowerCase() == 'block'){
+                                            this.status = 'opened';
+                                            this.dropdownOffset = this.dropdown.offset();
+                                            if(this.dropdownOffset.left && (this.dropdown.css('position').toLowerCase() == 'absolute')){
+                                                var process = function(){
+                                                    this.dropdown.css({
+                                                        'position':'fixed',
+                                                        'z-index':'9000'
+                                                    }).offset({
+                                                        'top':(this.dropdownOffset.top + 8),
+                                                        'left':(this.dropdownOffset.left + 8)
+                                                    });
+                                                };
+
+                                                process = process.bind(this);
+                                                setTimeout(process,100);
+                                            }else{
+                                                disciplinesControl.close();
+                                                setTimeout(function(){
+                                                    disciplinesControl.open();
+                                                },20);
+                                            }
+                                        }
+                                    }
+                                },
+                                'rePosition':function(){
+                                    if(this.dropdown){
+                                        this.status = 'closed';
+                                        this.position(this.dropdown);
+                                    }
+                                }
+                            };
+
+                            disciplinesControl.on('dropdown_open',function(dropdown){
+                                if(disciplineControlDropdown.status == 'closed'){
+                                    disciplineControlDropdown.position(dropdown);
+                                }
+                            });
+
+                            disciplinesControl.on('dropdown_close',function(dropdown){
+                                disciplineControlDropdown.status = 'closed';
+                                dropdown.css({
+                                    'position':'absolute'
+                                });
+                                disciplinesControl.positionDropdown();
+                            });
+
+                            disciplinesControl.on('change',function(e){
+                                var newDisciplineArray = this.getValue(),
+                                oldDisciplineArray = disciplines.data('value');
+
+                                if(newDisciplineArray !== oldDisciplineArray){
+                                    weights.html('');
+                                    var weightWrapper = $(document.createElement('div')),
+                                    oldWeightObject = weights.data('value'),
+                                    newWeightObject = {};
+
+                                    newDisciplineArray.forEach(function(value,i){
+                                        var weight = 0;
+                                        if((typeof oldWeightObject[value] == 'object') && (typeof oldWeightObject[value]['weight'] == 'number')){
+                                            weight = oldWeightObject[value]['weight'];
+                                        }
+
+                                        newWeightObject[value] = {
+                                            'weight' : weight
+                                        };
+
+                                        weightWrapper.append('<input type = "number" name = "weight_'+value+'" min = 0 step = 1 max = 100 data-discipline-id = "'+value+'" value = "'+weight+'">');
+                                    });
+
+                                    weights.append(weightWrapper);
+                                    disciplines.data('value',JSON.parse(JSON.stringify(newDisciplineArray)));
+                                    weights.data('value',newWeightObject);
+                                }
+                                disciplineControlDropdown.rePosition();
+                            });
+
+                            disciplinesControl.trigger.call(disciplinesControl,'change');
+                        }
+                    },300);
+
+                    disciplines.selectize({
+                        create: false,
+                        options: tbody.data('disciplines'),
+                        items: null,
+                        placeholder: 'Please select relating disciplines',
+                        plugins:[
+                            'remove_button',
+                            'drag_drop'
+                        ],
+                        'labelField':'name',
+                        'valueField':'id',
+                        'sortField':[
+                            {
+                                'field':'name',
+                                'direction':'asc'
+                            },
+                            {
+                                'field':'id',
+                                'direction':'asc'
+                            }
+                        ],
+                        'searchField':[
+                            'name'
+                        ],
+                        onInitialize: function(){
+                            isReady = true;
+                            self.attr('processed',true);
+                        },
+                        render: {
+                            'item' : function(item,escape){
+                                return '<div class="item" style = "width:100%;display:flex;">'+
+                                            '<span class="fa fa-user">'+
+                                            '</span>'+
+                                            '<span class="text">'+
+                                                escape(item.name)+
+                                            '</span>'+
+                                        '</div>';
+                            }
+                        }
+                    });
+                });
+            }
+
+            removeErrors.on('click',function(){
+                form.find('#displayErrors').remove();
+                $(this).remove();
+            });
+
+            saveDataBtn.on('click',function(e){
+                e.preventDefault();
+                var data = [],
+                rows = tbody.find('tr');
+
+                rows.each(function(){
+                    var self = $(this),
+                    out = {
+                        'name': self.find('td.nameHolder > input').val(),
+                        'categories' : self.find('td.categoryWeightHolder').eq(0).data('value'),
+                        'disciplines' : self.find('td.weightHolder').eq(0).data('value')
+                    };
+                    if((typeof out.name != 'undefined') && (out.name.length > 3)){
+                        data.push(out);
+                    }
+                });
+                
+                function send_sync_data(data){
+                    var newForm = $(document.createElement('form')).attr('method',form.attr('method')).attr('action',form.attr('action'));
+                    data.forEach(function(data,index){
+                        newForm.append('<input type = "hidden" name = "formData['+index+'][name]" value = "'+data.name+'">').append('<input type = "hidden" name = "formData['+index+'][categories]" value = \''+JSON.stringify(data.categories)+'\'>').append('<input type = "hidden" name = "formData['+index+'][disciplines]" value = \''+JSON.stringify(data.disciplines)+'\'>');
+                    });
+
+                    form.children('input[type="hidden"]').each(function(){
+                        var self = $(this);
+                        newForm.append('<input type = "hidden" name = "'+self.attr('name')+'" value = "'+self.val()+'">')
+                    });
+
+                    newForm.prependTo(document.body);
+                    newForm.submit();
+                }
+
+                send_sync_data(data);
+            });
+            
+            tbody.on('keypress',function(e){
+                var key = e.charCode || e.keyCode || 0;     
+                if(key == 13){
+                    e.preventDefault();
+                }
+            });
+
+            addNewRowBtn.on('click',function(e){
+                e.preventDefault();
+                tbody.append('<tr class="wrapper" processed = "false"><td class="placedId"></td><td class="nameHolder"><input type="text" class="form-control" name="profession_name" value = "" placeholder="Please insert profession name"></td><td class="categoryWeightHolder"><div class="weight science" style="width:100%;display:flex;align-items:center;margin-bottom:18px;flex-direction: column;"><span style="margin-bottom:7px;">science</span><input type="number" value="0" step="5" min="0" max="100"></div><div class="weight art" style="width:100%;display:flex;align-items:center;flex-direction: column;"><span style="margin-bottom:7px;">art</span><input type="number" value="0" step="5" min="0" max="100"></div></td><td class="disciplinesHolder"><select name="disciplines" id="" style = "visibility: hidden;" multiple = "multiple" data-value = \'[]\'></select></td><td class="weightHolder" data-value = \'{}\'></td><td class="controls"><div><button class="remove btn bg-danger" style="margin-right:8px;">Remove</button></div></td></tr>');
+                tbody.trigger('index_change');
+                processDisciplines();
+            });
+
+            tbody.on('click','button.remove',function(e){
+                e.preventDefault();
+                var self = $(this);
+                self.closest('tr.wrapper').remove();
+                tbody.trigger('index_change');
+            });
+
+            processDisciplines();
+            $('#saveData').removeAttr('disabled');
+        }
+    },200);
+</script>
+
+
+<!--<script src='{{data.googleCaptcha.url}}'></script>
+<script>
+    var $otherInterval = setInterval(function(){
+        if((typeof $ == 'function') && (typeof grecaptcha == 'object') && (typeof grecaptcha.execute == 'function')){
+            clearInterval($otherInterval);
+            grecaptcha.execute('{{data.googleCaptcha.siteKey}}', {action: 'adminUpdateDisciplines'}).then(function(token) {
+                $('#googleCaptcha').val(token);
+                $('#saveData').removeAttr('disabled');
+            });
+        }
+    },100);
+</script>-->

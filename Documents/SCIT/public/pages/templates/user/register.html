@@ -1,0 +1,873 @@
+{%include 'user/auth/header.html'%}
+
+            <section class="margins">
+              <div class="container">
+                        <div class="row">
+                                <div class="col-md-8 col-xs-12 col-sm-12  col-md-offset-2 col-lg-offset-3 col-lg-6">
+                <div id="container_demo" >
+                    <div id="wrapper">
+                        <div id="register" class="animate form">
+                            <form  method = "post" action="{{-data.user.register.url-}}" autocomplete="on">
+                                <input name="token" type="hidden" value="{{-data.user.register.token-}}">
+                                <h1> Sign up </h1>
+                                {%include 'pageNotification.html'%}
+                                <p class="change_ink" style="margin-bottom: 20px;">
+                                    Already a member ? <a href="/user/login"> Sign In </a> Or <a href="/"> Take Me Home </a>
+                                </p>
+
+                                <p>
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'name'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+
+                                    {%if attribute(data.errors.response,'name') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'name')%}
+                                    {%endif%}
+
+                                    <label for="namesignup" class="youname">Your Name</label>
+                                    <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} value = "{{data.post.name}}" id="namesignup" name="name" required="required" type="name" placeholder="someone someone" />
+
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+                                </p>
+
+                                <p>
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'password'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+
+                                    {%if attribute(data.errors.response,'password') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'password')%}
+                                    {%endif%}
+
+                                    <label for="passwordsignup" class="youpasswd" data-icon="p">Your password </label>
+                                    <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} value = "{{data.post.password}}" id="passwordsignup" name="password" required="required" type="password" placeholder="************"/>
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+
+                                </p>
+
+                                <p>
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'confirm_password'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+
+                                    {%if attribute(data.errors.response,'confirm_password') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'confirm_password')%}
+                                    {%endif%}
+
+                                    <label for="passwordsignup_confirm" class="youpasswd" data-icon="p">Please confirm your password </label>
+                                    <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} id="passwordsignup_confirm" name="confirm_password" required="required" type="password" placeholder="************" value = "{{data.post.confirm_password}}"/>
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+                                </p>
+
+                                <p>
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'country'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+
+                                    {%if attribute(data.errors.response,'country') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'country')%}
+                                    {%endif%}
+
+                                    {%set value = data.post.country|default(162)%}
+                                    <label for="countrysignup" class="country">Please select your country</label>
+                                    <select style="visibility:hidden;" data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} value = "{{value}}" id="countrysignup" data-post-value = "{{value}}" name="country" required="required" data-values = "{{data.countries|json_encode()}}" processed = "false">
+                                    </select>
+
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+                                </p>
+
+                                <p>
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'region'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+
+                                    {%if attribute(data.errors.response,'region') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'region')%}
+                                    {%endif%}
+
+                                    {%set value = data.post.region|default('0')%}
+                                    <label for="regionsignup" class="country">Please select your region</label>
+                                    <select style="visibility:hidden;" data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} id="regionsignup" name="region" value = "{{value}}" data-post-value = "{{value}}" required="required" data-get-region-url = "{{data.regions.url}}" data-get-region-token = "{{data.regions.token}}" processed = "false">
+
+                                    </select>
+
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+                                </p>
+
+                                <p>
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'local_government_area'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+
+                                    {%if attribute(data.errors.response,'local_government_area') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'local_government_area')%}
+                                    {%endif%}
+
+                                    {%set value = data.post.local_government_area|default('0')%}
+                                    <label for="lgasignup" class="lga">Please select your local government</label>
+                                    <select style="visibility:hidden;" data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} id="lgasignup" name="local_government_area" value = "{{value}}" data-post-value = "{{value}}" data-value = "{{value}}" required="required" data-get-lgas-url = "{{data.lgas.url}}" data-get-lgas-token = "{{data.lgas.token}}" processed = "false">
+
+                                    </select>
+
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+                                </p>
+
+                                <p>
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'personality'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+
+                                    {%if attribute(data.errors.response,'personality') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'personality')%}
+                                    {%endif%}
+
+                                    <label for="usertypesignup" class="personality">Please select your category</label>
+                                    <select style="visibility:hidden;" data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} value = "{{data.post.personality}}" id="usertypesignup" name="personality" required="required" data-post-value = "{{data.post.personality|default(0)}}" data-values = '[{"id":"student","name":"Student"},{"id":"secondary-school-administrator","name":"Secondary School Administrator"},{"id":"Institution-administrator","name":"Institution Administrator"},{"id":"internship-provider-administrator","name":"Internship Provider Administrator"},{"id":"general-administrator","name":"General Administrator"},{"id":"support-administrator","name":"Support Administrator"}]' processed="false">
+                                    </select>
+
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+                                </p>
+
+                                <p style="display:none;">
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'email'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+
+                                    {%if attribute(data.errors.response,'email') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'email')%}
+                                    {%endif%}
+
+                                    <label for="emailsignup" class="youmail" data-icon="e">Your Email</label>
+                                    <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} value = "{{data.post.email}}" id="emailsignup" name="email" type="email" placeholder="someone@mail.com" disabled = "disabled"/>
+
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+                                </p>
+                                <p style="display:none;">
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'phone'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+
+                                    {%if attribute(data.errors.response,'phone') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'phone')%}
+                                    {%endif%}
+
+                                    <label for="phonesignup" class="youphone"> Your Phone</label>
+                                    <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} value = "{{data.post.phone}}" id="phonesignup" name="phone" type="text" placeholder="080*********" disabled = "disabled"/>
+
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+                                </p>
+                                <p style="display:none;">
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'student_unique_name'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+
+                                    {%if attribute(data.errors.response,'student_unique_name') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'student_unique_name')%}
+                                    {%endif%}
+
+                                    <label for="uniqiuenamesignup" class="youphone"> Your Unique Name / Username</label>
+                                    <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} value = "{{data.post.student_unique_name}}" id="uniqiuenamesignup" name="student_unique_name" type="text" placeholder="A unique name that can be used for login" disabled = "disabled"/>
+
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+                                </p>
+                                <p style="display:none;">
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'student_dob'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+
+                                    {%if attribute(data.errors.response,'student_dob') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'student_dob')%}
+                                    {%endif%}
+
+                                    <label for="dobsignup" class="youdob"> Your Date Of Birth</label>
+                                    <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} value = "{{data.post.student_dob}}" id="dobsignup" name="student_dob" type="date" placeholder="dd/mm/yyyy is the specified format" disabled = "disabled"/>
+
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+                                </p>
+                                <p style = "display: none;">
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'student_class'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+
+                                    {%if attribute(data.errors.response,'student_class') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'student_class')%}
+                                    {%endif%}
+
+                                    <label for="userlevel" class="level">Please select your level (Class)</label>
+                                    <select style="visibility:hidden;" data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} value = "{{data.post.student_class}}" id="userlevel" name="student_class" required="required" data-post-value = "{{data.post.student_class|default('jss3')}}" data-values = '[{"id":"jss3","name":"Junior Secondary School 3 (jss3)"},{"id":"sss1","name":"Senior Secondary School 1 (sss1)"},{"id":"sss2","name":"Senior Secondary School 2 (sss2)"},{"id":"sss3","name":"Senior Secondary School 3 (sss3)"}]' processed="false" disabled = "disabled">
+                                    </select>
+
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+                                </p>
+
+                                <p style="display:none;">
+                                    {%set hasError,error = 0,''%}
+                                    {%if data.errors.from == 'school_id'%}
+                                        {%set hasError,error = 1,data.errors.response%}
+                                    {%endif%}
+
+                                    {%if attribute(data.errors.response,'school_id') is defined%}
+                                        {%set hasError,error = 1,attribute(data.errors.response,'school_id')%}
+                                    {%endif%}
+
+                                    <label for="schoolId" class="schoolId">School List</label>
+                                    <select data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} value = "{{data.post.school_id}}" id="schoolId" name="school_id" required="required" data-post-value = "{{data.post.school_id|default(0)}}" processed="false" disabled = "disabled" data-get-schools-url = "{{data.schools.url}}" data-get-schools-token = "{{data.schools.token}}">
+                                    </select>
+                                    {%if hasError%}
+                                    <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                    {%endif%}
+                                </p>
+                                <p class="signin button">
+									<input type="submit" id = "signUp" value="Sign up"/>
+                                </p>
+
+                                <script type="text/javascript" src="/assets/js/jquery-1.9.1.js"></script>
+                                <script src = "/assets/js/dashboard/mine.js"></script>
+
+                                <script type="text/javascript">
+                                    var processor = new Processor();
+
+                                    var $checkInterval = setInterval(function(){
+                                        if(typeof $ == 'function' && typeof $.fn.selectize === 'function'){
+                                            clearInterval($checkInterval);
+
+                                            $('#signUp').on('click',function(){
+                                                var self = $(this),
+                                                form = self.closest('form').eq(0),
+                                                newForm = $(document.createElement('form'));
+
+                                                if(!form.length){
+                                                    return;
+                                                }
+
+                                                processor.addLoader();
+                                                newForm.attr({
+                                                    'action' : form.attr('action'),
+                                                    'method': form.attr('method')
+                                                });
+
+                                                form.serializeArray().forEach(function(input){
+                                                    newForm.append($(document.createElement('input')).attr({
+                                                        'type' : 'hidden',
+                                                        'name' : input.name,
+                                                        'value' : input.value
+                                                    }));
+                                                });
+
+                                                newForm.prependTo($(document.body));
+                                                newForm.get(0).submit();
+                                            });
+
+                                            var regionHtml = $('#regionsignup'),
+                                            regionLoader = new InlineLoader(regionHtml.parent()),
+                                            regionUrl = regionHtml.data('get-region-url'),
+                                            regionToken = regionHtml.data('get-region-token'),
+                                            countryHtml = $('#countrysignup'),
+                                            lgaHtml = $('#lgasignup'),
+                                            lgaLoader = new InlineLoader(lgaHtml.parent()),
+                                            lgaUrl = lgaHtml.data('get-lgas-url'),
+                                            lgaToken = lgaHtml.data('get-lgas-token'),
+                                            personalityHtml = $('#usertypesignup'),
+                                            levelHtml = $('#userlevel'),
+                                            emailHtml = $('#emailsignup'),
+                                            phoneHtml = $('#phonesignup'),
+                                            dobHtml = $('#dobsignup'),
+                                            uniqueNameHtml = $('#uniqiuenamesignup'),
+                                            schoolIdHtml = $('#schoolId'),
+                                            schoolIdLoader = new InlineLoader(schoolIdHtml.parent()),
+                                            schoolIdUrl = schoolIdHtml.data('get-schools-url'),
+                                            schoolIdToken = schoolIdHtml.data('get-schools-token');
+
+                                            schoolIdHtml.selectize({
+                                                create:false,
+                                                options: null,
+                                                items: null,
+                                                placeholder: 'please select your school from the list below',
+                                                closeAfterSelect: true,
+                                                maxItems: 1,
+                                                plugins:[
+                                                    'remove_button'
+                                                ],
+                                                'labelField':'name',
+                                                'valueField':'id',
+                                                'sortField':[
+                                                    {
+                                                        'field':'name',
+                                                        'direction':'asc'
+                                                    },
+                                                    {
+                                                        'field':'id',
+                                                        'direction':'asc'
+                                                    }
+                                                ],
+                                                'searchField':[
+                                                    'name'
+                                                ],
+                                                onInitialize: function(){
+                                                    schoolIdHtml.get(0).selectize.disable();
+                                                    schoolIdHtml.attr('processed',true);
+                                                }
+                                            });
+
+                                            levelHtml.selectize({
+                                                create: false,
+                                                options: levelHtml.data('values'),
+                                                items: ['0'],
+                                                placeholder: 'Please select your class',
+                                                closeAfterSelect: true,
+                                                maxItems: 1,
+                                                plugins:[
+                                                    'remove_button'
+                                                ],
+                                                'labelField':'name',
+                                                'valueField':'id',
+                                                'sortField':[
+                                                    {
+                                                        'field':'name',
+                                                        'direction':'asc'
+                                                    },
+                                                    {
+                                                        'field':'id',
+                                                        'direction':'asc'
+                                                    }
+                                                ],
+                                                'searchField':[
+                                                    'name'
+                                                ],
+                                                onInitialize: function(){
+                                                    levelHtml.get(0).selectize.disable();
+                                                    levelHtml.attr('processed',true);
+                                                }
+                                            });
+
+                                            personalityHtml.selectize({
+                                                create: false,
+                                                options: personalityHtml.data('values'),
+                                                items: ['student'],
+                                                placeholder: 'Please select your category',
+                                                closeAfterSelect: true,
+                                                maxItems: 1,
+                                                persist: false,
+                                                plugins:[
+                                                    'remove_button'
+                                                ],
+                                                'labelField':'name',
+                                                'valueField':'id',
+                                                'sortField':[
+                                                    {
+                                                        'field':'name',
+                                                        'direction':'asc'
+                                                    },
+                                                    {
+                                                        'field':'id',
+                                                        'direction':'asc'
+                                                    }
+                                                ],
+                                                'searchField':[
+                                                    'name'
+                                                ],
+                                                onInitialize: function(){
+                                                    personalityHtml.get(0).selectize.disable();
+                                                    personalityHtml.attr('processed',true);
+                                                }
+                                            });
+
+                                            lgaHtml.selectize({
+                                                create: false,
+                                                options: null,
+                                                items: null,
+                                                placeholder: 'Please select your local government area',
+                                                closeAfterSelect: true,
+                                                maxItems: 1,
+                                                plugins:[
+                                                    'remove_button'
+                                                ],
+                                                'labelField':'name',
+                                                'valueField':'id',
+                                                'sortField':[
+                                                    {
+                                                        'field':'name',
+                                                        'direction':'asc'
+                                                    },
+                                                    {
+                                                        'field':'id',
+                                                        'direction':'asc'
+                                                    }
+                                                ],
+                                                'searchField':[
+                                                    'name'
+                                                ],
+                                                onInitialize: function(){
+                                                    lgaHtml.get(0).selectize.disable();
+                                                    lgaHtml.attr('processed',true);
+                                                }
+                                            });
+
+                                            regionHtml.selectize({
+                                                create: false,
+                                                options: null,
+                                                items: null,
+                                                placeholder: 'Please select your region',
+                                                closeAfterSelect: true,
+                                                maxItems: 1,
+                                                plugins:[
+                                                    'remove_button'
+                                                ],
+                                                'labelField':'name',
+                                                'valueField':'id',
+                                                'sortField':[
+                                                    {
+                                                        'field':'name',
+                                                        'direction':'asc'
+                                                    },
+                                                    {
+                                                        'field':'id',
+                                                        'direction':'asc'
+                                                    }
+                                                ],
+                                                'searchField':[
+                                                    'name'
+                                                ],
+                                                onInitialize: function(){
+                                                    regionHtml.get(0).selectize.disable();
+                                                    regionHtml.attr('processed',true);
+                                                }
+                                            });
+
+                                            countryHtml.selectize({
+                                                create: false,
+                                                options: countryHtml.data('values'),
+                                                items: ([countryHtml.data('post-value') || 162]),
+                                                placeholder: 'Please select your country',
+                                                closeAfterSelect: true,
+                                                maxItems: 1,
+                                                plugins:[
+                                                    'remove_button'
+                                                ],
+                                                'labelField':'name',
+                                                'valueField':'id',
+                                                'sortField':[
+                                                    {
+                                                        'field':'name',
+                                                        'direction':'asc'
+                                                    },
+                                                    {
+                                                        'field':'id',
+                                                        'direction':'asc'
+                                                    }
+                                                ],
+                                                'searchField':[
+                                                    'name'
+                                                ],
+                                                onInitialize: function(){
+                                                    var self = this,
+                                                    countries = countryHtml.data('values');
+
+                                                    for(var i = 0,j  = countries.length;i < j;i++){
+                                                        if(countries[i]['name'].toLowerCase() == 'nigeria'){
+                                                            self.setValue(countries[i]['id']);
+                                                            i = j;
+                                                            break;
+                                                        }
+                                                    }
+                                                    countryHtml.attr('processed',true);
+                                                }
+                                            });
+
+                                            $checkControls = setInterval(function(){
+                                                if(!$(document.body).find('select[processed="false"]').length){
+                                                    clearInterval($checkControls);
+
+                                                    var countryControl = countryHtml.get(0).selectize,
+                                                    regionControl = regionHtml.get(0).selectize,
+                                                    lgaControl = lgaHtml.get(0).selectize,
+                                                    levelControl = levelHtml.get(0).selectize,
+                                                    personalityControl = personalityHtml.get(0).selectize,
+                                                    schoolIdControl = schoolIdHtml.get(0).selectize;
+
+                                                    if(schoolIdHtml.data('has-error')){
+                                                        schoolIdControl.$wrapper.css({
+                                                            'border': '1px solid red'
+                                                        });
+                                                    }
+
+                                                    if(lgaHtml.data('has-error')){
+                                                        lgaControl.$wrapper.css({
+                                                            'border':'1px solid red'
+                                                        });
+                                                    }
+
+                                                    if(countryHtml.data('has-error')){
+                                                        countryControl.$wrapper.css({
+                                                            'border':'1px solid red'
+                                                        });
+                                                    }
+
+                                                    if(regionHtml.data('has-error')){
+                                                        regionControl.$wrapper.css({
+                                                            'border':'1px solid red'
+                                                        });
+                                                    }
+
+                                                    if(personalityHtml.data('has-error')){
+                                                        personalityControl.$wrapper.css({
+                                                            'border':'1px solid red'
+                                                        });
+                                                    }
+
+                                                    if(levelHtml.data('has-error')){
+                                                        levelControl.$wrapper.css({
+                                                            'border':'1px solid red'
+                                                        });
+                                                    }
+
+                                                    schoolIdControl.on('change',function(){
+                                                        var value = schoolIdControl.getValue();
+                                                        schoolIdHtml.data('value',value);
+
+                                                        if(schoolIdHtml.data('has-error')){
+                                                           schoolIdHtml.data('has-error',false);
+                                                            schoolIdControl.$wrapper.css({
+                                                                'border': '1px solid green'
+                                                            });
+                                                            schoolIdHtml.siblings('span.error').remove();
+                                                        }
+                                                    });
+
+                                                    levelControl.on('change',function(){
+                                                        var value = levelControl.getValue();
+                                                        levelHtml.data('value',value);
+
+                                                        if(levelHtml.data('has-error')){
+                                                           levelHtml.data('has-error',false);
+                                                            levelControl.$wrapper.css({
+                                                                'border': '1px solid green'
+                                                            });
+                                                            levelHtml.siblings('span.error').remove();
+                                                        }
+
+                                                        if(value != '0'){
+                                                            schoolIdHtml.removeAttr('disabled').closest('p').css({
+                                                                'display': 'block'
+                                                            });
+                                                            schoolIdControl.enable();
+                                                            schoolIdControl.trigger('focus');
+                                                        }else{
+                                                            schoolIdHtml.attr({
+                                                                'disabled': 'disabled'
+                                                            });
+                                                            schoolIdControl.disable();
+                                                            schoolIdControl.trigger('blur');
+                                                        }
+                                                    });
+
+                                                    personalityControl.on('change',function(){
+                                                        var value = personalityControl.getValue();
+
+                                                        personalityHtml.data('value',value);
+
+                                                        if(personalityHtml.data('has-error')){
+                                                            personalityHtml.data('has-error',false);
+                                                            personalityControl.$wrapper.css({
+                                                                'border': '1px solid green'
+                                                            });
+                                                            personalityHtml.siblings('span.error').remove();
+                                                        }
+
+                                                        if(value === 'student'){
+                                                            levelHtml.removeAttr('disabled').attr({
+                                                                'required': 'required'
+                                                            }).closest('p').css({
+                                                                'display': 'block'
+                                                            });
+                                                            dobHtml.removeAttr('disabled').attr({
+                                                                'required': 'required'
+                                                            }).closest('p').css({
+                                                                'display': 'block'
+                                                            });
+                                                            emailHtml.attr({'disabled':'disabled'}).removeAttr('required').closest('p').css({
+                                                                'display': 'none'
+                                                            });
+                                                            phoneHtml.attr({'disabled':'disabled'}).removeAttr('required').closest('p').css({
+                                                                'display': 'none'
+                                                            });
+                                                            uniqueNameHtml.removeAttr('disabled').attr({
+                                                                'required': 'required'
+                                                            }).closest('p').css({
+                                                                'display': 'block'
+                                                            });
+
+                                                            var postedLevelValue = levelHtml.data('post-value');
+                                                            levelControl.enable();
+                                                            levelControl.focus();
+                                                            if(postedLevelValue){
+                                                                levelControl.setValue([postedLevelValue]);
+                                                            }
+
+                                                            schoolIdControl.clearOptions();
+                                                            schoolIdControl.clear();
+
+                                                            schoolIdLoader.add();
+                                                            $.ajax({
+                                                                'method': 'get',
+                                                                'url': schoolIdUrl,
+                                                                'data': {
+                                                                    'regionId': regionControl.getValue(),
+                                                                    'countryId': countryControl.getValue(),
+                                                                    'lgaId': lgaControl.getValue(),
+                                                                    'for': 'register',
+                                                                    'token': schoolIdToken
+                                                                },
+                                                                'success': function(resp){
+                                                                    schoolIdLoader.remove(function(){
+                                                                        if (resp.status == 'ok') {
+                                                                            if (resp.response.length) {
+                                                                                var postedSchoolIdValue = schoolIdHtml.data('post-value');
+                                                                                schoolIdControl.addOption(resp.response);
+                                                                                schoolIdControl.refreshOptions(postedSchoolIdValue ? false : true);
+                                                                                if (postedSchoolIdValue) {
+                                                                                    schoolIdControl.setValue(postedSchoolIdValue);
+                                                                                    schoolIdControl.refreshItems();
+                                                                                }
+                                                                                schoolIdHtml.siblings('span.error').remove();
+                                                                            } else {
+                                                                                schoolIdHtml.siblings('span.error').remove();
+                                                                                schoolIdHtml.parent().append('<span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">Oops there are no registered school within your region</span>');
+                                                                            }
+                                                                        } else {
+                                                                            alert(resp.response);
+                                                                        }
+                                                                    });
+                                                                },
+                                                                'error' : function(){
+                                                                    schoolIdLoader.remove(function(){
+                                                                        alert('An unknown server error occured');
+                                                                    });
+                                                                }
+                                                            });
+
+                                                            schoolIdHtml.closest('p').css({
+                                                                'display': 'block'
+                                                            });
+                                                        }else{
+                                                            levelHtml.attr('disabled','disabled').removeAttr('required').closest('p').css({
+                                                                'display': 'none'
+                                                            });
+                                                            dobHtml.attr('disabled','disabled').removeAttr('required').closest('p').css({
+                                                                'display': 'none'
+                                                            });
+                                                            emailHtml.removeAttr('disabled').attr({
+                                                                'required': 'required'
+                                                            }).closest('p').css({
+                                                                'display': 'block'
+                                                            });
+                                                            phoneHtml.removeAttr('disabled').attr({
+                                                                'required': 'required'
+                                                            }).closest('p').css({
+                                                                'display': 'block'
+                                                            });
+                                                            uniqueNameHtml.attr('disabled','disabled').removeAttr('required').closest('p').css({
+                                                                'display': 'none'
+                                                            });
+                                                            levelControl.disable();
+                                                            levelControl.blur();
+                                                            schoolIdHtml.attr({'disabled':'disabled'}).removeAttr('required').closest('p').css({
+                                                                'display': 'none'
+                                                            });
+                                                        }
+
+                                                        uniqueNameHtml.trigger('focus');
+                                                    });
+
+                                                    lgaControl.off('change');
+                                                    lgaControl.on('change',function(e){
+                                                        var value = lgaControl.getValue();
+                                                        if(value.length){
+                                                            lgaHtml.data('value',value);
+                                                            lgaHtml.attr('value',value);
+
+                                                            var postedPersonalityValue = personalityHtml.data('post-value');
+                                                            personalityControl.enable();
+                                                            if(postedPersonalityValue){
+                                                                personalityControl.setValue(postedPersonalityValue);
+                                                            }
+                                                            personalityControl.trigger.call(personalityControl,'change');
+
+                                                            if(!personalityControl.getValue().length){
+                                                                personalityControl.focus();
+                                                            }
+                                                        }else{
+                                                            lgaHtml.data('value',0);
+                                                            lgaHtml.attr('value',0);
+                                                            personalityControl.clear();
+                                                            personalityControl.disable();
+                                                        }
+                                                    });
+
+                                                    regionControl.off('change');
+                                                    regionControl.on('change',function(){
+                                                        var value = regionControl.getValue(),
+                                                        countryId = countryControl.getValue();
+                                                        lgaControl.clear();
+                                                        lgaControl.clearOptions();
+                                                        lgaControl.disable();
+
+                                                        if((value.length) && (countryId.length)){
+                                                            regionHtml.data('value',value);
+                                                            regionHtml.attr('value',value);
+
+                                                            lgaLoader.add();
+                                                            $.ajax({
+                                                                'method': 'get',
+                                                                'url': lgaUrl,
+                                                                'data': {
+                                                                    'regionId': value,
+                                                                    'countryId': countryId,
+                                                                    'token': lgaToken
+                                                                },
+                                                                'success': function(resp){
+                                                                    lgaLoader.remove(function(){
+                                                                        if (resp.status == 'ok') {
+                                                                            var postedLgaValue = lgaHtml.data('post-value');
+                                                                            lgaControl.enable();
+                                                                            lgaControl.addOption(resp.response);
+                                                                            lgaControl.refreshOptions(postedLgaValue ? false : true);
+                                                                            if (postedLgaValue) {
+                                                                                lgaControl.setValue(postedLgaValue);
+                                                                                lgaControl.refreshItems();
+                                                                            }
+
+                                                                            if (regionHtml.data('has-error')) {
+                                                                                regionHtml.data('has-error', false);
+                                                                                regionControl.$wrapper.css({
+                                                                                    'border': '1px solid green'
+                                                                                });
+                                                                                regionHtml.siblings('span.error').remove();
+                                                                            }
+                                                                        } else {
+                                                                            alert(resp.response);
+                                                                        }
+                                                                    });
+                                                                },
+                                                                'error' : function(){
+                                                                    lgaLoader.remove(function(){
+                                                                        alert('An unknown server error occured');
+                                                                    });
+                                                                }
+                                                            });
+                                                        }else{
+                                                            regionHtml.data('value',0);
+                                                            regionHtml.attr('value',0);
+                                                        }
+                                                    });
+
+                                                    countryControl.off('change');
+                                                    countryControl.on('change',function(){
+                                                        var value = countryControl.getValue();
+                                                        regionControl.clear();
+                                                        regionControl.clearOptions();
+                                                        regionControl.disable();
+
+                                                        if(value.length){
+                                                            countryHtml.data('value',value);
+                                                            countryHtml.attr('value',value);
+
+                                                            regionLoader.add();
+                                                            $.ajax({
+                                                                'method': 'get',
+                                                                'url': regionUrl,
+                                                                'data': {
+                                                                    'countryId': value,
+                                                                    'token': regionToken
+                                                                },
+                                                                'success': function(resp){
+                                                                    regionLoader.remove(function(){
+                                                                        if (resp.status == 'ok') {
+                                                                            var postedRegionValue = regionHtml.data('post-value');
+                                                                            regionControl.enable();
+                                                                            regionControl.addOption(resp.response);
+                                                                            regionControl.refreshOptions((postedRegionValue ? false : true));
+                                                                            if (postedRegionValue) {
+                                                                                regionControl.setValue(postedRegionValue);
+                                                                                regionControl.refreshItems();
+                                                                            }
+
+                                                                            if (countryHtml.data('has-error')) {
+                                                                                countryHtml.data('has-error', false);
+                                                                                countryControl.$wrapper.css({
+                                                                                    'border': '1px solid green'
+                                                                                });
+                                                                                countryHtml.siblings('span.error').remove();
+                                                                            }
+                                                                        } else {
+                                                                            alert(resp.response);
+                                                                        }
+                                                                    });
+                                                                },
+                                                                'error' : function(){
+                                                                    regionLoader.remove(function(){
+                                                                        alert('An unknown server error occured');
+                                                                    });
+                                                                }
+                                                            });
+                                                        }else{
+                                                            countryHtml.data('value',0);
+                                                            countryHtml.attr('value',0);
+                                                        }
+                                                    });
+
+                                                    countryControl.trigger.call(countryControl,'change');
+                                                }
+                                            },500);
+                                        }
+                                    },100);
+
+                                </script>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+
+        </div>
+              </div>
+                    </div>
+    </section>
+
+ {%include 'user/auth/footer.html'%}

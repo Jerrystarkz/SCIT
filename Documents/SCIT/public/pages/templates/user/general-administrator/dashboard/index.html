@@ -1,0 +1,390 @@
+{%include 'user/general-administrator/dashboard/header.html'%}
+
+            <div class="col-12">
+              <!-- <span class="d-block d-md-flex align-items-center">
+                <p>Like what you see? Check out our premium version for more.</p>
+                <a class="btn ml-auto download-button d-none d-md-block" href="https://github.com/BootstrapDash/StarAdmin-Free-Bootstrap-Admin-Template" target="_blank">Download Free Version</a>
+                <a class="btn purchase-button mt-4 mt-md-0" href="https://www.bootstrapdash.com/product/star-admin-pro/" target="_blank">Upgrade To Pro</a>
+                <i class="mdi mdi-close popup-dismiss d-none d-md-block"></i>
+              </span> -->
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
+              <div class="card card-statistics">
+                <div class="card-body">
+                  <div class="clearfix">
+                    <div class="float-left">
+                      <i class="mdi mdi-cube text-danger icon-lg"></i>
+                    </div>
+                    <div class="float-right">
+                      <p class="mb-0 text-right">Total Schools</p>
+                      <div class="fluid-container">
+                        <h3 class="font-weight-medium text-right mb-0">{{data.dashboard.data.secondarySchool.total}}</h3>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <p class="text-muted mt-3 mb-0">
+                    <i class="mdi mdi-alert-octagon mr-1" aria-hidden="true"></i> 65% lower growth
+                  </p> -->
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
+              <div class="card card-statistics">
+                <div class="card-body">
+                  <div class="clearfix">
+                    <div class="float-left">
+                      <i class="mdi mdi-receipt text-warning icon-lg"></i>
+                    </div>
+                    <div class="float-right">
+                      <p class="mb-0 text-right">Total Internship Centres</p>
+                      <div class="fluid-container">
+                        <h3 class="font-weight-medium text-right mb-0">{{data.dashboard.data.internshipProvider.total}}</h3>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <p class="text-muted mt-3 mb-0">
+                    <i class="mdi mdi-bookmark-outline mr-1" aria-hidden="true"></i> Product-wise sales
+                  </p> -->
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
+              <div class="card card-statistics">
+                <div class="card-body">
+                  <div class="clearfix">
+                    <div class="float-left">
+                      <i class="mdi mdi-poll-box text-success icon-lg"></i>
+                    </div>
+                    <div class="float-right">
+                      <p class="mb-0 text-right">Total Students</p>
+                      <div class="fluid-container">
+                        <h3 class="font-weight-medium text-right mb-0">{{data.dashboard.data.student.total}}</h3>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
+              <div class="card card-statistics">
+                <div class="card-body">
+                  <div class="clearfix">
+                    <div class="float-left">
+                      <i class="mdi mdi-account-location text-info icon-lg"></i>
+                    </div>
+                    <div class="float-right">
+                      <p class="mb-0 text-right">Total Institutions</p>
+                      <div class="fluid-container">
+                        <h3 class="font-weight-medium text-right mb-0">{{data.dashboard.data.institution.total}}</h3>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-7 grid-margin stretch-card">
+              <!--events card-->
+              {%set shownEvent = (attribute(data.dashboard.data.events,'0') ?: {"viewUrl":"#","coverImage":"/assets/images/noImage.png"})%}
+              <div class="card card-events">
+                <div class="card-body preview">
+                  <a href="{{shownEvent.viewUrl}}">
+                    <img src="{{shownEvent.coverImage}}" alt="Event">
+                  </a>
+                </div>
+                <div class="card-body p-0">
+                  <div class="d-flex events">
+                    {%set left = 7%}
+                    {%for i,event in data.dashboard.data.events%}
+                    {%set date = event.date%}
+                    {%set eventData = {"day":(date|date('l')),"month":(date|date('F')),"year":(date|date('Y'))}%}
+
+                    <div class="event {{(i is same as(0) ? 'active' : '')}}" data-event-data = "{{event|merge({'date':eventData})|json_encode}}">
+                      <div class = "day">{{eventData.day}}</div>
+                      <div class="month">{{eventData.month}}</div>
+                      <div class="year">{{eventData.year}}</div>
+                    </div>
+
+                    {%set left = (left - 1)%}
+                    {%endfor%}
+
+                    {%if left%}
+                    {%for i in 1..(left)%}
+                    {%set event ,eventData = {"viewUrl":0,"coverImage":0},{"day":"null","month":"null","year":"null"}%}
+
+                    <div class="event" data-event-data="{{eventData|merge({'date':eventData})|json_encode}}">
+                      <div class="day">{{eventData.day}}</div>
+                      <div class="month">{{eventData.month}}</div>
+                      <div class="year">{{eventData.year}}</div>
+                    </div>
+
+                    {%endfor%}
+                    {%endif%}
+                  </div>
+                </div>
+              </div>
+              <!--events card ends-->
+            </div>
+            <div class="col-lg-5 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h2 class="card-title text-primary mb-5">Test Response Report</h2>
+                  {%set test = data.dashboard.data.test%}
+                  {%set testReport = test.response%}
+                  <div class="wrapper d-flex justify-content-between">
+                    <div class="side-left">
+                      <p class="mb-2">Total Number of Students Satisfied With Test</p>
+                      <p class="display-3 mb-4 font-weight-light">{{testReport.satisfied.yes}}</p>
+                    </div>
+                  </div>
+                  <div class="wrapper d-flex justify-content-between">
+                    <div class="side-left">
+                      <p class="mb-2">Total Number of Students dis Satisfied With Test</p>
+                      <p class="display-3 mb-5 font-weight-light">{{testReport.satisfied.no}}</p>
+                    </div>
+                  </div>
+                  <div class="wrapper">
+                    <div class="d-flex justify-content-between">
+                      <p class="mb-2">Percentage Of Completed Class Test</p>
+                      {%set completedClassTest = (((test.uniqueAcademic / data.dashboard.data.student.total) * 100)|number_format(2, '.', ''))%}
+                      {%set percentage = (completedClassTest|default(0)) ~ '%'%}
+                      <p class="mb-2 text-primary">{{percentage}}</p>
+                    </div>
+                    <div class="progress">
+                      <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{percentage}}"></div>
+                    </div>
+                  </div>
+                  <div class="wrapper mt-4">
+                    <div class="d-flex justify-content-between">
+                      <p class="mb-2">Percentage Of Completed Temperament Test</p>
+                      {%set completedTempTest = (((test.uniqueTemperament / data.dashboard.data.student.total) * 100)|number_format(2, '.', ''))%}
+                      {%set percentage = (completedTempTest|default(0)) ~ '%'%}
+                      <p class="mb-2 text-success">{{percentage}}</p>
+                    </div>
+                    <div class="progress">
+                      <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{percentage}}"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <div class="chart-container" id = "chart-container" data-stats = "{{data.dashboard.data.chart.registration|json_encode}}">
+                    <canvas id="dashboard-area-chart" height="80"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {%set tickets = data.dashboard.data.tickets%}
+          {%if (tickets is iterable) and (tickets|length)%}
+          <div class="row">
+            <div class="col-12 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title mb-4">Manage Tickets</h5>
+                  <div class="fluid-container">
+                    {%for ticket in tickets%}
+                    <div class="row ticket-card mt-3 pb-2 border-bottom pb-3 mb-3" data-ticket-id = "{{ticket.id}}">
+                      <div class="col-md-1">
+                        <img class="img-sm rounded-circle mb-4 mb-md-0" src="{{ticket.userData.coverImage ?: '/assets/images/noUserImage.png'}}" alt="profile image">
+                      </div>
+                      <div class="ticket-details col-md-9">
+                        <div class="d-flex">
+                          <p class="text-dark font-weight-semibold mr-2 mb-0 no-wrap">{{ticket.userData.name|title}} :</p>
+                          <p class="text-primary mr-1 mb-0">{{ticket.sender}}</p>
+                          <p class="mb-0 ellipsis">{{ticket.title}}</p>
+                        </div>
+                        <p class="text-gray ellipsis mb-2">
+                          {{ticket.message|title}}
+                        </p>
+                        <div class="row text-gray d-md-flex d-none">
+                          <div class="col-5 d-flex justify-content-start">
+                            <small class="mb-0 mr-2 text-muted text-muted">Last responded :</small>
+                            <small class="Last-responded mr-2 mb-0 text-muted text-muted">{{ticket.lastReplyDate ? (ticket.lastReplyDate|date) : (ticket.openDate ? (ticket.openDate|date) : '')}}</small>
+                          </div>
+                          <div class="col-4 d-flex justify-content-start">
+                            <small class="mb-0 mr-2 text-muted text-muted">Total Replies :</small>
+                            <small class="Last-responded mr-2 mb-0 text-muted text-muted">{{ticket.totalReplies ?: 0}}</small>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ticket-actions col-md-2">
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-success btn-sm">
+                            View Ticket
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    {%endfor%}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {%endif%}
+  {%include 'user/general-administrator/dashboard/footer.html'%}
+  <script>
+
+    let preview = $('.card-events > .card-body.preview').eq(0),
+    previewLink = preview.children('a').eq(0),
+    viewContainer = previewLink.children('img').eq(0);
+
+    $('.card-events .events .event').on('click',function(e){
+      e.preventDefault();
+      var self = $(this),eventData = self.data('event-data'),url = eventData.viewUrl,imageSrc = eventData.coverImage;
+
+      if(url && imageSrc){
+        previewLink.attr('href', url);
+        viewContainer.attr('src',imageSrc);
+
+        self.siblings('.active').removeClass('active');
+        self.addClass('active');
+      }
+    });
+
+    var type = "{{data.user.type}}";
+    $('.ticket-card > .ticket-actions  button').on('click',function(e){
+      var self = $(this),
+      row = self.closest('.ticket-card'),
+      ticketId = row.data('ticket-id');
+
+      if(ticketId){
+        window.location.href = type + '/view/support/tickets?ticketId=' + ticketId;
+      }
+    });
+
+    (function ($) {
+        'use strict';
+        $(function () {
+          var chartCon = $('#chart-container'),chart = $('#dashboard-area-chart');
+
+          if (chart.length && chartCon.length) {
+            var data = chartCon.data('stats'),
+                months = ['jan','feb','mar','apr','may','jun','jul','aug','sept','oct','nov','dec'],
+                days = ['sun','mon','tue','wed','thu','fri','sat'],
+                labels = [],
+                sortOrder = [],
+                studentsData = [],
+                secondarySchoolsData = [],
+                internshipProvidersData = [];
+
+              if(typeof data == 'object'){
+                data.forEach(function(item,index){
+                  var startDate = new Date(item.start),
+                    endDate = new Date(item.end),
+                    startDateEpoch = startDate.getTime(),
+                    endDateEpoch = endDate.getTime(),
+                    usedDate = endDate,
+                    usedDateEpoch,
+                    day = '',
+                    month = '',
+                    year = '',
+                    placedIndex = 0;
+
+                    if(sortOrder.indexOf(startDateEpoch) === -1){
+                      usedDate = startDate;
+                    }
+
+                    usedDateEpoch = usedDate.getTime();
+                    day = days[usedDate.getDay()];
+                    month = months[usedDate.getDate()];
+                    year = String(usedDate.getFullYear()).slice(-2);
+
+                    for(var i = 0,j = sortOrder.length; i < j; i++){
+                      if(sortOrder[i] > usedDateEpoch){
+                        placedIndex = i;
+                        break;
+                      }
+                    }
+
+                    if(!placedIndex){
+                      placedIndex = sortOrder.length;
+                    }
+
+                    sortOrder.splice(placedIndex,0,usedDateEpoch);
+                    labels.splice(placedIndex,0,usedDate.toDateString()),
+                    studentsData.splice(placedIndex,0,(parseInt(item.count.students) || 0)),
+                    secondarySchoolsData.splice(placedIndex,0,(parseInt(item.count.secondary_schools) || 0)),
+                    internshipProvidersData.splice(placedIndex,0,(parseInt(item.count.internship_providers) || 0));
+                });
+              }
+
+            var lineChartCanvas = chart.get(0).getContext("2d");
+            var data = {
+              labels: labels,
+              datasets: [{
+                label: 'Students',
+                data: studentsData,
+                backgroundColor: 'rgba(70, 128, 255, 0.4)',
+                borderWidth: 1,
+                fill: true
+              },
+              {
+                label: 'Councellors',
+                data: secondarySchoolsData,
+                backgroundColor: 'rgba(212, 70, 255, 0.4)',
+                borderWidth: 1,
+                fill: true
+              },
+              {
+                label: 'Internship Providers',
+                data: internshipProvidersData,
+                backgroundColor: 'rgba(70, 255, 230, 0.4)',
+                borderWidth: 1,
+                fill: true
+              }
+              ]
+            };
+            var options = {
+              responsive: true,
+              maintainAspectRatio: true,
+              scales: {
+                yAxes: [{
+                  display: true
+                }],
+                xAxes: [{
+                  display: true,
+                  ticks: {
+                    beginAtZero: true
+                  }
+                }]
+              },
+              legend: {
+                display: true
+              },
+              elements: {
+                point: {
+                  radius: 3
+                }
+              },
+              layout: {
+                padding: {
+                  left: 0,
+                  right: 0,
+                  top: 0,
+                  bottom: 0
+                }
+              },
+              stepsize: 1
+            };
+            var lineChart = new Chart(lineChartCanvas, {
+              type: 'line',
+              data: data,
+              options: options
+            });
+          }
+        });
+      })(jQuery);
+  </script>

@@ -1,0 +1,1190 @@
+
+<div style="display:flex;justify-content:center;width:100%;">
+        {%include 'pageNotification.html'%}
+    </div>
+
+    {%if data.user.portfolio.status == 'ok'%}
+    {%set isGeneral = (data.user.portfolio.response.canEdit == 'all' ? true : false)%}
+    {%set isUser = (data.user.portfolio.response.canEdit == 'basic' ? true : false)%}
+    {%set isCouncellor = (data.user.portfolio.response.canEdit == 'school-edit' ? true : false)%}
+    {%set controllerType = data.user.portfolio.response.controllerType%}
+
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+            <style>
+            #holder,#portfolio,#user{
+                width: 100%;
+            }
+
+            #user .header{
+                font-size: 130%;
+                font-weight: 800;
+                text-align: left;
+                text-transform: uppercase;
+                margin: 20px 10px;
+            }
+
+            #user .inner{
+                margin: 7px 20px;
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            #user .inner .header{
+                font-size: 100%;
+                font-weight: 600;
+            }
+
+            #user .field{
+                margin: 20px 10px;
+            }
+
+            #user .field > .title{
+                font-weight: 650;
+                font-size: 90%;
+                width: 100%;
+                padding-bottom: 8px;
+                text-align: left;
+            }
+
+            #user .field > .text{
+                font-weight: 500;
+                font-size: 80%;
+                width: 100%;
+                background: rgb(230,230,230);
+                text-align: left;
+                padding: 14px;
+            }
+
+            #user .field.picture > .image{
+                display: flex;
+                width: 150px;
+                position: relative;
+                height: 150px;
+                z-index: 1;
+                background: rgb(0,0,0);
+            }
+
+            #user .field.picture > .image > img{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 2;
+            }
+
+            #user .field.picture > .button{
+                display: flex;
+                width: 150px;
+                height: auto;
+            }
+
+            #user .field.picture > .button > button{
+                display: flex;
+                width: 100%;
+                height: auto;
+                padding: 10px 5px;
+            }
+
+            div.error.report{
+                font-size: 90%;
+                font-style: italic;
+                font-weight: 500;
+                text-align: left;
+                color: red;
+                margin: 5px 0px 15px;
+            }
+            </style>
+
+            <form id = "holder" method = "post" action="{{attribute(data,'update-data').url}}" autocomplete="off">
+
+                {%set userProfile = data.user.portfolio.response%}
+                <input type="hidden" name = "token" value = "{{attribute(data,'update-data').token}}" />
+                <input type="hidden" name="id" value="{{userProfile.id}}" class = "hidden" />
+
+                <div id = "user" data-id = "{{userProfile.id}}">
+                    <div class="row">
+                        <div class="col-11 header">
+                            User Portfolio
+                        </div>
+                        <div class="col-12 col-md-8 field picture" data-name = "image">
+                            <div class="title">
+                                Profile Picture
+                            </div>
+                            <div class="image">
+                                <img data-src="{{attribute(userProfile.data,'cover-image')}}" alt=""/>
+                            </div>
+                            <div class="button">
+                                <button class="btn btn-info p-2 selector">Edit Profile Image</button>
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Full Name
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isUser or isCouncellor)%}
+                                <input type="text" name="name" class="form-control watchItem" value="{{userProfile.name|lower}}" data-value = "{{userProfile.name|lower}}" placeholder="please insert a valid name">
+                                {%else%}
+                                {{userProfile.name|title}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                User Name
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor)%}
+                                <input type="text" name="username" class="form-control watchItem" value="{{userProfile.uniqueName|lower}}" data-value = "{{userProfile.uniqueName|lower}}" placeholder="please insert a valid user name without space">
+                                {%else%}
+                                {{userProfile.uniqueName|default('none')|lower}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Email
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor)%}
+                                <input type="email" name="email" class="form-control watchItem" value="{{userProfile.email|lower}}" data-value = "{{userProfile.email|lower}}" placeholder="please insert a valid email address">
+                                {%else%}
+                                {{userProfile.email|default('none')|lower}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Phone Number
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor)%}
+                                <input type="text" name="phoneNumber" class="form-control watchItem" value="{{userProfile.phoneNumber}}" data-value = "{{userProfile.phoneNumber|lower}}" placeholder="please insert a valid phone number">
+                                {%else%}
+                                {{userProfile.phoneNumber|default('none')}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Main Role
+                            </div>
+                            <div class="text">
+                                {{userProfile.type|split('-')|join(' ')|title}}
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Is Approved
+                            </div>
+                            <div class="text">
+                                {%if isGeneral%}
+                                <select name="isApproved" class="form-control select watchItem" processed = "false" data-value = "{{userProfile.isApproved ? '1' : '0'}}" placeholder = "Please select account approval status">
+                                    <option value="" disabled>None</option>
+                                    <option value="1" {%if userProfile.isApproved == 1%}selected{%endif%}>Yes</option>
+                                    <option value="0" {%if userProfile.isApproved == 0%}selected{%endif%}>No</option>
+                                </select>
+                                {%else%}
+                                {{userProfile.isApproved ? 'yes' : 'no'}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Is Blocked
+                            </div>
+                            <div class="text">
+                                {%if isGeneral%}
+                                <select name="isBlocked" class="form-control select watchItem" processed = "false" data-value = "{{userProfile.isBlocked == 1 ? '1' : '0'}}" placeholder = "Please select account blocked status">
+                                    <option value="" disabled>None</option>
+                                    <option value="1" {%if userProfile.isBlocked == 1%}selected{%endif%}>Yes</option>
+                                    <option value="0" {%if userProfile.isBlocked == 0%}selected{%endif%}>No</option>
+                                </select>
+                                {%else%}
+                                {{userProfile.isBlocked ? 'yes' : 'no'}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Is Verified
+                            </div>
+                            <div class="text">
+                                {%if isGeneral%}
+                                <select name="isVerified" class="form-control select watchItem" processed = "false" data-value = "{{userProfile.isVerified == 1 ? '1' : '0'}}" placeholder = "Please select account verification status">
+                                    <option value="" disabled>None</option>
+                                    <option value="1" {%if userProfile.isVerified == 1%}selected{%endif%}>Yes</option>
+                                    <option value="0" {%if userProfile.isVerified == 0%}selected{%endif%}>No</option>
+                                </select>
+                                {%else%}
+                                {{userProfile.isVerified ? 'yes' : 'no'}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Country
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor or isUser)%}
+                                <select name="country" class = "form-control select watchItem" processed = "false" data-values = "{{data.countries|json_encode}}" data-value = "{{userProfile.country.id}}" id = "country" affect = "#region,#stateOfResidence" data-is-remote = "true" placeholder = "please select your country"></select>
+                                {%else%}
+                                {{userProfile.country.name|title|default('none')}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                State Of Origin
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor or isUser)%}
+                                <select name="region" class = "form-control select watchItem" processed = "false" data-value = "{{userProfile.region.id}}" id = "region" affect = "#lga" provider = "#country" data-url = "{{data.settings.region.url}}" data-token = "{{data.settings.region.token}}" data-is-remote = "true" provider = "#country" placeholder = "please select your state of origin"></select>
+                                {%else%}
+                                {{userProfile.region.name|title|default('none')}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Local Government Area
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor or isUser)%}
+                                <select name="lga" class = "form-control select watchItem" processed = "false" data-value = "{{userProfile.lga.id}}" id = "lga" data-url = "{{data.settings.lga.url}}" data-token = "{{data.settings.lga.token}}" provider = "#region" data-is-remote = "true" placeholder = "please select your local government area"></select>
+                                {%else%}
+                                {{userProfile.lga.name|title|default('none')}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                State Of Residence
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor or isUser)%}
+                                <select name="stateOfResidence" class = "form-control select watchItem" processed = "false" data-value = "{{userProfile.data.stateOfResidence.id}}" id = "stateOfResidence" data-url = "{{data.settings.region.url}}" data-token = "{{data.settings.region.token}}" data-is-remote = "true" provider = "#country" placeholder = "please select your state of residence"></select>
+                                {%else%}
+                                {{userProfile.data.stateOfResidence.name|title|default('none')}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        {%if (isGeneral or isCouncellor)%}
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                New Password
+                            </div>
+                            <div class="text">
+                                <input type="password" name="password" class="form-control watchItem" placeholder="**********************" value = ''>
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Confirm New Password
+                            </div>
+                            <div class="text">
+                                <input type="password" name="confirmPassword" class="form-control watchItem" placeholder="**********************" value = ''>
+                            </div>
+                        </div>
+                        {%endif%}
+                        {%if (userProfile.student is iterable) and (userProfile.student|length)%}
+                        <div class="col-12 header">
+                            Student Data
+                        </div>
+                        <input type="hidden" name = "student.id" value = "{{userProfile.student.id}}" class = "hidden">
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Student Class
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor or isUser)%}
+                                <select name="student.class" class = "form-control select watchItem"  processed = "false" data-value = "{{userProfile.student.level|lower}}" placeholder = "please select student class">
+                                    <option value="" disabled>None</option>
+                                    <option value="sss1" {%if userProfile.student.level == 'sss1'%}selected{%endif%}>Senior Secondary School 1 (sss1)</option>
+                                    <option value="sss2" {%if userProfile.student.level == 'sss2'%}selected{%endif%}>Senior Secondary School 2 (sss2)</option>
+                                    <option value="sss3" {%if userProfile.student.level == 'sss3'%}selected{%endif%}>Senior Secondary School 3 (sss3)</option>
+                                </select>
+                                {%else%}
+                                {{userProfile.student.level|title|default('none')}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Student Date Of Birth
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor or isUser)%}
+                                <input type="text" name="student.dob" value="{{userProfile.student.dob|date('Y/m/d')}}" class="form-control watchItem" placeholder="Please insert your date oof birth in this format yyyy/mm/dd" data-value = "{{userProfile.student.dob|date('Y/m/d')}}">
+                                {%else%}
+                                {{userProfile.student.dob|date('Y/m/d')}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-11 col-md-5 field">
+                            <div class="title">
+                                Student Age
+                            </div>
+                            <div class="text">
+                                {%set age = date().diff(date(userProfile.student.dob)).years%}
+                                {{(age ? ((age > 1) ? age~' years old' : 'A year old') : 'None')}}
+                            </div>
+                        </div>
+                        {%if (userProfile.student.school is iterable) and (userProfile.student.school|length)%}
+                        {%set school = userProfile.student.school%}
+                        <div class="col-12 header">
+                            School Data
+                        </div>
+                        <input type="hidden" name="student.school.id" value="{{school.id}}" class = "hidden">
+
+                        <div class="col-12 col-md-8 field picture" data-name = "student.school.image">
+                            <div class="title">
+                                Student School Picture
+                            </div>
+                            {%if (isGeneral or isCouncellor)%}
+                            <div class="image">
+                                <img data-src="{{attribute(school.data,'cover-image')}}" alt=""/>
+                            </div>
+                            <div class="button">
+                                <button class="btn btn-info p-2 selector">Edit School Image</button>
+                            </div>
+                            {%else%}
+                            <div class="image">
+                                {%if attribute(school.data,'cover-image')%}
+                                <img src="{{attribute(school.data,'cover-image')}}" alt=""/>
+                                {%else%}
+                                <img src="/assets/images/noImage.png" alt=""/>
+                                {%endif%}
+                            </div>
+                            {%endif%}
+                        </div>
+
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student School Name
+                            </div>
+                            <div class="text">
+                               {%if (isGeneral or isCouncellor)%}
+                               <input class = "form-control watchItem" type = "text" name = "student.school.name" data-value = "{{school.name|lower}}" placeholder = "Please insert a valid school name" value = "{{school.name|lower}}">
+                               {%else%}
+                               {{school.name|title|default('none')}}
+                               {%endif%}
+
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student School Unique Name
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor)%}
+                               <input class = "form-control watchItem" type = "text" name = "student.school.uniqueName" data-value = "{{school.uniqueName|lower}}" placeholder = "Please insert a valid school unique name" value = "{{school.uniqueName|lower}}">
+                               {%else%}
+                               {{school.uniqueName|title|default('none')}}
+                               {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student School Country
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor)%}
+                                <select class = "form-control select watchItem" type = "text" name = "student.school.country" data-value = "{{school.country.id}}" placeholder = "Please select a valid school country" value = "{{school.country.id}}" data-values = "{{data.countries|json_encode()}}" id = "schoolCountry" affect = "#schoolRegion" processed = "false"></select>
+                                {%else%}
+                                {{school.country.name|title|default('none')}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student School Region
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor)%}
+                                <select class = "form-control select watchItem" type = "text" name = "student.school.region" data-value = "{{school.region.id}}" provider = "#schoolCountry" data-is-remote = "true" placeholder = "please select your school region" value = "{{school.region.id}}" id = "schoolRegion" affect = "#schoolLga" data-url = "{{data.settings.region.url}}" data-token = "{{data.settings.region.token}}" processed = "false"></select>
+                                {%else%}
+                                {{school.region.name|title|default('none')}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Student School Local Government Area
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor)%}
+                                <select class = "form-control select watchItem" type = "text" name = "student.school.lga" data-value = "{{school.lga.id}}" provider = "#schoolRegion" data-is-remote = "true" placeholder = "please select your school lga" value = "{{school.lga.id}}" id = "schoolLga" data-url = "{{data.settings.lga.url}}" data-token = "{{data.settings.lga.token}}" processed = "false"></select>
+                                {%else%}
+                                {{school.lga.name|title|default('none')}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-11 field">
+                            <div class="title">
+                                Student School Address
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor)%}
+                                <textarea name="student.school.address" class="form-control watchItem" data-value = "{{student.school.address|lower}}" placeholder="please insert a valid address">{{student.school.address|lower}}</textarea>
+                                {%else%}
+                                {{school.address|title|default('none')}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-11 field">
+                            <div class="title">
+                                Student School Description
+                            </div>
+                            <div class="text">
+                                {%if (isGeneral or isCouncellor)%}
+                                <textarea class = "form-control watchItem" type = "text" name = "student.school.description" data-value = "{{school.description|lower}}" placeholder = "Please insert a valid school description">{{school.description|lower}}</textarea>
+                                {%else%}
+                                {{school.description|capitalize|default('none')}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        {%if (isGeneral or isCouncellor)%}
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Is Approved
+                            </div>
+                            <div class="text">
+                                {%if isGeneral%}
+                                <select name="student.school.isApproved" class="form-control select watchItem" processed = "false" data-value = "{{school.isApproved ? '1' : '0'}}" placeholder = "Please select school approval status">
+                                    <option value="" disabled>None</option>
+                                    <option value="1" {%if school.isApproved == 1%}selected{%endif%}>Yes</option>
+                                    <option value="0" {%if school.isApproved == 0%}selected{%endif%}>No</option>
+                                </select>
+                                {%else%}
+                                {{school.isApproved ? 'yes' : 'no'}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 field">
+                            <div class="title">
+                                Is Blocked
+                            </div>
+                            <div class="text">
+                                {%if isGeneral%}
+                                <select name="student.school.isBlocked" class="form-control select watchItem" processed = "false" data-value = "{{school.isBlocked == 1 ? '1' : '0'}}" placeholder = "Please select school blocked status">
+                                    <option value="" disabled>None</option>
+                                    <option value="1" {%if school.isBlocked == 1%}selected{%endif%}>Yes</option>
+                                    <option value="0" {%if school.isBlocked == 0%}selected{%endif%}>No</option>
+                                </select>
+                                {%else%}
+                                {{school.isBlocked ? 'yes' : 'no'}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%if (userProfile.adminProfiles is iterable) and (userProfile.adminProfiles|length)%}
+                        <div class="col-12 header">
+                            Administrator Data
+                        </div>
+                        {%for i,adminProfile in userProfile.adminProfiles%}
+                        {%set prefix = "admin."~i%}
+                        <input type="hidden" name="{{prefix~'.id'}}" value="{{adminProfile.id}}"  class = "hidden">
+                        <div class="col-12 inner">
+                            <div class="col-12 header">
+                                {{adminProfile.type|split('-')|join(' ')|title}} Data
+                            </div>
+                            <div class="col-11 col-md-5 field">
+                                <div class="title">
+                                    Is Approved
+                                </div>
+                                <div class="text">
+                                    {%if isGeneral%}
+                                    <select name="{{prefix~'.isApproved'}}" class="form-control select watchItem" processed = "false" data-value = "{{adminProfile.isApproved == 1 ? '1' : '0'}}" placeholder = "Please select account approval status">
+                                        <option value="" disabled>None</option>
+                                        <option value="1" {%if adminProfile.isApproved == 1%}selected{%endif%}>Yes</option>
+                                        <option value="0" {%if adminProfile.isApproved == 0%}selected{%endif%}>No</option>
+                                    </select>
+                                    {%else%}
+                                    {{adminProfile.isApproved == '1' ? 'yes' : 'no'}}
+                                    {%endif%}
+                                </div>
+                            </div>
+                            <div class="col-11 col-md-5 field">
+                                <div class="title">
+                                    Is Blocked
+                                </div>
+                                <div class="text">
+                                    {%if isGeneral%}
+                                    <select name="{{prefix~'.isBlocked'}}" class="form-control select watchItem" processed = "false" data-value = "{{adminProfile.isBlocked == 1 ? '1' : '0'}}" placeholder = "Please select account blocked status">
+                                        <option value="" disabled>None</option>
+                                        <option value="1" {%if adminProfile.isBlocked == 1%}selected{%endif%}>Yes</option>
+                                        <option value="0" {%if adminProfile.isBlocked == 0%}selected{%endif%}>No</option>
+                                    </select>
+                                    {%else%}
+                                    {{adminProfile.isBlocked == '1' ? 'yes' : 'no'}}
+                                    {%endif%}
+                                </div>
+                            </div>
+                            {%if adminProfile.isApproved%}
+                            <div class="col-11 col-md-5 field">
+                                <div class="title">
+                                    Approved Date
+                                </div>
+                                <div class="text">
+                                    {{adminProfile.approvedDate|date}}
+                                </div>
+                            </div>
+                            {%else%}
+                            <div class="col-11 col-md-5 field">
+                                <div class="title">
+                                    Approval Request Date
+                                </div>
+                                <div class="text">
+                                    {{adminProfile.approvalRequestDate|date}}
+                                </div>
+                            </div>
+                            {%endif%}
+                            {%if ((adminProfile.stakeholder is iterable) and (adminProfile.stakeholder|length))%}
+                            {%set stakeholder = adminProfile.stakeholder%}
+                            {%set prefix = prefix~'.stakeholder'%}
+                            <div class="col-11 inner">
+                                <div class="col-12 header">
+                                    stakeholder Data
+                                </div>
+                                <input type="hidden" name="{{prefix~'.id'}}" value="{{stakeholder.id}}"  class = "hidden">
+
+                                <div class="col-12 col-md-8 field picture" data-name = "{{prefix~'.image'}}">
+                                    <div class="title">
+                                        Stakeholder Picture
+                                    </div>
+                                    {%if (isGeneral)%}
+                                    <div class="image">
+                                        <img data-src="{{attribute(stakeholder.data,'cover-image')}}" alt=""/>
+                                    </div>
+                                    <div class="button">
+                                        <button class="btn btn-info p-2 selector">Edit Stakeholder Image</button>
+                                    </div>
+                                    {%else%}
+                                    <div class="image">
+                                        {%if attribute(stakeholder.data,'cover-image')%}
+                                        <img src="{{attribute(stakeholder.data,'cover-image')}}" alt=""/>
+                                        {%else%}
+                                        <img src="/assets/images/noImage.png" alt=""/>
+                                        {%endif%}
+                                    </div>
+                                    {%endif%}
+                                </div>
+
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        name
+                                    </div>
+                                    <div class="text">
+                                        {%if (isGeneral or isUser)%}
+                                        <input type="text" name="{{prefix~'.name'}}" class="form-control watchItem" data-value = "{{stakeholder.name}}" placeholder = "Please insert stakeholder name">
+                                        {%else%}
+                                        {{stakeholder.name|title|default('none')}}
+                                        {%endif%}
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        unique name
+                                    </div>
+                                    <div class="text">
+                                        {%if (isGeneral)%}
+                                        <input type="text" name="{{prefix~'.uniqueName'}}" class="form-control watchItem" data-value = "{{stakeholder.uniqueName}}" placeholder = "Please insert stakeholder unique name">
+                                        {%else%}
+                                        {{stakeholder.uniqueName|title|default('none')}}
+                                        {%endif%}
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        country
+                                    </div>
+                                    <div class="text">
+                                        {%if (isGeneral or isUser)%}
+                                        <select class="select form-control watchItem"  name="{{prefix~'.country'}}" processed = "false" data-values = "{{data.countries|json_encode()}}" data-value = "{{stakeholder.country.id}}" id = "stakeholder_{{i}}_country" affect = "#stakeholder_{{i}}_region"  placeholder = "please select yourcountry"></select>
+                                        {%else%}
+                                        {{stakeholder.country.name}}
+                                        {%endif%}
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        region
+                                    </div>
+                                    <div class="text">
+                                        {%if (isGeneral or isUser)%}
+                                        <select class="select form-control watchItem"  name="{{prefix~'.region'}}" processed = "false" data-value = "{{stakeholder.region.id}}" data-is-remote = "true" id = "stakeholder_{{i}}_region" affect = "#stakeholder_{{i}}_lga" provider = "#stakeholder_{{i}}_country" data-url = "{{data.settings.region.url}}" data-token = "{{data.settings.region.token}}" placeholder = "please select your region"></select>
+                                        {%else%}
+                                        {{stakeholder.region.name}}
+                                        {%endif%}
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        lga
+                                    </div>
+                                    <div class="text">
+                                        {%if (isGeneral or isUser)%}
+                                        <select class="select form-control watchItem" name="{{prefix~'.lga'}}" processed = "false" data-value = "{{stakeholder.lga.id}}" data-is-remote = "true" provider = "#stakeholder_{{i}}_region" id = "stakeholder_{{i}}_lga" data-url = "{{data.settings.lga.url}}" data-token = "{{data.settings.lga.token}}" placeholder = "please select your local government area"></select>
+                                        {%else%}
+                                        {{stakeholder.lga.name}}
+                                        {%endif%}
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        Is Approved
+                                    </div>
+                                    <div class="text">
+                                        {%if isGeneral%}
+                                        <select name="{{prefix~'.isApproved'}}" class="form-control select watchItem" processed = "false" placeholder = "Please select account approval status" data-value = "{{stakeholder.isApproved == 1 ? '1' : '0'}}">
+                                            <option value="" disabled>None</option>
+                                            <option value="1" {%if stakeholder.isApproved == 1%}selected{%endif%}>Yes</option>
+                                            <option value="0" {%if stakeholder.isApproved == 0%}selected{%endif%}>No</option>
+                                        </select>
+                                        {%else%}
+                                        {{stakeholder.isApproved ? 'yes' : 'no'}}
+                                        {%endif%}
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        Is Blocked
+                                    </div>
+                                    <div class="text">
+                                        {%if isGeneral%}
+                                        <select name="{{prefix~'.isBlocked'}}" class="form-control select watchItem" processed = "false" placeholder = "Please select account blocked status" data-value = "{{stakeholder.isBlocked == 1 ? '1' : '0'}}">
+                                            <option value="" disabled selected>None</option>
+                                            <option value="1" {%if stakeholder.isBlocked == 1%}selected{%endif%}>Yes</option>
+                                            <option value="0" {%if stakeholder.isBlocked == 0%}selected{%endif%}>No</option>
+                                        </select>
+                                        {%else%}
+                                        {{stakeholder.isBlocked ? 'yes' : 'no'}}
+                                        {%endif%}
+                                    </div>
+                                </div>
+                                {%if stakeholder.isApproved%}
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        Approved Date
+                                    </div>
+                                    <div class="text">
+                                        {{adminProfile.approvedDate|date}}
+                                    </div>
+                                </div>
+                                {%else%}
+                                <div class="col-11 col-md-5 field">
+                                    <div class="title">
+                                        Approval Request Date
+                                    </div>
+                                    <div class="text">
+                                        {{stakeholder.approvalRequestDate|date}}
+                                    </div>
+                                </div>
+                                {%endif%}
+                                <div class="col-11 col-md-10 field">
+                                    <div class="title">
+                                        Address
+                                    </div>
+                                    <div class="text">
+                                        {%if (isGeneral or isUser)%}
+                                        <textarea name="{{prefix~'.address'}}" class="form-control watchItem" placeholder="Please insert stakeholder address" data-value = "{{stakeholder.address|lower}}">{{stakeholder.address|lower}}</textarea>
+                                        {%else%}
+                                        {{stakeholder.address}}
+                                        {%endif%}
+                                    </div>
+                                </div>
+                                <div class="col-11 col-md-10 field">
+                                    <div class="title">
+                                        Description
+                                    </div>
+                                    <div class="text">
+                                        {%if (isGeneral or isUser)%}
+                                        <textarea name="{{prefix~'.description'}}"  class="form-control watchItem" placeholder="Please insert stakeholder description" data-value = "{{stakeholder.description|lower}}">{{stakeholder.description|lower}}</textarea>
+                                        {%else%}
+                                        {{stakeholder.description}}
+                                        {%endif%}
+                                    </div>
+                                </div>
+                            </div>
+                            {%endif%}
+                        </div>
+                        {%endfor%}
+                        {%endif%}
+                    </div>
+                </div>
+            <div>
+
+            <div style="width:100%;margin-top:15px;display:flex;justify-content:center;" class="d-none" id = "updateDataCnt">
+                <button style="width:100%;padding:2%;background: rgb(123, 238, 28);color:rgb(255,255,255);" class="btn updateDataBtn">Save Data</button>
+            </div>
+        </div>
+    </form>
+    {%else%}
+    <div class="container no-margin no-padding no-data">
+        <div class="content">
+            Oooops... invalid profile data
+        </div>
+    </div>
+    {%endif%}
+
+    <script type="text/javascript" src="/assets/js/jquery-1.9.1.js"></script>
+    <script src = "/assets/js/dashboard/mine.js"></script>
+    <script>
+        var processor = new Processor();
+        processor.loadMoxie();
+        processor.addLoader();
+
+        var checkInterval = setInterval(function(){
+            if(typeof $ === 'function' && typeof $.fn.selectize === 'function' && window.isMoxieLoaded){
+                clearInterval(checkInterval);
+
+                var form = $('#holder'),
+                imageContainer = form.find('.profilePicture > .image').eq(0),
+                preview = imageContainer.find('img').eq(0),
+                updateBtnCnt = $('#updateDataCnt'),
+                updateBtn = updateBtnCnt.children('button').eq(0),
+                data;
+
+                form.on('keypress',function(e){
+                    var key = e.charCode || e.keyCode || 0;
+                    if(key == 13){
+                        e.preventDefault();
+                    }
+                });
+
+                form.on('submit',function(e){
+                    e.preventDefault();
+                });
+
+                processor.removeLoader();
+
+                updateBtn.on('click',function(){
+                    var items = form.find('input[type="hidden"].hidden');
+                    items.each(function(){
+                        var self = $(this),
+                        value = self.val(),
+                        name,
+                        names,
+                        pointer = data;
+
+                        name = self.attr('name');
+                        names = name.split('.');
+
+                        for(var i = 0,j = names.length;i < j;i++){
+                            var key = names[i];
+                            if(i === (j - 1)){
+                                pointer[key] = value;
+                            }else{
+                                if(typeof pointer[key] != 'object'){
+                                    pointer[key] = {};
+                                }
+                                pointer = pointer[key];
+                            }
+                        }
+                    });
+
+                    var formData = new FormData(),
+                    pictures = form.find('.picture[image-changed="true"]');
+
+                    if(pictures.length){
+                        pictures.each(function(){
+                            var self = $(this),
+                            name = '',
+                            names = self.data('name');
+
+                            names.split('.').forEach(function(n){
+                                if(name){
+                                    name += '['+n+']';
+                                }else{
+                                    name = n;
+                                }
+                            });
+
+                            formData.append(name,self.data('image-binary-file'),'image-data');
+                        });
+                    }
+
+                    data['controllerType'] = "{{controllerType|e('js')}}";
+                    formData.append('token',form.children('input[name="token"]').eq(0).val());
+                    formData.append('data',JSON.stringify(data));
+                    formData.append('__action','update');
+                    formData.append('__for','portfolio');
+                    formData.append('for','user');
+
+                    processor.addLoader();
+                    $.ajax({
+                        'method': form.attr('method'),
+                        'url': form.attr('action'),
+                        'processData': false,
+                        'contentType': false,
+                        'data': formData,
+                        'success': function(resp){
+                            processor.removeLoader();
+                            if (typeof resp !== 'object' || typeof resp.status !== 'string' || ['ok', 'error'].indexOf(resp.status) === -1) {
+                                alert('A recoverable error occured.. please contact support if the problem persists');
+                            } else if (resp.status == 'error') {
+                                let errors = resp.errors || false,
+                                    response = resp.response || 'An error occured',
+                                    topOffset;
+
+                                if($.isArray(errors)){
+                                    $.each(errors,function(index,obj){
+                                        if($.isPlainObject(obj)){
+                                            $.each(obj,function(key,value){
+                                                let items = $(`input[name="${key}"],select[name="${key}"],textarea[name="${key}"],.picture[data-name="${key}"]`);
+
+                                                if (!items.length) {
+                                                    items = $(`[name^="${pointer}"]`);
+                                                }
+
+                                                if (items.length) {
+                                                    let item = items.eq(0),
+                                                        prev = item.prev('div.error.report');
+                                                    if (!prev.length) {
+                                                        item.before('<div class = "error report"></div>');
+                                                        prev = item.prev('div.error');
+                                                    }
+
+                                                    prev.html(value);
+                                                    let offset = prev.offset().top;
+
+                                                    if (offset > 200) {
+                                                        offset -= 200;
+                                                    } else if (offset > 180) {
+                                                        offset -= 180;
+                                                    } else if (offset > 160) {
+                                                        offset -= 160;
+                                                    } else if (offset > 140) {
+                                                        offset -= 140;
+                                                    } else if (offset > 120) {
+                                                        offset -= 120;
+                                                    } else {
+                                                        offset = 0;
+                                                    }
+
+                                                    if(typeof topOffset == 'undefined'){
+                                                        topOffset = offset;
+                                                    }else if(offset < topOffset){
+                                                        topOffset = offset;
+                                                    }
+                                                } else {
+                                                    alert(value);
+                                                }
+                                            });
+                                        }
+                                    });
+
+                                    $('html, body').animate({
+                                        scrollTop: (topOffset ? topOffset : 0)
+                                    }, 800);
+                                }else{
+                                    alert(response);
+                                }
+                            } else {
+                                $('html, body').animate({
+                                    scrollTop: 0
+                                }, 800);
+                                alert(resp.response ? resp.response : 'Data updated succesfully');
+                            }
+                        },
+                        'error' : function(resp){
+                            processor.removeLoader();
+                            alert('A Fatal error occured while processing your request... please contact administrator');
+                        }
+                    });
+                });
+
+                form.on('dataChanged',function(){
+                    var items = form.find('.watchItem');
+                    data = {};
+
+                    items.each(function(){
+                        var self = $(this),
+                        value = self.val(),
+                        name,
+                        names,
+                        nodeName = self.get(0).nodeName.toLowerCase(),
+                        pointer = data;
+
+                        if((['input','select','textarea'].indexOf(nodeName) !== -1) && value && (String(value) !== String(self.data('value')))){
+                            name = self.attr('name');
+                            names = name.split('.');
+
+                            for(var i = 0,j = names.length;i < j;i++){
+                                var key = names[i];
+                                if(i === (j - 1)){
+                                    pointer[key] = value;
+                                }else{
+                                    if(typeof pointer[key] != 'object'){
+                                        pointer[key] = {};
+                                    }
+                                    pointer = pointer[key];
+                                }
+                            }
+                        }
+                    });
+
+                    if(JSON.stringify(data) == '{}' && (form.find('.picture[image-changed="true"]').length === 0)){
+                        updateBtnCnt.removeClass('d-flex').addClass('d-none');
+                    }else{
+                        updateBtnCnt.removeClass('d-none').addClass('d-flex');
+                    }
+                });
+
+                var debounceTimer,
+                triggerDataChanged = function(e){
+                    if(debounceTimer){
+                        clearTimeout(debounceTimer);
+                    }
+                    debounceTimer = setTimeout(() => {
+                        form.trigger('dataChanged');
+                            let errorElement = $(e.target).closest('.text').children('div.error.report');
+                            if (errorElement.length) {
+                                errorElement.remove();
+                            }
+                    },500);
+                };
+
+                var items = form.find('input.watchItem,textarea.watchItem');
+                items.each(function(){
+                    var self = $(this);
+                    self.on('change blur keypress keydown keyup focus',triggerDataChanged);
+                });
+
+                var pictures = form.find('.picture');
+                pictures.each(function(){
+                    var self = $(this),
+                    screenCnt = self.find('.image').eq(0),
+                    screen = screenCnt.children('img').eq(0),
+                    selector = self.find('.selector').eq(0),
+                    imageInput,
+                    loader = new InlineLoader(screenCnt),
+                    selectorLoader = new InlineLoader(selector);
+
+                    if(selector.length){
+                        imageInput = new moxie.file.FileInput({
+                            'browse_button': selector.get(0),
+                            'multiple':false,
+                            'accept' : 'image/*'
+                        });
+
+                        screen.on('load',function(){
+                            var canvas = document.createElement('canvas');
+                            canvas.setAttribute('width',700);
+                            canvas.setAttribute('height',550);
+
+                            ctx = canvas.getContext('2d');
+                            ctx.drawImage(screen.get(0),0,0,700,550);
+                            canvas.toBlob(function(blob){
+                                self.data('image-binary-file',blob);
+                                var reader = new FileReader();
+                                reader.addEventListener('load',function(){
+                                    if(self.attr('is-set') != 'true'){
+                                        self.data('default-image-binary-string',reader.result);
+                                        self.attr('is-set','true');
+                                    }else{
+                                        if(self.data('default-image-binary-string') !== reader.result){
+                                            self.attr('image-changed','true');
+                                        }else{
+                                            self.attr('image-changed','false');
+                                        }
+                                    }
+
+                                    if(self.attr('is-set') == 'true'){
+                                        triggerDataChanged({
+                                            target: self
+                                        });
+                                    }
+
+                                    loader.remove();
+                                    selectorLoader.remove();
+                                });
+
+                                reader.readAsBinaryString(blob);
+                            },'image/png','1.0');
+                        });
+
+                        screen.on('error',function(){
+                            if (self.attr('is-set') != 'true') {
+                                self.attr('is-set', 'true');
+                            }
+                            loader.remove();
+                            selectorLoader.remove();
+                        });
+
+                        imageInput.addEventListener('change',function(){
+                            if(imageInput.files.length && /^image\/[\s\S]{1,}$/.test(imageInput.files[0]['type'])){
+                                if(imageInput.files[0]['size'] > 3000000){
+                                    alert('image has a maximum allowed size of 3 Mb');
+                                }else{
+                                    loader.add();
+                                    selectorLoader.add();
+
+                                    var reader = new moxie.file.FileReader();
+                                    reader.addEventListener('load',function(){
+                                        var blob = $$.binaryStringToBlob(reader.result);
+                                        blob = new Blob([blob],{'type':'image/png'});
+
+                                        var objectUrl = window.URL.createObjectURL(blob);
+                                        screen.attr('src',objectUrl);
+                                    });
+
+                                    reader.addEventListener('error',function(){
+                                        alert('Invalid Image file uploaded');
+                                        loader.remove();
+                                        selectorLoader.remove();
+                                    });
+
+                                    reader.readAsBinaryString(imageInput.files[0]);
+                                }
+                            }else{
+                                alert('Invalid file... Only Image upload is allowed');
+                            }
+                        });
+
+                        imageInput.init();
+                    }
+                });
+
+                form.find('.picture .image > img').each(function(){
+                    var self = $(this);
+                    if(self.data('src')){
+                        self.attr('src',self.data('src'));
+                    }else{
+                        self.closest('.picture').attr('is-set','true');
+                    }
+                });
+
+                $('select[processed="false"].select').each(function(){
+                    var self = $(this);
+                    self.selectize({
+                        create:false,
+                        placeholder: self.attr('placeholder'),
+                        closeAfterSelect: true,
+                        maxItems: 1,
+                        plugins:[
+                            'remove_button'
+                        ],
+                        'labelField':'name',
+                        'valueField':'id',
+                        'sortField':[
+                            {
+                                'field':'name',
+                                'direction':'asc'
+                            },
+                            {
+                                'field':'id',
+                                'direction':'asc'
+                            }
+                        ],
+                        'searchField':[
+                            'name'
+                        ],
+                        onInitialize: function(){
+                            var control = self.get(0).selectize;
+                            if(self.data('values')){
+                                control.addOption(self.data('values'));
+                            }
+
+                            if(self.data('value')){
+                                control.setValue([self.data('value')]);
+                            }
+
+                            if(self.attr('affect') && control.getValue()){
+                                var timeout = setTimeout(function(){
+                                    control.trigger('change');
+                                },1000);
+                            }
+                        },
+                        onChange: function(){
+                            triggerDataChanged({
+                                target: self
+                            });
+
+                            var control = self.get(0).selectize,
+                            affectedElement = self.attr('affect');
+                            if(affectedElement){
+                                var el = $(affectedElement);
+
+                                if(el.length && el.data('url') && el.data('token')){
+                                    el.each(function(){
+                                        var self = $(this),
+                                        elControl = self.get(0).selectize,
+                                        provider = self.attr('provider'),
+                                        loader = new InlineLoader(self.parent()),
+                                        process = function(){
+                                            if(provider){
+                                                provider = $(provider);
+
+                                                if(provider.length){
+                                                    var providerName = provider.attr('name').toLowerCase(),
+                                                    name = ((providerName.indexOf('country') != -1) ? 'countryId' : ((providerName.indexOf('region') != -1) ? 'regionId' : 'lgaId')),
+                                                    value = provider.val(),
+                                                    data = {
+                                                        'token': self.data('token')
+                                                    };
+                                                    data[name] = value;
+
+                                                    elControl.clear();
+                                                    elControl.clearOptions();
+                                                    elControl.disable();
+
+                                                    if(value){
+                                                        loader.add();
+
+                                                        $.ajax({
+                                                            'method': 'get',
+                                                            'url': self.data('url'),
+                                                            'data': data,
+                                                            'success': function(resp){
+                                                                loader.remove();
+                                                                if(resp.status == 'ok'){
+                                                                    var defaultValue = self.data('value');
+                                                                    elControl.enable();
+                                                                    elControl.addOption(resp.response);
+                                                                    elControl.refreshOptions(defaultValue ? false : true);
+                                                                    if(defaultValue){
+                                                                        elControl.setValue(defaultValue);
+                                                                        elControl.refreshItems();
+                                                                    }
+                                                                }else{
+                                                                    alert(resp.response);
+                                                                }
+                                                            },
+                                                            'error' : function(resp){
+                                                                loader.remove();
+                                                                alert('An unknown server error occured');
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        };
+
+                                        if(!elControl){
+                                            var controlTimer = setInterval(function(){
+                                                elControl = el.get(0).selectize
+                                                if(elControl){
+                                                    clearInterval(controlTimer);
+                                                    process();
+                                                }
+                                            },500);
+                                        }else{
+                                            process();
+                                        }
+
+                                    });
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+        },500);
+    </script>

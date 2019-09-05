@@ -1,0 +1,723 @@
+
+<div style="display:flex;justify-content:center;width:100%;">
+    {%include 'pageNotification.html'%}
+</div>
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title" style="font-size:130%;font-weight:800;text-decoration-line:underline; text-decoration-style: dotted; text-decoration-color: rgb(230,230,230);">Tickets List</h2>
+
+            <style>
+                .modal .holder{
+                    height: 500px;
+                    overflow: hidden;
+                }
+
+                .modal .ticketData{
+                    display: flex;
+                    flex-direction: column;
+                    height: 350px;
+                    overflow: auto;
+                }
+
+                .modal .ticketData  > .message{
+                    width: auto;
+                    max-width: 70%;
+                    font-size: 80%;
+                    text-align: justify;
+                    padding:10px;
+                    margin-bottom: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: flex-start;
+                }
+
+                .modal .ticketData  > .message > .text{
+                    padding:10px;
+                    border-radius: 10px;
+                    width:100%;
+                }
+
+                .modal .ticketData  > .message.admin{
+                    margin-right:auto;
+                    justify-content: flex-start;
+                }
+
+                .modal .ticketData  > .message.user{
+                    margin-left:auto;
+                    justify-content: flex-end;
+                }
+
+                .modal .ticketData  > .message.admin > .text{
+                    background: rgb(50,50,50);
+                    color: rgb(255,255,255);
+                }
+
+                .modal .ticketData  > .message.user > .text{
+                    background: rgb(240,240,240);
+                    color: rgb(0,0,0);
+                }
+
+                .modal .ticketData  > .message > .meta{
+                    width:100%;
+                    display: flex;
+                    flex-direction: column;
+                    font-size: 70%;
+                }
+
+                .modal .ticketData  > .message.user > .meta{
+                    justify-content: flex-end;
+                }
+
+                .modal .ticketData  > .message > .meta > *{
+                    width:100%;
+                    padding-top:5px;
+                }
+
+                .modal .ticketData  > .message.user > .meta > *{
+                    width:100%;
+                    text-align:right;
+                }
+
+                .modal .ticketData  > .timeline{
+                    max-width: 80%;
+                    margin-top:20px;
+                    margin-bottom:20px;
+                    display: flex;
+                    margin-right: auto;
+                    margin-left: auto;
+                    font-size: 70%;
+                    flex-direction: column;
+                }
+
+                .modal .ticketData  > .timeline > *{
+                    width: 100%;
+                    text-align: center;
+                }
+
+                .modal .ticketData  > .timeline > .text{
+                    width: 100%;
+                    padding: 7px;
+                    background: rgb(68, 137, 246);
+                    border-radius: 15px;
+                    color: rgb(255,255,255);
+                }
+
+                .modal .ticketData  > .timeline > .date{
+                    font-size: 80%;
+                }
+
+                .modal .modal-body > .holder > .newReply > button#addReply{
+                    background: rgb(68, 137, 246);
+                    color: rgb(255,255,255);
+                }
+
+                .modal .modal-footer{
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: flex-end;
+                    align-items: center;
+                }
+
+                .modal .modal-footer > button{
+                    margin: 5px 10px;
+                    background: rgb(50,50,50);
+                    color: rgb(255,255,255);
+                    border-radius: 6px;
+                }
+            </style>
+
+            <div class="modal fade" id="ticketInformation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header" style="border-bottom:1px solid rgb(200,200,200);">
+                            <div class="title" style = "text-transform:capitalize;font-size:100%;font-weight:700;"></div>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container-fluid holder">
+                                <div class="mt-2"></div>
+                                <div class="ticketData" style="width:100%;padding:10px;"></div>
+                                <div class="mt-2"></div>
+                                <div class="newReply" style="display:flex;margin-left:auto;margin-right:auto;width:90%;flex-direction: column;height:120px;">
+                                    <textarea class="form-control" name="" id="" cols="30" rows="10" style="height:60%;border:1px solid rgb(200,200,200);" placeholder="Reply to the above message"></textarea>
+                                    <button class="btn btn-success" id="addReply" style="width:100%;text-align:center;height:40%;">
+                                        Save Data
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form id = "holder" action="/update-data" method = "post">
+                <input type="hidden" name="token" value="{{attribute(data,'update-data').token}}">
+                <input type="hidden" id = "googleCaptcha" name="googleCaptchaToken" value="">
+                <div class="table-responsive">
+                    {%set increment = data.tickets.increment | default(50)%}
+                    {%set count = data.tickets.total.count%}
+                    {%set current = increment%}
+                    {%set hasSetCurrent = 0%}
+                    {%set isPaginated = false%}
+                    {%set from = data.tickets.from | default(0)%}
+
+                    <div  class="row">
+                        <div class="d-flex d-md-none">
+
+                        </div>
+
+                        <style>
+                        #tickets{
+                            display: flex;
+                            flex-wrap: wrap;
+                            padding: 1% 2%;
+                            width: 100%;
+                        }
+
+                        #tickets > .ticket{
+                            display: flex;
+                            flex-wrap: nowrap;
+                            width: 100%;
+                            height: 150px;
+                            box-shadow: 1px 1px 3px rgb(150,150,150);
+                            border-left: 30px solid rgb(200,200,200);
+                            border-right: 3px solid rgb(200,200,200);
+                            margin-bottom: 50px;
+                            overflow: auto;
+                        }
+
+                        #tickets > .ticket > .profile{
+                            flex-wrap: wrap;
+                            height: 100%;
+                            justify-content: center;
+                            padding: 1% 0% 1% 2%;
+                            margin-right: 0px;
+                        }
+
+                        #tickets > .ticket > .profile > .img-container{
+                            display: flex;
+                            width: 100%;
+                            justify-content: center;
+                            border-right: 1px solid rgb(200,200,200);
+                            padding-top: 10px;
+                            padding-bottom: 2px;
+                        }
+
+                        #tickets > .ticket > .profile > .img-container > .avatar{
+                            width: 70px;
+                            height: 70px;
+                            background: rgb(247, 231, 231);
+                            border-radius: 50%;
+                            position: relative;
+                            z-index: 1;
+                            display: flex;
+                        }
+
+                        #tickets > .ticket > .profile > .img-container > .avatar > img{
+                            width: 100%;
+                            height: 100%;
+                            position: absolute;
+                            z-index: 2;
+                            top: 0;
+                            left: 0;
+                        }
+
+                        #tickets > .ticket > .profile > .user{
+                            display: flex;
+                            width: 100%;
+                            justify-content: center;
+                            border-right: 1px solid rgb(200,200,200);
+                        }
+
+                        #tickets > .ticket > .profile > .user > .type{
+                            display: flex;
+                            justify-content: center;
+                            font-size: 55%;
+                            width: 100%;
+                            text-align: center;
+                        }
+
+                        #tickets > .ticket > .profile > .data,
+                        #tickets > .ticket > .content > .data{
+                            display: flex;
+                            width: 100%;
+                            justify-content: center;
+                            margin-top: auto;
+                            flex-wrap: wrap;
+                            align-items: center;
+                        }
+
+                        #tickets > .ticket > .profile > .data > .status,
+                        #tickets > .ticket > .content > .data > .status{
+                            display: flex;
+                            margin-top: auto;
+                            justify-content: center;
+                            align-items: center;
+                            font-size:60%;
+                            width:100%;
+                            flex-wrap: wrap;
+                            flex-direction: row;
+                        }
+
+                        #tickets > .ticket > .profile > .data > .status > *{
+                            padding: 5px 10px;
+                        }
+
+                        #tickets > .ticket > .content > .data > .status >*{
+                            padding: 5px 25px;
+                        }
+
+                        #tickets > .ticket > .content{
+                            display: flex;
+                            height: 100%;
+                            flex-wrap: wrap;
+                            justify-content: center;
+                            padding: 1% 2% 1% 0%;
+                            margin-left: 0px;
+                        }
+
+                        #tickets > .ticket > .content > .body{
+                            width: 100%;
+                            padding: 10px;
+                            padding-bottom: 2px;
+                            text-align: left;
+                        }
+
+                        #tickets > .ticket > .content > .body > .title{
+                            width: 100%;
+                            text-transform: uppercase;
+                            font-size: 100%;
+                            font-weight: 600;
+                            margin-bottom: 15px;
+                            text-align: center;
+                        }
+
+                        #tickets > .ticket > .content > .body > .message{
+                            font-size: 80%;
+                            width: 100%;
+                            font-weight: 400;
+                            text-align: center;
+                        }
+                        </style>
+
+                        <div id = "tickets" class="tickets" data-replies-url = "{{data.tickets.replies.url}}" data-replies-token = "{{data.tickets.replies.token}}" data-from = "{{data.ticket.from}}" data-from-id = "{{data.ticket.fromId}}">
+                            {%if data.tickets.list is iterable and data.tickets.list|length%}
+                            {%for i,ticket in data.tickets.list%}
+                            <div class="ticket" data-id = "{{ticket.id}}">
+                                <div class="col-md-3 d-none d-md-flex profile">
+                                    <div class ="img-container">
+                                        <div class="avatar">
+                                            <img src="{{ticket.userData.coverImage ?: '/assets/images/noUserImage.png'}}" alt="Profile Image">
+                                        </div>
+                                    </div>
+                                    <div class = "user">
+                                        <div class="type">
+                                            <i class="fa fa-user"></i>&nbsp;
+                                            {{ticket.sender|split('-')|join(' ')|title}}
+                                        </div>
+                                    </div>
+                                    <div class = "data">
+                                        <div class="status">
+                                            {%if ticket.isClosed%}
+                                            <i class="fa fa-check-square-o text-success"></i>&nbsp;
+                                            <span class="text">solved</span>
+                                            {%else%}
+                                            {%if ticket.isSeen%}
+                                            <i class="fa fa-circle-o text-warning"></i>&nbsp;
+                                            <span class="text">Processing</span>
+                                            {%else%}
+                                            <i class="fa fa-circle text-info"></i>&nbsp;
+                                            <span class="text">New</span>
+                                            {%endif%}
+                                            {%endif%}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9 content">
+                                    <div class = "body">
+                                        <div class = "title">
+                                            {{ticket.title}}
+                                        </div>
+                                        <div class="message">
+                                            {{ticket.message|capitalize}}
+                                        </div>
+                                    </div>
+                                    <div class = "data">
+                                        <div class="status">
+                                            <div class="priority">
+                                                <i class="fa fa-book text-success"></i>&nbsp;
+                                                <span class="text">{{ticket.priorityName}}</span>
+                                            </div>
+                                            <div class="category">
+                                                <i class="fa fa-anchor"></i>&nbsp;
+                                                <span class="text">{{ticket.categoryName}}</span>
+                                            </div>
+                                            <div class="reply">
+                                                <i class="fa fa-comment-o"></i>&nbsp;
+                                                <span class="text">{{ticket.totalReplies}} {{(ticket.totalReplies > 1) ? 'replies' : 'reply'}}</span>
+                                            </div>
+                                            <div class="action reply">
+                                                <a href="#ticketInformation" data-toggle="modal" data-target="#ticketInformation">
+                                                    <i class="fa fa-commenting-o"></i>&nbsp;
+                                                    <span class="text viewReplies">View Replies / Reply</span>
+                                                </a>
+                                            </div>
+                                            {%if ticket.canEdit and ticket.totalReplies == 0%}
+                                            <div class="edit">
+                                                <i class="fa fa-pencil-square-o"></i>&nbsp;
+                                                <a href="{{ticket.edit.url}}">Edit ticket data</a>
+                                            </div>
+                                            {%endif%}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {%endfor%}
+                            {%else%}
+                            <div style = "display:flex;justify-content: center;align-items: center;padding: 40px;width:100%;">
+                                <h4>
+                                    Oooops... there is currently no ticket based on your selection
+                                </h4>
+                            </div>
+                            {%endif%}
+                        </div>
+                        <div class="col-md-4 d-none d-md-block">
+
+                        </div>
+                    </div>
+
+                    <nav aria-label="..." class="mt-3">
+                        <ul class="pagination">
+                            <li class="page-item {%if (from < increment)%}disabled{%endif%}">
+                                <a class="page-link" href="?from={{(from - increment)}}" tabindex="-1">Previous</a>
+                            </li>
+                            {%for i in 0..30000 if (not isPaginated)%}
+                            <li class="page-item {%if((current >= (from + increment)) and (hasSetCurrent == 0))%}active{%set hasSetCurrent = 1%}{%endif%}">
+                                <a class="page-link" href="?from={{(i*increment)}}">{{i + 1}}</a>
+                            </li>
+                            {%if current > count%}
+                            {%set isPaginated = true%}
+                            {%endif%}
+                            {%set current = (current + increment)%}
+                            {%endfor%}
+
+                            <li class="page-item {%if (count <= increment) or (count <= (from + increment))%}disabled{%endif%}">
+                                <a class="page-link" href="?from={{(from + increment)}}">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div style="width:100%;margin-top:15px;display:none;justify-content:center;">
+                    <button type="submit" style="width:100%;padding:2%;" class="btn bg-danger" id = "deleteData" disabled = "disabled">Delete Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/assets/js/jquery-1.9.1.js"></script>
+<script src = "/assets/js/dashboard/mine.js"></script>
+<script>
+    var processor = new Processor();
+
+    processor.addLoader();
+    window.addEventListener('load',function(){
+        processor.removeLoader();
+    });
+
+    var checkInterval = setInterval(function(){
+        if(typeof $ === 'function' && typeof $.fn.selectize === 'function'){
+            clearInterval(checkInterval);
+
+            var form = $('form#holder'),
+            url = form.attr('action'),
+            token = form.children('input[name="token"]').eq(0).val(),
+            tickets = $('#tickets'),
+            qs = (function (a) {
+                if (a == "") return {};
+                var b = {};
+                for (var i = 0; i < a.length; ++i) {
+                    var p = a[i].split('=', 2);
+                    if (p.length == 1)
+                        b[p[0]] = "";
+                    else
+                        b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+                }
+                return b;
+            })(window.location.search.substr(1).split('&'));
+
+            $('#ticketInformation').on('show.bs.modal', function (e){
+                var modal = $(this),
+                button = $(e.relatedTarget),
+                modalHeader = modal.find('.modal-header').eq(0),
+                modalBody = modal.find('.modal-body').eq(0),
+                modalFooter = modal.find('.modal-footer').eq(0),
+                title = modalHeader.find('.title').eq(0),
+                ticketDataContainer = modalBody.find('.ticketData').eq(0),
+                newReplyContainer = modalBody.find('.newReply').eq(0),
+                textArea = newReplyContainer.find('textarea').eq(0),
+                addReplyBtn = newReplyContainer.find('button#addReply').eq(0),
+                ticketId;
+
+                if(button.length){
+                    var ticket = button.closest('.ticket').eq(0),
+                    ticketId = ticket.data('id');
+                }else{
+                    ticketId = qs.ticketId;
+                }
+
+                var processModal = function(){
+                    $.ajax({
+                        'method': 'post',
+                        'url' : url,
+                        'data' : {
+                            'token' : token,
+                            'ticketId' : ticketId,
+                            '__action' : 'view',
+                            '__for' : 'ticket',
+                            'type' : 'ticket-replies'
+                        },
+                        'success' : function(resp){
+                            processor.removeLoader();
+                            if(typeof resp == 'object'){
+                                if(resp.status == 'ok'){
+                                    var outSchedule = [];
+
+                                    if(resp.response.replies){
+                                        resp.response.replies = resp.response.replies.map(function(reply){
+                                            reply.__type = 'reply';
+                                            return reply;
+                                        });
+
+                                        outSchedule = outSchedule.concat(resp.response.replies);
+                                    }
+
+                                    if(resp.response.timeline){
+                                        resp.response.timeline = resp.response.timeline.map(function(timeline){
+                                            timeline.__type = 'timeline';
+                                            return timeline;
+                                        });
+
+                                        outSchedule = outSchedule.concat(resp.response.timeline);
+                                    }
+
+                                    outSchedule.push({
+                                        '__type': 'reply',
+                                        'id' : resp.response.id,
+                                        'message': resp.response.message,
+                                        'date' : resp.response.date,
+                                        'canDelete' : 0,
+                                        'sender' : resp.response.sender
+                                    });
+
+                                    outSchedule.sort(function(a,b){
+                                        var date1 = new Date(a.date),
+                                        date2 = new Date(b.date);
+
+                                        return (date1.getTime() - date2.getTime());
+                                    });
+
+                                    title.text(resp.response.title);
+                                    modalBody.data('id',resp.response.id);
+                                    ticketDataContainer.html('');
+                                    textArea.val('');
+
+                                    outSchedule.forEach(function(item){
+                                        switch(item.__type){
+                                            case 'timeline':
+                                                var showString = '';
+                                                showString += item.by.display_type;
+
+                                                switch(item.action){
+                                                    case 'open':
+                                                        showString += ' opened';
+                                                    break;
+
+                                                    case 'close':
+                                                        showString += ' closed';
+                                                    break;
+
+                                                    case 'reopen':
+                                                        showString += ' re-opened';
+                                                    break;
+
+                                                    case 'seen':
+                                                        showString += ' saw the last reply for';
+                                                    break;
+                                                }
+
+                                                showString += ' this support ticket';
+                                                ticketDataContainer.append('<div class="timeline"><span class="text">'+showString+'</span><span class="date">'+item.date+'</span></div>');
+                                            break;
+
+                                            case 'reply':
+                                                var from = (item.sender.id === resp.response.sender.id ? 'user' : 'admin'),
+                                                displayType = item.sender.type.split('-');
+
+                                                displayType = displayType.map(function(item){
+                                                    return item.charAt(0).toUpperCase() + item.slice(1);
+                                                }).join(' ');
+
+                                                ticketDataContainer.append('<div class="message '+from+'" data-id = "'+item.id+'"><span class="text">'+item.message+'</span><span class="meta"><span class="date">'+item.date+'</span><span class="from">'+displayType+'</span></span></div>');
+                                            break;
+                                        }
+                                    });
+
+                                    ticketDataContainer.animate({
+                                        'scrollTop': (parseInt(ticketDataContainer.children().length) * 300)
+                                    },500);
+
+                                    modalFooter.find('button.added').remove();
+                                    if(resp.response.isClosed){
+                                        modalFooter.prepend('<button type="button" class="btn reopen added">Re-open Ticket</button>');
+                                    }else{
+                                        modalFooter.prepend('<button type="button" class="btn resolve added">Resolve Ticket</button>');
+                                    }
+                                }else{
+                                    alert((typeof resp.response == 'string' ? resp.response : 'An error occurred... please try again later'));
+                                }
+                            }
+                        },
+                        'error' : function(resp){
+                            processor.removeLoader();
+                            alert('An unknown server error occured while processing request');
+                        }
+                    });
+                };
+
+                modalFooter.on('click',function(e){
+                    var target = $(e.target);
+                    if(target.get(0).nodeName.toLowerCase() === 'button' && target.hasClass('added')){
+                        processor.addLoader();
+
+                        var data = {
+                            'type': 'ticketData',
+                            'id': modalBody.eq(0).data('id'),
+                            'instructions' : []
+                        };
+
+                        switch(true){
+                            case target.hasClass('resolve'):
+                                data.instructions.push({
+                                    'key' : 'close'
+                                });
+                            break;
+
+                            case target.hasClass('reopen'):
+                                data.instructions.push({
+                                    'key' : 'reopen'
+                                });
+                            break;
+                        }
+
+                        $.ajax({
+                            'method': 'post',
+                            'url' : url,
+                            'data' : {
+                                'token' : token,
+                                '__action' : 'update',
+                                '__for' : 'ticket',
+                                'data' : JSON.stringify(data)
+                            },
+                            'success' : function(resp){
+                                if(typeof resp == 'object'){
+                                    if(resp.status == 'error'){
+                                        processor.removeLoader();
+                                        alert(resp.response);
+                                    }else{
+                                        processModal();
+                                    }
+                                }else{
+                                    processor.removeLoader();
+                                    alert('Invalid request');
+                                }
+                            },
+                            'error' : function(resp){
+                                processor.removeLoader();
+                                alert('An unknown server error occured while processing request');
+                            }
+                        });
+                    }
+                });
+
+                processor.addLoader();
+                processModal();
+
+                addReplyBtn.off().on('click',function(e){
+                    var self = $(this);
+                    e.preventDefault();
+
+                    var replyText = textArea.val();
+                    if(replyText.length){
+                        processor.addLoader();
+
+                        $.ajax({
+                            'method': 'post',
+                            'url' : url,
+                            'data' : {
+                                'token' : token,
+                                '__action' : 'add',
+                                '__for' : 'ticket',
+                                '__type' : 'response',
+                                'data' : JSON.stringify({
+                                    'type': 'response',
+                                    'forId': modalBody.eq(0).data('id'),
+                                    'from' : tickets.data('from'),
+                                    'fromId' : tickets.data('from-id'),
+                                    'message': replyText
+                                })
+                            },
+                            'success' : function(resp){
+                                if(typeof resp == 'object'){
+                                    if(resp.status == 'error'){
+                                        processor.removeLoader();
+                                        alert(resp.response);
+                                    }else{
+                                        processModal();
+                                    }
+                                }else{
+                                    processor.removeLoader();
+                                    alert('Invalid request');
+                                }
+                            },
+                            'error' : function(resp){
+                                processor.removeLoader();
+                                alert('An unknown server error occured while processing request');
+                            }
+                        });
+                    }
+                });
+            });
+
+            $('#ticketInformation').on('click',function(e){
+                var self = $(this);
+                e.preventDefault();
+            });
+
+            var ticketId = qs.ticketId;
+            if (ticketId) {
+                $('#ticketInformation').modal('show');
+            }
+        }
+    },200);
+</script>
+<!--<script src='{{data.googleCaptcha.url}}'></script>
+<script>
+    var $otherInterval = setInterval(function(){
+        if((typeof $ == 'function') && (typeof grecaptcha == 'object') && (typeof grecaptcha.execute == 'function')){
+            clearInterval($otherInterval);
+            grecaptcha.execute('{{data.googleCaptcha.siteKey}}', {action: 'adminUpdateSubjects'}).then(function(token) {
+                $('#googleCaptcha').val(token);
+                $('#deleteData, button.remove').removeAttr('disabled');
+            });
+        }
+    },100);
+</script>-->

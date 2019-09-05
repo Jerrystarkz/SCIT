@@ -1,0 +1,820 @@
+{%include 'user/auth/header.html'%}
+<link rel="stylesheet" href="/assets/css/font-awesome.min.css">
+
+<section class="margins">
+              <div class="container">
+                        <div class="row">
+                                <div class="col-md-8 col-xs-12 col-sm-12  col-md-offset-2 col-lg-offset-3 col-lg-6">
+                <div id="container_demo" >
+
+                    <div id="wrapper">
+                        <div id="login" class="animate form">
+                            <form method="post" id = "completeRegistration" action="{{-data.user.addStakeholderData.url-}}" autocomplete="on">
+                                {%set requestFor = data.user.addStakeholderData.for%}
+                                <input name="token" type="hidden" value="{{-data.user.addStakeholderData.token-}}">
+                                <input name="for" type="hidden" value="{{-requestFor-}}">
+                                <input type="hidden" name="googleCaptchaToken" id="googleCaptcha" value = "">
+                                {%if requestFor is same as('secondary-school')%}
+                                    <h1>School Information Update</h1>
+                                    {%include 'pageNotification.html'%}
+                                    <p class="change_ink" style="margin-bottom: 20px;">
+                                        <a href="#" id = "logout"> Take Me Home</a>
+
+                                        <script>
+                                            var anchor = document.getElementById('logout');
+                                            anchor.addEventListener('click',function(e){
+                                                e.preventDefault();
+                                                var form = document.createElement('form');
+                                                form.setAttribute('action','{{data.user.logout.url}}');
+                                                form.setAttribute('method','post');
+                                                
+                                                var tokenInput = document.createElement('input');
+                                                tokenInput.setAttribute('type','hidden');
+                                                tokenInput.setAttribute('name','token');
+                                                tokenInput.setAttribute('value','{{data.user.logout.token}}');
+
+                                                form.appendChild(tokenInput);
+                                                document.body.appendChild(form);
+                                                form.submit();
+                                            });
+                                        </script>
+                                    </p>
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == 'school_name'%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,'school_name') is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,'school_name')%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-name')) | default('')%}
+                                        <label for="schoolName">School Name</label>
+                                        <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} value = "{{value}}" id="schoolName" name="{{-requestFor-}}-name" required="required" type="text" data-post-value = "{{value}}" placeholder="Brainfield college" />
+    
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-unique-name')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-unique-name')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-unique-name'))%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-unique-name')) | default('')%}
+                                        <label for="schoolUniqueName">Please insert a unique name for your school without spaces</label>
+                                        <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} value = "{{value}}" id="schoolUniqueName" name="{{-requestFor-}}-unique-name" data-post-value = "{{value}}" required="required" type="text" placeholder="Brain-field-college" />
+    
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-country')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-country')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-country'))%}
+                                        {%endif%}
+    
+                                        {%set value = attribute(data.post,(requestFor~'-country')) | default('162')%}
+                                        <label for="schoolCountry" class="country">Please select school's country</label>
+                                        <select data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} value = "{{value}}" id="schoolCountry" name="{{-requestFor-}}-country" required="required" data-post-value = "{{value}}" data-values = "{{data.countries|json_encode()}}" processed = "false">
+                                        </select>
+
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-region')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-region')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-region'))%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-region')) | default('')%}
+                                        <label for="schoolRegion" class="country">Please select your school region</label>
+                                        <select data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} id="schoolRegion" name="{{-requestFor-}}-region" value = "{{value}}" data-post-value = "{{value}}" required="required" data-get-region-url = "{{data.regions.url}}" data-get-region-token = "{{data.regions.token}}" disabled = "disabled" processed = "false">
+                                        </select>
+    
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+                                    
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-local-government-area')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-local-government-area')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-local-government-area'))%}
+                                        {%endif%}
+    
+                                        {%set value = attribute(data.post,(requestFor~'-local-government-area')) | default('0')%}
+                                        <label for="schoolLga" class="lga">Please select your local government</label>
+                                        <select data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} id="schoolLga" name="{{-requestFor-}}-local-government-area" value = "{{value}}" data-post-value = "{{value}}" required="required" data-get-lgas-url = "{{data.lgas.url}}" data-get-lgas-token = "{{data.lgas.token}}" disabled = "disabled" processed = "false">
+                                        </select>
+    
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-address')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-address')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-address'))%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-address'))%}
+                                        <label for="schoolAddress">Detailed Address Information</label>
+                                        <textarea {%if hasError%}style="margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} id="schoolAddress" name="{{-requestFor-}}-address" required="required" data-post-value = "{{value}}" type="text" placeholder="Plot 28 road 6 douglas road">{{-value-}}</textarea>
+                                        
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-description')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-description')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-description'))%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-description')) | default('')%}
+                                        <label for="schoolDescription">Brief description about school</label>
+                                        <textarea {%if hasError%}style="margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} id="schoolDescription" name="{{-requestFor-}}-description" required="required" type="text" data-post-value = "{{value}}" placeholder="Brainfield is a secondary school located at rumuokoro portharcout. We offer tutulage to stdents from jss1 to ss3.............">{{-value-}}</textarea>
+    
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+                                {%elseif requestFor is same as('internship-provider')%}
+                                    <h1>Internship Provider Information Update</h1>
+                                    {%include 'pageNotification.html'%}
+                                    <p class="change_ink" style="margin-bottom: 20px;">
+                                        <a href="#" id = "logout"> Take Me Home</a>
+
+                                        <script>
+                                            var anchor = document.getElementById('logout');
+                                            anchor.addEventListener('click',function(e){
+                                                e.preventDefault();
+                                                var form = document.createElement('form');
+                                                form.setAttribute('action','{{data.user.logout.url}}');
+                                                form.setAttribute('method','post');
+                                                
+                                                var tokenInput = document.createElement('input');
+                                                tokenInput.setAttribute('type','hidden');
+                                                tokenInput.setAttribute('name','token');
+                                                tokenInput.setAttribute('value','{{data.user.logout.token}}');
+
+                                                form.appendChild(tokenInput);
+                                                document.body.appendChild(form);
+                                                form.submit();
+                                            });
+                                        </script>
+                                    </p>
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == 'internship_provider_name'%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,'internship_provider_name') is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,'internship_provider_name')%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-name')) | default('')%}
+                                        <label for="internshipProviderName">Internship Provider Name</label>
+                                        <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} data-post-value = "{{value}}" value = "{{value}}" id="internshipProviderName" name="{{-requestFor-}}-name" required="required" type="text" placeholder="Google Interns" />
+    
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-unique-name')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-unique-name')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-unique-name'))%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-unique-name')) | default('')%}
+                                        <label for="internshipProviderUniqueName">Please insert a unique name without space</label>
+                                        <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} value = "{{value}}" id="internshipProviderUniqueName" name="{{-requestFor-}}-unique-name" data-post-value = "{{value}}" required="required" type="text" placeholder="Google-interns" />
+    
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-country')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-country')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-country'))%}
+                                        {%endif%}
+    
+                                        {%set value = attribute(data.post,(requestFor~'-country')) | default('162')%}
+                                        <label for="internshipProviderCountry" class="country">Please select internship provider's country</label>
+                                        <select data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} value = "{{value}}" id="internshipProviderCountry" data-post-value = "{{value}}" name="{{-requestFor-}}-country" required="required" data-values = "{{data.countries|json_encode()}}" processed = "false">
+                                        </select>
+
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-region')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-region')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-region'))%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-region')) | default('')%}
+                                        <label for="internshipProviderRegion" class="country">Please select your internship provider region</label>
+                                        <select data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} id="internshipProviderRegion" name="{{-requestFor-}}-region" value = "{{value}}" data-post-value = "{{value}}" required="required" data-get-region-url = "{{data.regions.url}}" data-get-region-token = "{{data.regions.token}}" disabled = "disabled" processed = "false">
+                                        </select>
+    
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+                                    
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-local-government-area')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-local-government-area')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-local-government-area'))%}
+                                        {%endif%}
+    
+                                        {%set value = attribute(data.post,(requestFor~'-local-government-area')) | default('0')%}
+                                        <label for="internshipProviderLga" class="lga">Please select your local government</label>
+                                        <select data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} id="internshipProviderLga" name="{{-requestFor-}}-local-government-area" value = "{{value}}" data-post-value = "{{value}}" required="required" data-get-lgas-url = "{{data.lgas.url}}" data-get-lgas-token = "{{data.lgas.token}}" disabled = "disabled" processed = "false">
+    
+                                        </select>
+    
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-address')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-address')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-address'))%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-address'))%}
+                                        <label for="internshipProviderAddress">Detailed Address Information</label>
+                                        <textarea {%if hasError%}style="margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} id="internshipProviderAddress" name="{{-requestFor-}}-address" required="required" data-post-value = "{{value}}" type="text" placeholder="Plot 65 garki Abuja">{{-value-}}</textarea>
+                                        
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-description')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-description')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-description'))%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-description')) | default('')%}
+                                        <label for="internshipProviderDescription">Brief description</label>
+                                        <textarea {%if hasError%}style="margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} id="internshipProviderDescription" name="{{-requestFor-}}-description" required="required" type="text" data-post-value = "{{value}}" placeholder="Google Interns is an internship company that helps groom the skill of young individuals.............">{{-value-}}</textarea>
+
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+                                {%elseif requestFor is same as('institution')%}
+                                    <h1>Institution Information Update</h1>
+                                    {%include 'pageNotification.html'%}
+                                    <p class="change_ink" style="margin-bottom: 20px;">
+                                        <a href="#" id = "logout"> Take Me Home</a>
+
+                                        <script>
+                                            var anchor = document.getElementById('logout');
+                                            anchor.addEventListener('click',function(e){
+                                                e.preventDefault();
+                                                var form = document.createElement('form');
+                                                form.setAttribute('action','{{data.user.logout.url}}');
+                                                form.setAttribute('method','post');
+                                                
+                                                var tokenInput = document.createElement('input');
+                                                tokenInput.setAttribute('type','hidden');
+                                                tokenInput.setAttribute('name','token');
+                                                tokenInput.setAttribute('value','{{data.user.logout.token}}');
+
+                                                form.appendChild(tokenInput);
+                                                document.body.appendChild(form);
+                                                form.submit();
+                                            });
+                                        </script>
+                                    </p>
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == 'institution_name'%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,'institution_name') is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,'institution_name')%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-name')) | default('')%}
+                                        <label for="institutionName">Institution Name</label>
+                                        <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} value = "{{value}}" id="institutionName" name="{{-requestFor-}}-name" data-post-value = "{{value}}" required="required" type="text" placeholder="Federal University Of Technology Owerri" />
+    
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-unique-name')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-unique-name')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-unique-name'))%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-unique-name')) | default('')%}
+                                        <label for="institutionUniqueName">Please insert a unique name for your institution without spaces</label>
+                                        <input {%if hasError%}style = "margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} value = "{{value}}" id="institutionUniqueName" name="{{-requestFor-}}-unique-name" data-post-value = "{{value}}" required="required" type="text" placeholder="FUTO" />
+    
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-country')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-country')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-country'))%}
+                                        {%endif%}
+    
+                                        {%set value = attribute(data.post,(requestFor~'-country')) | default('162')%}
+                                        <label for="institutionCountry" class="country">Please select institution's country</label>
+                                        <select data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} value = "{{value}}" id="institutionCountry" name="{{-requestFor-}}-country" required="required" data-post-value = "{{value}}" data-values = "{{data.countries|json_encode()}}" processed = "false">
+                                        </select>
+
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-region')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-region')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-region'))%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-region')) | default('0')%}
+                                        <label for="institutionRegion" class="country">Please select your institution region</label>
+                                        <select data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} id="institutionRegion" name="{{-requestFor-}}-region" value = "{{value}}" data-post-value = "{{value}}" required="required" data-get-region-url = "{{data.regions.url}}" data-get-region-token = "{{data.regions.token}}" disabled = "disabled" processed = "false">
+                                        </select>
+    
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+                                    
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-local-government-area')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-local-government-area')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-local-government-area'))%}
+                                        {%endif%}
+    
+                                        {%set value = attribute(data.post,(requestFor~'-local-government-area')) | default('0')%}
+                                        <label for="institutionLga" class="lga">Please select your local government</label>
+                                        <select data-has-error = {%if hasError%}"true"{%else%}"false"{%endif%} id="institutionLga" name="{{-requestFor-}}-local-government-area" value = "{{value}}" data-post-value = "{{value}}" required="required" data-get-lgas-url = "{{data.lgas.url}}" data-get-lgas-token = "{{data.lgas.token}}" disabled = "disabled" processed = "false">
+                                        </select>
+    
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-address')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-address')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-address'))%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-address'))%}
+                                        <label for="institutionAddress">Detailed Address Information</label>
+                                        <textarea {%if hasError%}style="margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} id="institutionAddress" name="{{-requestFor-}}-address" required="required" data-post-value = "{{value}}" type="text" placeholder="Obinze off Imo - portharcout expressway">{{-value-}}</textarea>
+                                        
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+
+                                    <p>
+                                        {%set hasError,error = 0,''%}
+                                        {%if data.errors.from == (requestFor~'-description')%}
+                                            {%set hasError,error = 1,data.errors.response%}
+                                        {%endif%}
+                                        
+                                        {%if attribute(data.errors.response,(requestFor~'-description')) is defined%}
+                                            {%set hasError,error = 1,attribute(data.errors.response,(requestFor~'-description'))%}
+                                        {%endif%}
+                                        
+                                        {%set value = attribute(data.post,(requestFor~'-description'))%}
+                                        <label for="institutionDescription">Brief description about institution</label>
+                                        <textarea {%if hasError%}style="margin-bottom:0;border:1px solid red;" onblur = "this.style.border = '1px solid green';this.parentElement.querySelector('.error').innerHTML = '';"{%endif%} id="institutionDescription" name="{{-requestFor-}}-description" required="required" data-post-value = "{{value}}" type="text" placeholder="Federal University of technology owerri(FUTO) offers tertiary tutulage to scholars to study diverse courses at its best quality.............">{{-value-}}</textarea>
+                                        
+                                        {%if hasError%}
+                                        <span class="error" style="font-size:80%;color:red;margin-top:0;margin-bottom:15px;">{{-error-}}</span>
+                                        {%endif%}
+                                    </p>
+                                {%endif%}
+                                
+                                <p class="button text-center">
+                                    <input  id = "addStakeholderDataButton" class="btn" type="submit" value="Save Data" disabled = "disabled" />
+                                </p>
+                                
+                                <script type="text/javascript" src="/assets/js/jquery-1.9.1.js"></script>
+                                <script src = "/assets/js/dashboard/mine.js"></script>
+
+                                <script type="text/javascript">
+                                    var processor = new Processor();
+
+                                    var $checkInterval = setInterval(function(){
+                                        if(typeof $ == 'function' && typeof $.fn.selectize === 'function'){
+                                            clearInterval($checkInterval);
+
+                                            var country = $('#schoolCountry,#internshipProviderCountry,#institutionCountry'),
+                                            countryHtml,
+                                            regionHtml,
+                                            regionUrl,
+                                            regionToken,
+                                            lgaHtml,
+                                            lgaToken,
+                                            lgaUrl;
+
+                                            country.each(function(){
+                                                var self = $(this);
+                                                if(self.length){
+                                                    var append = self.attr('id').replace('Country','');
+                                                    countryHtml = self;                                                
+                                                    regionHtml = $('#' + append + 'Region'),
+                                                    regionUrl = regionHtml.data('get-region-url'),
+                                                    regionToken = regionHtml.data('get-region-token'),
+                                                    lgaHtml = $('#' + append + 'Lga'),
+                                                    lgaUrl = lgaHtml.data('get-lgas-url'),
+                                                    lgaToken = lgaHtml.data('get-lgas-token');
+                                                }
+                                            });
+
+                                            lgaHtml.selectize({
+                                                create: false,
+                                                options: null,
+                                                items: null,
+                                                placeholder: 'Please select your local government area',
+                                                closeAfterSelect: true,
+                                                maxItems: 1,
+                                                plugins:[
+                                                    'remove_button'
+                                                ],
+                                                'labelField':'name',
+                                                'valueField':'id',
+                                                'sortField':[
+                                                    {
+                                                        'field':'name',
+                                                        'direction':'asc'
+                                                    },
+                                                    {
+                                                        'field':'id',
+                                                        'direction':'asc'
+                                                    }
+                                                ],
+                                                'searchField':[
+                                                    'name'
+                                                ],
+                                                onInitialize: function(){
+                                                    lgaHtml.get(0).selectize.disable();
+                                                    lgaHtml.attr('processed',true);
+                                                }
+                                            });
+
+                                            regionHtml.selectize({
+                                                create: false,
+                                                options: null,
+                                                items: null,
+                                                placeholder: 'Please select your region',
+                                                closeAfterSelect: true,
+                                                maxItems: 1,
+                                                plugins:[
+                                                    'remove_button'
+                                                ],
+                                                'labelField':'name',
+                                                'valueField':'id',
+                                                'sortField':[
+                                                    {
+                                                        'field':'name',
+                                                        'direction':'asc'
+                                                    },
+                                                    {
+                                                        'field':'id',
+                                                        'direction':'asc'
+                                                    }
+                                                ],
+                                                'searchField':[
+                                                    'name'
+                                                ],
+                                                onInitialize: function(){
+                                                    regionHtml.get(0).selectize.disable();
+                                                    regionHtml.attr('processed',true);
+                                                }
+                                            });
+
+                                            countryHtml.selectize({
+                                                create: false,
+                                                options: countryHtml.data('values'),
+                                                items: countryHtml.data('post-value'),
+                                                placeholder: 'Please select your country',
+                                                closeAfterSelect: true,
+                                                maxItems: 1,
+                                                plugins:[
+                                                    'remove_button'
+                                                ],
+                                                'labelField':'name',
+                                                'valueField':'id',
+                                                'sortField':[
+                                                    {
+                                                        'field':'name',
+                                                        'direction':'asc'
+                                                    },
+                                                    {
+                                                        'field':'id',
+                                                        'direction':'asc'
+                                                    }
+                                                ],
+                                                'searchField':[
+                                                    'name'
+                                                ],
+                                                onInitialize: function(){
+                                                    var self = this,
+                                                    countries = countryHtml.data('values');
+                                                    
+                                                    for(var i = 0,j  = countries.length;i < j;i++){
+                                                        if(countries[i]['name'].toLowerCase() == 'nigeria'){
+                                                            self.setValue(countries[i]['id']);
+                                                            i = j;
+                                                            break;
+                                                        }
+                                                    }
+                                                    countryHtml.attr('processed',true);
+                                                }
+                                            });
+
+                                            $checkControls = setInterval(function(){
+                                                if(!$(document.body).find('select[processed="false"]').length){
+                                                    clearInterval($checkControls);
+
+                                                    var countryControl = countryHtml.get(0).selectize,
+                                                    regionControl = regionHtml.get(0).selectize,
+                                                    lgaControl = lgaHtml.get(0).selectize;
+
+                                                    if(lgaHtml.data('has-error')){
+                                                        lgaControl.$wrapper.css({
+                                                            'border':'1px solid red'
+                                                        });
+                                                    }
+
+                                                    if(countryHtml.data('has-error')){
+                                                        countryControl.$wrapper.css({
+                                                            'border':'1px solid red'
+                                                        });
+                                                    }
+
+                                                    if(regionHtml.data('has-error')){
+                                                        regionControl.$wrapper.css({
+                                                            'border':'1px solid red'
+                                                        });
+                                                    }
+
+                                                    lgaControl.on('change',function(){
+                                                        var value = lgaControl.getValue();
+                                                        if(value.length){
+                                                            lgaHtml.data('value',value);
+                                                            lgaHtml.attr('value',value);
+
+                                                            if(lgaHtml.data('has-error')){
+                                                                lgaHtml.data('has-error',false);
+                                                                lgaControl.$wrapper.css({
+                                                                    'border': '1px solid green'
+                                                                });
+                                                                lgaHtml.siblings('span.error').remove();
+                                                            }
+                                                        }else{
+                                                            lgaHtml.data('value',0);
+                                                            lgaHtml.attr('value',0);
+                                                        }
+                                                    });
+
+                                                    regionControl.on('change',function(){
+                                                        var value = regionControl.getValue(),
+                                                        countryId = countryControl.getValue();
+                                                        lgaControl.clear();
+                                                        lgaControl.clearOptions();
+                                                        lgaControl.disable();
+                                                        
+                                                        if(value.length && countryId.length){
+                                                            regionHtml.data('value',value);
+                                                            regionHtml.attr('value',value);
+
+                                                            processor.addLoader();
+                                                            $.ajax({
+                                                                'method': 'get',
+                                                                'url': lgaUrl,
+                                                                'data': {
+                                                                    'regionId': value,
+                                                                    'countryId': countryId,
+                                                                    'token': lgaToken
+                                                                },
+                                                                'success': function(resp){
+                                                                    if(resp.status == 'ok'){
+                                                                        var postedLgaValue = lgaHtml.data('post-value');
+                                                                        lgaControl.enable();
+                                                                        lgaControl.addOption(resp.response);
+                                                                        lgaControl.refreshOptions((postedLgaValue ? false : true));
+                                                                        if(postedLgaValue){
+                                                                            lgaControl.setValue([postedLgaValue]);
+                                                                            lgaControl.refreshItems();
+                                                                        }
+
+                                                                        if(regionHtml.data('has-error')){
+                                                                            regionHtml.data('has-error',false);
+                                                                            regionControl.$wrapper.css({
+                                                                                'border': '1px solid green'
+                                                                            });
+                                                                            regionHtml.siblings('span.error').remove();
+                                                                        }
+                                                                    }else{
+                                                                        alert(resp.response);
+                                                                    }
+                                                                    processor.removeLoader();
+                                                                },
+                                                                'error' : function(){
+                                                                    alert('An unknown server error occured');
+                                                                    processor.removeLoader();
+                                                                }
+                                                            });
+                                                        }else{
+                                                            regionHtml.data('value',0);
+                                                            regionHtml.attr('value',0);
+                                                        }
+                                                    });
+
+                                                    countryControl.on('change',function(){
+                                                        var value = countryControl.getValue();
+                                                        regionControl.clear();
+                                                        regionControl.clearOptions();
+                                                        regionControl.disable();
+                                                        if(value.length){
+                                                            countryHtml.data('value',value);
+                                                            countryHtml.attr('value',value);
+
+                                                            processor.addLoader();
+                                                            $.ajax({
+                                                                'method': 'get',
+                                                                'url': regionUrl,
+                                                                'data': {
+                                                                    'countryId': value,
+                                                                    'token': regionToken
+                                                                },
+                                                                'success': function(resp){
+                                                                    if(resp.status == 'ok'){
+                                                                        var postedRegionValue = regionHtml.data('post-value');
+                                                                        regionControl.enable();
+                                                                        regionControl.addOption(resp.response);
+                                                                        regionControl.refreshOptions((postedRegionValue ? false : true));
+                                                                        if(postedRegionValue){
+                                                                            regionControl.setValue(postedRegionValue);
+                                                                            regionControl.refreshItems();
+                                                                        }
+
+                                                                        if(countryHtml.data('has-error')){
+                                                                            countryHtml.data('has-error',false);
+                                                                            countryControl.$wrapper.css({
+                                                                                'border': '1px solid green'
+                                                                            });
+                                                                            countryHtml.siblings('span.error').remove();
+                                                                        }
+                                                                    }else{
+                                                                        alert(resp.response);
+                                                                    }
+                                                                    processor.removeLoader();
+                                                                },
+                                                                'error' : function(){
+                                                                    alert('An unknown server error occured');
+                                                                    processor.removeLoader();
+                                                                }
+                                                            });
+                                                        }else{
+                                                            countryHtml.data('value',0);
+                                                            countryHtml.attr('value',0);
+                                                        }
+                                                    });
+
+                                                    countryControl.trigger.call(countryControl,'change');
+                                                }
+                                            },500);
+                                        }
+                                    },100);
+                                    
+                                </script>
+                                <script src='{{data.googleCaptcha.url}}'></script>
+                                <script>
+                                    var $otherInterval = setInterval(function(){
+                                        if((typeof $ == 'function') && (typeof grecaptcha == 'object') && (typeof grecaptcha.execute == 'function')){
+                                            clearInterval($otherInterval);
+                                            grecaptcha.execute('{{data.googleCaptcha.siteKey}}', {action: 'addStakeholderData'}).then(function(token) {
+                                                $('#googleCaptcha').val(token);
+                                                $('#addStakeholderDataButton').removeAttr('disabled');
+                                            });
+                                        }
+                                    },100);
+                                </script>
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+
+        </div>
+              </div>
+                    </div>
+    </section>
+    
+{%include 'user/auth/footer.html'%}
